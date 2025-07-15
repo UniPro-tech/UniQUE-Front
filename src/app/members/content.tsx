@@ -1,6 +1,7 @@
 import { PrismaClient } from "@/generated/prisma";
 import { use } from "react";
 import DataGridDemo from "./datagrid";
+import { Stack } from "@mui/material";
 
 export default function MembersContents() {
   const prisma = new PrismaClient();
@@ -16,10 +17,8 @@ export default function MembersContents() {
   }));
 
   return (
-    <div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <DataGridDemo rows={rows} />
-      </div>
-    </div>
+    <Stack style={{ width: "100%", height: "100%" }}>
+      <DataGridDemo rows={rows} />
+    </Stack>
   );
 }
