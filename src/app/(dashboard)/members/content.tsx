@@ -1,6 +1,6 @@
 import { use } from "react";
-import DataGridDemo from "./datagrid";
-import { Stack } from "@mui/material";
+import DataGridContents from "./datagrid";
+import { Stack, Typography } from "@mui/material";
 import { ListResponse } from "@/types/rest";
 import { User } from "@/types/user";
 
@@ -24,7 +24,13 @@ export default function MembersContents() {
 
   return (
     <Stack style={{ width: "100%", height: "100%" }}>
-      <DataGridDemo rows={rows} />
+      <Stack spacing={1} marginBottom={2}>
+        <Typography variant="h4">Members</Typography>
+        <Typography variant="subtitle1" color="textSecondary">
+          メンバー一覧です。
+        </Typography>
+      </Stack>
+      <DataGridContents rows={rows} />
     </Stack>
   );
 }

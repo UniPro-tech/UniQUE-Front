@@ -3,7 +3,11 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import { GridValidRowModel } from "@mui/x-data-grid";
 
-export default function DataGridDemo({ rows }: { rows: GridValidRowModel[] }) {
+export default function DataGridContents({
+  rows,
+}: {
+  rows: GridValidRowModel[];
+}) {
   return (
     <DataGrid
       rows={rows}
