@@ -5,11 +5,11 @@ import {
   Button,
   LinearProgress,
   Snackbar,
-  Fade,
   Alert,
 } from "@mui/material";
 import { useActionState, useState } from "react";
 import * as crypto from "crypto";
+import { redirect } from "next/navigation";
 
 export default function MembersContents() {
   const [name, setName] = useState("");
@@ -30,9 +30,11 @@ export default function MembersContents() {
     confirm_password: string;
   };
   type FormErrorStatus = {
+    success: boolean;
     error: string | null;
   };
   const initialFormData: FormErrorStatus = {
+    success: false,
     error: null,
   };
   const formAction = async (state: FormErrorStatus, newData: FormData) => {
@@ -67,13 +69,21 @@ export default function MembersContents() {
     if (!response.ok) {
       const error = await response.json();
       setOpenState(true);
-      return { error: error.message };
+      return { success: false, error: error.message };
     } else {
       const data = await response.json();
       console.log("User created successfully:", data);
-      return { error: null };
+      successRedirect();
+      setOpenState(true);
+      return { success: true, error: null };
     }
   };
+
+  const successRedirect = async () => {
+    await new Promise((res) => setTimeout(res, 2400));
+    redirect("/members");
+  };
+
   const [formData, action, isPending] = useActionState(
     formAction,
     initialFormData
@@ -106,6 +116,7 @@ export default function MembersContents() {
                 );
               }}
               value={customId}
+              disabled={formData.success}
               required
             />
             <TextField
@@ -114,6 +125,7 @@ export default function MembersContents() {
               type="text"
               onChange={(e) => setName(e.target.value)}
               value={name}
+              disabled={formData.success}
               required
               fullWidth
             />
@@ -122,6 +134,7 @@ export default function MembersContents() {
               name="period"
               type="text"
               value={period}
+              disabled={formData.success}
               onChange={(e) => {
                 setPeriod(e.target.value);
                 setEmail(
@@ -137,6 +150,7 @@ export default function MembersContents() {
               label="メール"
               name="email"
               type="email"
+              disabled={formData.success}
               required
               fullWidth
               value={email}
@@ -145,6 +159,7 @@ export default function MembersContents() {
               label="外部メールアドレス"
               name="external_email"
               type="email"
+              disabled={formData.success}
               value={externalEmail}
               onChange={(e) => setExternalEmail(e.target.value)}
               fullWidth
@@ -153,6 +168,7 @@ export default function MembersContents() {
               label="パスワード"
               name="password"
               type="password"
+              disabled={formData.success}
               value={password}
               required
               fullWidth
@@ -163,12 +179,19 @@ export default function MembersContents() {
               name="confirm_password"
               type="password"
               value={confirmPassword}
+              disabled={formData.success}
               required
               fullWidth
               onChange={(e) => setConfirmPassword(e.target.value)}
               error={password !== confirmPassword}
             />
-            <Button type="submit" variant="contained" color="primary" fullWidth>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={formData.success}
+            >
               追加
             </Button>
             {formData.error && (
@@ -176,7 +199,6 @@ export default function MembersContents() {
                 open={openState}
                 onClose={handleClose}
                 autoHideDuration={6000}
-                color="red"
               >
                 <Alert
                   onClose={handleClose}
@@ -185,6 +207,22 @@ export default function MembersContents() {
                   sx={{ width: "100%" }}
                 >
                   ユーザーの追加に失敗しました: {formData.error}
+                </Alert>
+              </Snackbar>
+            )}
+            {formData.success && (
+              <Snackbar
+                open={openState}
+                onClose={handleClose}
+                autoHideDuration={2400}
+              >
+                <Alert
+                  onClose={handleClose}
+                  severity="success"
+                  variant="filled"
+                  sx={{ width: "100%" }}
+                >
+                  ユーザーの追加に成功しました
                 </Alert>
               </Snackbar>
             )}
