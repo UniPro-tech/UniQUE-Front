@@ -1,6 +1,14 @@
 "use client";
-import { Stack, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import {
+  Stack,
+  TextField,
+  Button,
+  LinearProgress,
+  Snackbar,
+  Fade,
+  Alert,
+} from "@mui/material";
+import { useActionState, useState } from "react";
 import * as crypto from "crypto";
 
 export default function MembersContents() {
@@ -12,8 +20,24 @@ export default function MembersContents() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  type FormType = {
+    name: string;
+    email: string;
+    external_email: string;
+    custom_id: string;
+    period: string;
+    password: string;
+    confirm_password: string;
+  };
+  type FormErrorStatus = {
+    error: string | null;
+  };
+  const initialFormData: FormErrorStatus = {
+    error: null,
+  };
+  const formAction = async (state: FormErrorStatus, newData: FormData) => {
+    const values = Object.fromEntries(newData.entries()) as FormType;
+    const { name, email, external_email, custom_id, period, password } = values;
     const password_hash = crypto
       .createHash("sha256")
       .update(password)
@@ -21,12 +45,12 @@ export default function MembersContents() {
     console.log({
       name,
       email,
-      external_email: externalEmail,
-      custom_id: customId,
+      external_email,
+      custom_id,
       period,
       password_hash,
     });
-    await fetch(`http://localhost:8080/v1/users`, {
+    const response = await fetch(`http://localhost:8080/v1/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,83 +64,133 @@ export default function MembersContents() {
         password_hash,
       }),
     });
+    if (!response.ok) {
+      const error = await response.json();
+      setOpenState(true);
+      return { error: error.message };
+    } else {
+      const data = await response.json();
+      console.log("User created successfully:", data);
+      return { error: null };
+    }
+  };
+  const [formData, action, isPending] = useActionState(
+    formAction,
+    initialFormData
+  );
+
+  const [openState, setOpenState] = useState<boolean>(false);
+
+  const handleClose = () => {
+    setOpenState(false);
   };
 
   return (
     <Stack justifyContent="center" alignItems="center" minHeight="100vh">
-      <form onSubmit={handleSubmit} style={{ width: 320 }}>
-        <Stack spacing={3}>
-          <TextField
-            label="カスタムID"
-            value={customId}
-            onChange={(e) => {
-              setCustomId(e.target.value);
-              setEmail(
-                `${period != "0" ? `${period}.` : ""}${
-                  e.target.value
-                }@uniproject.jp`
-              );
-            }}
-            required
-          />
-          <TextField
-            label="名前"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            fullWidth
-          />
-          <TextField
-            label="所属期"
-            type="text"
-            value={period}
-            onChange={(e) => {
-              setPeriod(e.target.value);
-              setEmail(
-                `${
-                  e.target.value != "0" ? `${e.target.value}.` : ""
-                }${customId}@uniproject.jp`
-              );
-            }}
-            required
-            fullWidth
-          />
-          <TextField
-            label="メール"
-            type="email"
-            value={email}
-            required
-            fullWidth
-          />
-          <TextField
-            label="外部メールアドレス"
-            type="email"
-            value={externalEmail}
-            onChange={(e) => setExternalEmail(e.target.value)}
-            fullWidth
-          />
-          <TextField
-            label="パスワード"
-            type="password"
-            required
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <TextField
-            label="パスワード（確認用）"
-            type="password"
-            required
-            fullWidth
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            error={password !== confirmPassword}
-          />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            追加
-          </Button>
-        </Stack>
-      </form>
+      {isPending ? (
+        <>
+          <LinearProgress />
+        </>
+      ) : (
+        <form action={action} style={{ width: 320 }}>
+          <Stack spacing={3}>
+            <TextField
+              label="カスタムID"
+              name="custom_id"
+              onChange={(e) => {
+                setCustomId(e.target.value);
+                setEmail(
+                  `${period != "0" ? `${period}.` : ""}${
+                    e.target.value
+                  }@uniproject.jp`
+                );
+              }}
+              value={customId}
+              required
+            />
+            <TextField
+              label="名前"
+              name="name"
+              type="text"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              required
+              fullWidth
+            />
+            <TextField
+              label="所属期"
+              name="period"
+              type="text"
+              value={period}
+              onChange={(e) => {
+                setPeriod(e.target.value);
+                setEmail(
+                  `${
+                    e.target.value != "0" ? `${e.target.value}.` : ""
+                  }${customId}@uniproject.jp`
+                );
+              }}
+              required
+              fullWidth
+            />
+            <TextField
+              label="メール"
+              name="email"
+              type="email"
+              required
+              fullWidth
+              value={email}
+            />
+            <TextField
+              label="外部メールアドレス"
+              name="external_email"
+              type="email"
+              value={externalEmail}
+              onChange={(e) => setExternalEmail(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="パスワード"
+              name="password"
+              type="password"
+              value={password}
+              required
+              fullWidth
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              label="パスワード（確認用）"
+              name="confirm_password"
+              type="password"
+              value={confirmPassword}
+              required
+              fullWidth
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              error={password !== confirmPassword}
+            />
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              追加
+            </Button>
+            {formData.error && (
+              <Snackbar
+                open={openState}
+                onClose={handleClose}
+                autoHideDuration={6000}
+                color="red"
+              >
+                <Alert
+                  onClose={handleClose}
+                  severity="error"
+                  variant="filled"
+                  sx={{ width: "100%" }}
+                >
+                  ユーザーの追加に失敗しました: {formData.error}
+                </Alert>
+              </Snackbar>
+            )}
+          </Stack>
+        </form>
+      )}
     </Stack>
   );
 }
