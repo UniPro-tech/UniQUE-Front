@@ -82,11 +82,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     });
     if (res.ok) {
       const result = await res.json();
-      if (result.success) {
-        window.location.href = "/";
-      } else {
-        alert(result.message || "サインインに失敗しました。");
-      }
+      window.location.href = result.redirectUrl || "/dashboard";
     } else {
       alert("サインインに失敗しました。");
     }
