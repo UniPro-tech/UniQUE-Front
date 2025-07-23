@@ -71,7 +71,7 @@ export default function MembersContents() {
 
   const successRedirect = async () => {
     await new Promise((res) => setTimeout(res, 2400));
-    redirect("/members");
+    redirect("/dashboard/members");
   };
 
   const [formData, action, isPending] = useActionState(
