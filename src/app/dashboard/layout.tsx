@@ -11,7 +11,6 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const sid = cookieStore.get("sid");
-  console.log("SID:", sid?.value);
   if (!sid) redirect("/signin");
   const prisma = new PrismaClient();
   const session = await prisma.sessions.findUnique({
@@ -29,7 +28,6 @@ export default async function RootLayout({
         },
       }
     );
-    console.log(res.status);
     redirect("/signin");
   }
   const user = await prisma.users.findUnique({

@@ -5,9 +5,7 @@ import * as crypto from "crypto";
 import { ulid } from "ulid";
 
 export async function POST(req: Request) {
-  const body = await req.text();
-  console.log("Received body:", body);
-  const { custom_id, password, remember } = JSON.parse(body);
+  const { custom_id, password, remember } = await req.json();
   const prisma = new PrismaClient();
   const user = await prisma.users.findFirst({
     where: { custom_id },

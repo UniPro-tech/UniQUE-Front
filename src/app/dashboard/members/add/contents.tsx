@@ -44,14 +44,6 @@ export default function MembersContents() {
       .createHash("sha256")
       .update(password)
       .digest("hex");
-    console.log({
-      name,
-      email,
-      external_email,
-      custom_id,
-      period,
-      password_hash,
-    });
     const response = await fetch(`http://localhost:8080/v1/users`, {
       method: "POST",
       headers: {
@@ -60,8 +52,8 @@ export default function MembersContents() {
       body: JSON.stringify({
         name,
         email,
-        external_email: externalEmail,
-        custom_id: customId,
+        external_email,
+        custom_id,
         period,
         password_hash,
       }),
@@ -71,8 +63,6 @@ export default function MembersContents() {
       setOpenState(true);
       return { success: false, error: error.message };
     } else {
-      const data = await response.json();
-      console.log("User created successfully:", data);
       successRedirect();
       setOpenState(true);
       return { success: true, error: null };

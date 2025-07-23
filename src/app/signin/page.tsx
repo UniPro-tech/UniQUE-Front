@@ -78,11 +78,6 @@ export default function SignInPage(props: { disableCustomTheme?: boolean }) {
     );
     const rememberData =
       remember !== undefined && remember && remember !== null;
-    console.log("Submitting:", {
-      custom_id,
-      password,
-      remember,
-    });
     const res = await fetch("/api/login", {
       method: "POST",
       headers: {
