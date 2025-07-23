@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -59,8 +60,9 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignIn(props: { disableCustomTheme?: boolean }) {
+export default function SignInPage(props: { disableCustomTheme?: boolean }) {
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -70,21 +72,27 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     setOpen(false);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const data = new FormData(event.currentTarget);
-    const { custom_id, password } = Object.fromEntries(data.entries());
+  const handleSubmit = async (data: FormData) => {
+    const { custom_id, password, remember } = Object.fromEntries(
+      data.entries()
+    );
+    const rememberData =
+      remember !== undefined && remember && remember !== null;
+    console.log("Submitting:", {
+      custom_id,
+      password,
+      remember,
+    });
     const res = await fetch("/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ custom_id, password }),
+      credentials: "include",
+      body: JSON.stringify({ custom_id, password, remember: rememberData }),
     });
     if (res.ok) {
-      const result = await res.json();
-      window.location.href = result.redirectUrl || "/dashboard";
-    } else {
-      alert("サインインに失敗しました。");
+      router.push("/dashboard");
     }
   };
 
@@ -101,63 +109,64 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
           >
             サインイン
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-              gap: 2,
-            }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="custom_id">UniQUE ID</FormLabel>
-              <TextField
-                id="custom_id"
-                type="text"
-                name="custom_id"
-                placeholder="your-unique-id"
-                autoComplete="custom_id"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">パスワード</FormLabel>
-              <TextField
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="ログイン情報を記憶する"
-            />
-            <ForgotPassword open={open} handleClose={handleClose} />
-            <Button type="submit" fullWidth variant="contained">
-              サインイン
-            </Button>
-            <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: "center" }}
+          <form action={handleSubmit}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                gap: 2,
+              }}
             >
-              パスワードをお忘れですか?
-            </Link>
-          </Box>
+              <FormControl>
+                <FormLabel htmlFor="custom_id">UniQUE ID</FormLabel>
+                <TextField
+                  id="custom_id"
+                  type="text"
+                  name="custom_id"
+                  placeholder="your-unique-id"
+                  autoComplete="custom_id"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="password">パスワード</FormLabel>
+                <TextField
+                  name="password"
+                  placeholder="••••••"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                />
+              </FormControl>
+              <FormControlLabel
+                control={
+                  <Checkbox name="remember" id="remember" color="primary" />
+                }
+                label="ログイン情報を記憶する"
+              />
+              <ForgotPassword open={open} handleClose={handleClose} />
+              <Button type="submit" fullWidth variant="contained">
+                サインイン
+              </Button>
+              <Link
+                component="button"
+                type="button"
+                onClick={handleClickOpen}
+                variant="body2"
+                sx={{ alignSelf: "center" }}
+              >
+                パスワードをお忘れですか?
+              </Link>
+            </Box>
+          </form>
         </Card>
       </SignInContainer>
     </AppTheme>

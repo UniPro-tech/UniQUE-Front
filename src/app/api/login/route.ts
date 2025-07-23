@@ -7,7 +7,7 @@ import { ulid } from "ulid";
 export async function POST(req: Request) {
   const body = await req.text();
   console.log("Received body:", body);
-  const { custom_id, password } = JSON.parse(body);
+  const { custom_id, password, remember } = JSON.parse(body);
   const prisma = new PrismaClient();
   const user = await prisma.users.findFirst({
     where: { custom_id },
@@ -40,8 +40,13 @@ export async function POST(req: Request) {
         user_id: user.id,
         ip_address: req.headers.get("x-forwarded-for") || "unknown",
         user_agent: req.headers.get("user-agent") || "unknown",
+        expires_at: remember
+          ? new Date(Date.now() + 60 * 60 * 24 * 30 * 1000)
+          : new Date(Date.now() + 60 * 60 * 24 * 7 * 1000), // 30 days if remember, else 7 days
       },
     });
+    await prisma.$disconnect();
+
     const token = session.id;
 
     (await cookies()).set({
@@ -50,10 +55,9 @@ export async function POST(req: Request) {
       httpOnly: true,
       path: "/",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 30,
+      maxAge: remember ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7, // 30 days if remember, else 7 days
     });
 
-    await prisma.$disconnect();
     return NextResponse.json({ message: "ログイン成功" });
   }
   await prisma.$disconnect();
