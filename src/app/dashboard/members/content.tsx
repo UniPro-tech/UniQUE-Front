@@ -7,7 +7,7 @@ import { User } from "@/types/user";
 export default function MembersContents() {
   const fetchUsers = async () => {
     const response = (await (
-      await fetch(`${process.env.API_URL}/v1/users`)
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/users`)
     ).json()) as ListResponse<User>;
     return response.data;
   };
