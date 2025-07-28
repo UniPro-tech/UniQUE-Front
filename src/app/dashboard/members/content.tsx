@@ -20,6 +20,10 @@ export default function MembersContents() {
     period: member.period,
     id: member.id,
     external_email: member.external_email,
+    created_at: member.created_at,
+    updated_at: member.updated_at,
+    is_enabled: member.is_enabled,
+    joined_at: member.joined_at,
   }));
 
   return (
