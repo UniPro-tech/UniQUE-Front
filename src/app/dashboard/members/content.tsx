@@ -23,8 +23,13 @@ export default function MembersContents() {
     created_at: member.created_at,
     updated_at: member.updated_at,
     is_enabled: member.is_enabled,
-    joined_at: member.joined_at,
+    joined_at:
+      (member.joined_at as unknown as string) == "0001-01-01T00:00:00Z"
+        ? null
+        : member.joined_at,
   }));
+
+  console.log(rows);
 
   return (
     <Stack style={{ width: "100%", height: "100%" }}>

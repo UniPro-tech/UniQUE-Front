@@ -234,6 +234,20 @@ export default function DataGridContents({
       require: true,
     },
     {
+      field: "joined_at",
+      headerName: "Joined At",
+      width: 180,
+      editable: true,
+      type: "date",
+      require: true,
+      valueGetter: (params: string) => {
+        if (params === null) {
+          return null;
+        }
+        return new Date(params as string);
+      },
+    },
+    {
       field: "id",
       headerName: "UUID",
       width: 300,
