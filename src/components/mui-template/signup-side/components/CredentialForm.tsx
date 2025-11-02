@@ -260,10 +260,33 @@ export default function CredentialForm(props: { signUp?: boolean }) {
           onBlur={(e) => validateField("password", e.target.value)}
         />
       </FormControl>
-      {!props.signUp && (
+      {!props.signUp ? (
         <FormControlLabel
           control={<Checkbox name="remember" color="primary" />}
           label="ログイン状態を保持する"
+        />
+      ) : (
+        <FormControlLabel
+          sx={{ wordBreak: "keep-all" }}
+          control={<Checkbox name="remember" color="primary" />}
+          label={
+            <>
+              <Link href="/terms" target="_blank">
+                利用規約
+              </Link>
+              と
+              <Link href="/privacy" target="_blank">
+                プライバシーポリシー
+              </Link>
+              、
+              <Link href="/cookie-policy" target="_blank">
+                サークル規約
+              </Link>
+              に
+              <wbr />
+              同意します。
+            </>
+          }
         />
       )}
       <Button type="submit" fullWidth variant="contained">
