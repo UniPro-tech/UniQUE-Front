@@ -266,10 +266,10 @@ export default function CredentialForm(props: { signUp?: boolean }) {
           label="ログイン状態を保持する"
         />
       )}
-      <ForgotPassword open={open} handleClose={handleClose} />
       <Button type="submit" fullWidth variant="contained">
         {props.signUp ? "メンバー登録を申請" : "サインイン"}
       </Button>
+      <ForgotPassword open={open} handleClose={handleClose} />
     </Box>
   );
 }
