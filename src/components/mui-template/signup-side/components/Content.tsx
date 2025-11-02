@@ -7,7 +7,6 @@ import KeyIcon from "@mui/icons-material/Key";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import HubIcon from "@mui/icons-material/Hub";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
-import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import { SitemarkIcon } from "./CustomIcons";
 
 const SignInItems = [
@@ -69,75 +68,6 @@ const SignInItems = [
   },
 ];
 
-const SignUpItems = [
-  {
-    icon: <VolunteerActivismIcon sx={{ color: "text.secondary" }} />,
-    title: "デジタル創作をもっと自由に",
-    description: (
-      <>
-        デジタル創作サークルでは、
-        <wbr />
-        自由に創作活動を
-        <wbr />
-        行うため、
-        <wbr />
-        さまざまな支援を
-        <wbr />
-        行っています。
-      </>
-    ),
-  },
-  {
-    icon: <HubIcon sx={{ color: "text.secondary" }} />,
-    title: "UniQUEひとつで、すべてをつなぐ",
-    description: (
-      <>
-        UniProjectでは、さまざまな
-        <wbr />
-        ツールを
-        <wbr />
-        提供しています。
-        <wbr />
-        UniQUEひとつで、
-        <wbr />
-        すべての
-        <wbr />
-        サービスを
-        <wbr />
-        利用できます。
-      </>
-    ),
-  },
-  {
-    icon: <BadgeIcon sx={{ color: "text.secondary" }} />,
-    title: "メンバーになろう",
-    description: (
-      <>
-        あなたもUniQUEに登録して、
-        <wbr />
-        UniProjectの
-        <wbr />
-        一員になりましょう！
-      </>
-    ),
-  },
-  {
-    icon: <EmojiPeopleIcon sx={{ color: "text.secondary" }} />,
-    title: "仲間とつながる",
-    description: (
-      <>
-        UniQUEを通じて、
-        <wbr />
-        他のメンバーと
-        <wbr />
-        つながり、
-        <wbr />
-        交流を深めましょう。
-      </>
-    ),
-  },
-];
-
 export default function Content({ isSignUp = false }: { isSignUp?: boolean }) {
   return (
     <Stack
@@ -151,47 +81,53 @@ export default function Content({ isSignUp = false }: { isSignUp?: boolean }) {
       <Box sx={{ display: { xs: "none", md: "flex" } }}>
         <SitemarkIcon />
       </Box>
-      {isSignUp
-        ? SignUpItems.map((item, index) => (
-            <Stack key={index} direction="row" sx={{ gap: 2 }}>
-              {item.icon}
-              <Box sx={{ display: "block", width: "100%" }}>
-                <Typography gutterBottom sx={{ fontWeight: "medium" }}>
-                  {item.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "text.secondary",
-                    wordBreak: "keep-all",
-                    width: "100%",
-                  }}
-                >
-                  {item.description}
-                </Typography>
-              </Box>
-            </Stack>
-          ))
-        : SignInItems.map((item, index) => (
-            <Stack key={index} direction="row" sx={{ gap: 2 }}>
-              {item.icon}
-              <Box sx={{ display: "block", width: "100%" }}>
-                <Typography gutterBottom sx={{ fontWeight: "medium" }}>
-                  {item.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "text.secondary",
-                    wordBreak: "keep-all",
-                    width: "100%",
-                  }}
-                >
-                  {item.description}
-                </Typography>
-              </Box>
-            </Stack>
-          ))}
+      {isSignUp ? (
+        <Stack direction="row" gap={2}>
+          <EmojiPeopleIcon sx={{ color: "text.secondary" }} />
+          <Box display={"block"} width={"100%"}>
+            <Typography gutterBottom sx={{ fontWeight: "medium" }}>
+              UniProjectへようこそ！
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                wordBreak: "keep-all",
+                width: "100%",
+              }}
+            >
+              UniProjectに興味をお持ちいただき、ありがとうございます。
+              <wbr />
+              参加するには、当サービス「UniQUE」への登録が必要です。
+              <wbr />
+              右側のフォームに必要事項を入力して、登録申請を送信してください。
+              <wbr />
+              たくさんのご参加をお待ちしています。
+            </Typography>
+          </Box>
+        </Stack>
+      ) : (
+        SignInItems.map((item, index) => (
+          <Stack key={index} direction="row" sx={{ gap: 2 }}>
+            {item.icon}
+            <Box sx={{ display: "block", width: "100%" }}>
+              <Typography gutterBottom sx={{ fontWeight: "medium" }}>
+                {item.title}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  wordBreak: "keep-all",
+                  width: "100%",
+                }}
+              >
+                {item.description}
+              </Typography>
+            </Box>
+          </Stack>
+        ))
+      )}
     </Stack>
   );
 }

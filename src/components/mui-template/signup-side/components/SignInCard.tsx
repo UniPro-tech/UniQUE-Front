@@ -43,7 +43,7 @@ export default function SignInCard(props: { signUp?: boolean }) {
         variant="h4"
         sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
       >
-        {props.signUp ? "サインアップ" : "サインイン"}
+        {props.signUp ? "メンバー登録" : "サインイン"}
       </Typography>
       <Stack direction="row" alignItems="center" sx={{ width: "100%" }} gap={1}>
         {props.signUp
