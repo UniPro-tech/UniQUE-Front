@@ -7,6 +7,7 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  Input,
   Link,
   TextField,
 } from "@mui/material";
@@ -33,7 +34,10 @@ const credentialSchema = z.object({
     .min(8, { message: "パスワードは8文字以上で入力してください。" }),
 });
 
-export default function CredentialForm(props: { signUp?: boolean }) {
+export default function CredentialForm(props: {
+  signUp?: boolean;
+  csrfToken: string;
+}) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
@@ -146,6 +150,7 @@ export default function CredentialForm(props: { signUp?: boolean }) {
       noValidate
       sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
     >
+      <input type="hidden" name="csrfToken" value={props.csrfToken} />
       {props.signUp ? (
         <>
           <FormControl>
