@@ -6,9 +6,11 @@ import * as util from "tweetnacl-util";
 // 秘密鍵をファイルから読み込む
 // 存在しない場合は新規作成
 const secretKeyFile =
-  process.env.CSRF_SECRET_KEY_PATH || `${__dirname}/../../keys/csrf_secret.key`;
+  process.env.CSRF_SECRET_KEY_PATH ||
+  path.join(process.cwd(), "keys", "csrf_secret.key");
 const publicKeyFile =
-  process.env.CSRF_PUBLIC_KEY_PATH || `${__dirname}/../../keys/csrf_public.key`;
+  process.env.CSRF_PUBLIC_KEY_PATH ||
+  path.join(process.cwd(), "keys", "csrf_public.key");
 let secretKey, publicKey;
 
 if (fs.existsSync(secretKeyFile) && fs.existsSync(publicKeyFile)) {
@@ -29,7 +31,7 @@ if (fs.existsSync(secretKeyFile) && fs.existsSync(publicKeyFile)) {
   });
 }
 
-export const GenerateCSRFToken = (data: string): string => {
+export const generateCSRFToken = (data: string): string => {
   const message = util.decodeUTF8(data);
   const signedMessage = nacl.sign(message, secretKey);
   return util.encodeBase64(signedMessage);
