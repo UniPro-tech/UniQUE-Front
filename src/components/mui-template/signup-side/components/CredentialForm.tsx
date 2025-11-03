@@ -156,7 +156,7 @@ export default function CredentialForm(props: { signUp?: boolean }) {
               id="name"
               type="text"
               name="name"
-              placeholder="ゆに 太郎"
+              placeholder="ゆに太郎"
               autoFocus
               required
               fullWidth
