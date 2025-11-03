@@ -5,8 +5,10 @@ import * as util from "tweetnacl-util";
 
 // 秘密鍵をファイルから読み込む
 // 存在しない場合は新規作成
-const secretKeyFile = `${__dirname}/../../keys/csrf_secret.key`;
-const publicKeyFile = `${__dirname}/../../keys/csrf_public.key`;
+const secretKeyFile =
+  process.env.CSRF_SECRET_KEY_PATH || `${__dirname}/../../keys/csrf_secret.key`;
+const publicKeyFile =
+  process.env.CSRF_PUBLIC_KEY_PATH || `${__dirname}/../../keys/csrf_public.key`;
 let secretKey, publicKey;
 
 if (fs.existsSync(secretKeyFile) && fs.existsSync(publicKeyFile)) {
