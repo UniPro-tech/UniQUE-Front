@@ -2,7 +2,7 @@
 
 import { authenticationRequest } from "@/lib/Authentication";
 import { createSession } from "@/lib/Session";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { headers } from "next/headers";
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { CSRFError } from "@/lib/RequestErrors";
@@ -40,7 +40,7 @@ export async function signInAction(formData: FormData) {
   }
 
   // 成功時のリダイレクト
-  redirect("/dashboard");
+  redirect("/dashboard", RedirectType.push);
 }
 
 export async function signUpAction(formData: FormData) {
