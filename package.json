@@ -16,9 +16,7 @@
     "@mui/material": "^7.3.5",
     "@mui/material-nextjs": "^7.3.5",
     "@mui/x-data-grid": "^8.17.0",
-    "@prisma/client": "^6.19.0",
     "next": "^16.0.1",
-    "prisma": "^6.19.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tweetnacl": "^1.0.3",
@@ -29,11 +27,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.16",
-    "@types/node": "^20.19.24",
+    "@types/node": "^24.10.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "eslint": "^9.39.1",
-    "eslint-config-next": "15.4.1",
+    "eslint-config-next": "^16.0.1",
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3"
   }
