@@ -1,3 +1,4 @@
+"use server";
 import fs from "fs";
 import { cookies } from "next/headers";
 import path from "path";
