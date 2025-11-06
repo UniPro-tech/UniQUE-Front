@@ -19,6 +19,9 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import { Session } from "@/lib/Session";
+import AccountButton from "./Sidebar/AccountButton";
+import { Stack } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -105,8 +108,10 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function MiniDrawer({
+  session,
   children,
 }: {
+  session: Session | null;
   children: React.ReactNode;
 }) {
   const theme = useTheme();
@@ -125,23 +130,30 @@ export default function MiniDrawer({
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={[
-              {
-                marginRight: 5,
-              },
-              open && { display: "none" },
-            ]}
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent={"center"}
+            justifyItems={"center"}
+            margin={0}
+            padding={0}
           >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            UniQUE Front (Dev)
-          </Typography>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={[open && { display: "none" }]}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              UniQUE Front (Dev)
+            </Typography>
+          </Stack>
+          <Box sx={{ flexGrow: 1 }} />
+          <AccountButton session={session} />
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>

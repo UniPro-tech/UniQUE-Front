@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import path from "path";
 import nacl from "tweetnacl";
 import * as util from "tweetnacl-util";
+import { toCamelcase } from "./SnakeCamlUtil";
+import { User } from "@/types/User";
 
 // 秘密鍵をファイルから読み込む
 // 存在しない場合は新規作成
@@ -40,4 +42,25 @@ export const createSession = async (sessionId: string, expires: Date) => {
     path: "/",
   });
   return res;
+};
+
+export interface Session {
+  id: string;
+  ipAddress: string;
+  isEnable: boolean;
+  userAgent: string;
+  createdAt: string;
+  expiresAt: string;
+  user: User;
+}
+
+export const getSession = async (): Promise<Session | null> => {
+  const cookieStore = await cookies();
+  const sid = cookieStore.get("sid")?.value || null;
+  const session = await (
+    await fetch(`${process.env.RESOURCE_API_URL}/sessions/${sid}`, {
+      cache: "no-store",
+    })
+  ).json();
+  return toCamelcase<Session>(session);
 };

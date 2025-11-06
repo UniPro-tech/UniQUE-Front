@@ -1,12 +1,16 @@
-export type User = {
+export interface User {
   id: string;
-  custom_id: string;
   name: string;
+  customId: string;
   email: string;
-  external_email: string;
-  created_at: Date;
-  updated_at: Date;
-  joined_at: Date;
-  period: string;
-  is_enabled: boolean;
-};
+  externalEmail: string;
+  period: string | null;
+  isEnable: boolean;
+  isSuspended: boolean;
+  isSystem: boolean;
+  suspendedReason: string | null;
+  suspendedUntil: Date | null;
+  joinedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
