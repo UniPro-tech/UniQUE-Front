@@ -10,7 +10,7 @@ import {
 import { User } from "@/types/User";
 import Base from "../Base";
 import { useActionState } from "react";
-import { updateAccountSettings } from "./account";
+import { updateAccountSettings } from "./action";
 import React from "react";
 
 export default function AccountSettingsCardClient({
