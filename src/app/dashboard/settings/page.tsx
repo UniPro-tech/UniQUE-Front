@@ -1,4 +1,5 @@
 import AccountSettingsCard from "@/components/Pages/Settings/Cards/Account";
+import SecuritySettingsCard from "@/components/Pages/Settings/Cards/Security";
 import { getSession } from "@/lib/Session";
 import { Stack, Typography } from "@mui/material";
 
@@ -14,6 +15,7 @@ export default async function Page() {
         </Typography>
       </Stack>
       <AccountSettingsCard user={user} />
+      <SecuritySettingsCard user={user} />
     </Stack>
   );
 }
