@@ -8,9 +8,9 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "@/types/User";
-import Base from "./Base";
+import Base from "../Base";
 import { useActionState } from "react";
-import { updateAccountSettings } from "./actions/account";
+import { updateAccountSettings } from "./account";
 import React from "react";
 
 export default function AccountSettingsCardClient({
