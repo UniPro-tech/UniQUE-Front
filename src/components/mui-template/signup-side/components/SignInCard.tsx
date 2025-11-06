@@ -9,6 +9,6 @@ export default async function SignInCard(props: { signUp?: boolean }) {
   if (session) {
     redirect("/dashboard", RedirectType.replace);
   }
-  const csrfToken = generateCSRFToken("expired_" + Date.now().toString());
+  const csrfToken = generateCSRFToken("csrf_protect");
   return <SignInCardClient signUp={props.signUp} csrfToken={csrfToken} />;
 }
