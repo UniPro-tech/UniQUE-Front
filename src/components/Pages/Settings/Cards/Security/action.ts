@@ -18,10 +18,27 @@ export const updateSettings = async (prevState: string, formData: FormData) => {
   }
 
   // ここでデータベースの更新などの処理を行う
-  // TODO: 実際の更新ロジックを実装する
+  const res = await fetch(
+    `${process.env.RESOURCE_API_URL}/users/${id}/password/change`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    }
+  );
 
-  // const user = toCamelcase(await res.json());
-  // console.log("Account settings updated:", user, "status:", res.status);
+  if (!res.ok) {
+    console.log("Failed to update password:", res.status, res.statusText);
+    const errorData = await res.json();
+    throw new Error(
+      `Failed to update password: ${errorData.message || res.statusText}`
+    );
+  }
 
   // 必要に応じて結果を返す
   return "アカウントが更新されました。";
