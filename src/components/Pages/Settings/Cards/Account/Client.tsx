@@ -9,9 +9,10 @@ import {
 } from "@mui/material";
 import { User } from "@/types/User";
 import Base from "../Base";
-import { useActionState } from "react";
+import { FormStatus } from "../Base";
+import { useActionState, useEffect } from "react";
 import { updateAccountSettings } from "./action";
-import React from "react";
+import { enqueueSnackbar } from "notistack";
 
 export default function AccountSettingsCardClient({
   user,
@@ -22,8 +23,19 @@ export default function AccountSettingsCardClient({
 }) {
   const [lastResult, action, isPending] = useActionState(
     updateAccountSettings,
-    { user, message: "" }
+    { user, status: null } as {
+      user: User;
+      status: FormStatus | null;
+    }
   );
+  useEffect(() => {
+    if (lastResult.status) {
+      console.log("Account settings update status:", lastResult.status);
+      enqueueSnackbar(lastResult.status.message, {
+        variant: lastResult.status.status,
+      });
+    }
+  }, [lastResult.status]);
   return (
     <Base
       sid={user.id}

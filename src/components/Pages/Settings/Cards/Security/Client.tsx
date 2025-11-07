@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "@/types/User";
-import Base from "../Base";
+import Base, { FormStatus } from "../Base";
 import { useActionState, useEffect } from "react";
 import { updateSettings } from "./action";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
@@ -20,10 +20,13 @@ export default function SecuritySettingsCardClient({
   user: User;
   csrfToken: string;
 }) {
-  const [lastResult, action, isPending] = useActionState(updateSettings, "");
+  const [lastResult, action, isPending] = useActionState(
+    updateSettings,
+    null as null | FormStatus
+  );
   useEffect(() => {
     if (lastResult) {
-      enqueueSnackbar(lastResult, { variant: "success" });
+      enqueueSnackbar(lastResult.message, { variant: lastResult.status });
     }
   }, [lastResult]);
   return (

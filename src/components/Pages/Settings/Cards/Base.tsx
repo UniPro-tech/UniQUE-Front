@@ -1,6 +1,11 @@
 import { SnackbarProvider } from "notistack";
 import { Card } from "@mui/material";
 
+export interface FormStatus {
+  status: "success" | "error";
+  message: string;
+}
+
 export default function Base({
   sid,
   action,

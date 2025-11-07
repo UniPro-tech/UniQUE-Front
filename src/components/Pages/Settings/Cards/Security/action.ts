@@ -1,8 +1,12 @@
 "use server";
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
+import { FormStatus } from "../Base";
 
-export const updateSettings = async (prevState: string, formData: FormData) => {
+export const updateSettings = async (
+  _prevState: null | FormStatus,
+  formData: FormData
+) => {
   // フォームデータから必要な情報を取得して処理を行う
   const csrfToken = formData.get("csrfToken") as string;
   const isVerified = await VerifyCSRFToken(csrfToken);
@@ -14,7 +18,10 @@ export const updateSettings = async (prevState: string, formData: FormData) => {
   const confirmNewPassword = formData.get("confirm_new_password") as string;
 
   if (newPassword !== confirmNewPassword) {
-    throw new Error("New password and confirmation do not match.");
+    return {
+      status: "error",
+      message: "新しいパスワードと確認欄が一致しません。",
+    } as FormStatus;
   }
 
   // ここでデータベースの更新などの処理を行う
@@ -34,12 +41,22 @@ export const updateSettings = async (prevState: string, formData: FormData) => {
 
   if (!res.ok) {
     console.log("Failed to update password:", res.status, res.statusText);
-    const errorData = await res.json();
-    throw new Error(
-      `Failed to update password: ${errorData.message || res.statusText}`
-    );
+    // const errorData = await res.json();
+    if (res.status == 401) {
+      return {
+        status: "error",
+        message: "パスワードが違います。",
+      } as FormStatus;
+    }
+    return {
+      status: "error",
+      message: "フォームの更新に失敗しました。",
+    } as FormStatus;
   }
 
   // 必要に応じて結果を返す
-  return "アカウントが更新されました。";
+  return {
+    status: "success",
+    message: "アカウントが更新されました。",
+  } as FormStatus;
 };

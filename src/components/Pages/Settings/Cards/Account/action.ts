@@ -3,9 +3,10 @@
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { User } from "@/types/User";
+import { FormStatus } from "../Base";
 
 export const updateAccountSettings = async (
-  prevState: { user: User; message: string },
+  _prevState: { user: User; status: FormStatus | null },
   formData: FormData
 ) => {
   // フォームデータから必要な情報を取得して処理を行う
@@ -32,6 +33,21 @@ export const updateAccountSettings = async (
   const user = toCamelcase(await res.json()) as User;
   console.log("Account settings updated:", user, "status:", res.status);
 
+  if (!res.ok)
+    return {
+      user,
+      status: {
+        status: "error",
+        message: "エラーが発生しました",
+      } as FormStatus,
+    };
+
   // 必要に応じて結果を返す
-  return { user, message: "アカウント設定が更新されました。" };
+  return {
+    user,
+    status: {
+      status: "success",
+      message: "アカウントが更新されました。",
+    } as FormStatus,
+  };
 };
