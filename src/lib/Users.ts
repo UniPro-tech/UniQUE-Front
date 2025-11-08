@@ -16,7 +16,7 @@ export const getUserById = async (userId: string) => {
 export const getUsersList = async (isRoot: boolean) => {
   const res = await fetch(
     `${process.env.RESOURCE_API_URL}/users/search${
-      !isRoot ? "?is_enable=true" : ""
+      !isRoot ? "?filter=is_enable:true,is_suspended:false" : ""
     }`,
     {
       cache: "no-store",
