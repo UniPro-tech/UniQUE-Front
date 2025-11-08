@@ -3,50 +3,67 @@ import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 
 export default function MembersDataGrid({
   rows,
-  isRoot,
+  canUpdate,
 }: {
   rows: GridRowsProp;
-  isRoot: boolean;
+  canUpdate: boolean;
 }) {
   const columns: GridColDef[] = [
-    ...(isRoot ? [{ field: "id", headerName: "ID", width: 250 }] : []),
-    { field: "name", headerName: "名前", width: 150 },
-    { field: "customId", headerName: "カスタムID", width: 150 },
-    { field: "email", headerName: "メールアドレス", width: 250 },
-    ...(isRoot
+    ...(canUpdate ? [{ field: "id", headerName: "ID", width: 250 }] : []),
+    { field: "name", headerName: "名前", editable: canUpdate, width: 150 },
+    {
+      field: "customId",
+      headerName: "カスタムID",
+      editable: canUpdate,
+      width: 150,
+    },
+    {
+      field: "email",
+      headerName: "メールアドレス",
+      editable: canUpdate,
+      width: 250,
+    },
+    ...(canUpdate
       ? [
           {
             field: "externalEmail",
             headerName: "外部メールアドレス",
             width: 250,
+            editable: canUpdate,
           },
         ]
       : []),
-    { field: "period", headerName: "所属期", width: 150 },
-    ...(isRoot
+    { field: "period", headerName: "所属期", editable: canUpdate, width: 150 },
+    ...(canUpdate
       ? ([
           {
             field: "isEnable",
             headerName: "有効状態",
             width: 100,
             type: "boolean",
+            editable: canUpdate,
           },
           {
             field: "isSuspended",
             headerName: "停止状態",
             width: 100,
             type: "boolean",
+
+            editable: canUpdate,
           },
           {
             field: "suspendedReason",
             headerName: "停止理由",
             width: 200,
+            editable: canUpdate,
           },
           {
             field: "suspendedUntil",
             headerName: "停止解除日",
             width: 150,
             type: "dateTime",
+
+            editable: canUpdate,
             valueGetter: (value: Date) => {
               return value ? new Date(value) : null;
             },
@@ -58,11 +75,12 @@ export default function MembersDataGrid({
       headerName: "参加日時",
       width: 150,
       type: "dateTime",
+      editable: canUpdate,
       valueGetter: (value: Date) => {
         return value ? new Date(value) : null;
       },
     },
-    ...(isRoot
+    ...(canUpdate
       ? ([
           {
             field: "createdAt",

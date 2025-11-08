@@ -14,7 +14,7 @@ export default async function Page() {
         <Typography variant="h5">ユーザー一覧</Typography>
         <Typography variant="body1">UniProjectのメンバー一覧</Typography>
       </Stack>
-      <MembersDataGrid rows={users} isRoot={true} />
+      <MembersDataGrid rows={users} canUpdate={true} />
     </Stack>
   );
 }
