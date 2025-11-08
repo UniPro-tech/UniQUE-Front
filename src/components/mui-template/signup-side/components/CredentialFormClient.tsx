@@ -259,7 +259,11 @@ export default function CredentialFormClient(props: {
       <Button type="submit" fullWidth variant="contained">
         {props.signUp ? "メンバー登録を申請" : "サインイン"}
       </Button>
-      <ForgotPassword open={open} handleClose={handleClose} />
+      <ForgotPassword
+        open={open}
+        handleClose={handleClose}
+        csrfToken={props.csrfToken}
+      />
     </>
   );
 }
