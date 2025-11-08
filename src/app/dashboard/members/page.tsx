@@ -6,7 +6,7 @@ import MembersDataGrid from "./datagrid";
 export default async function Page() {
   const session = await getSession();
   const user = session!.user;
-  const users = await getUsersList(false);
+  const users = await getUsersList(true);
   console.log(users);
   return (
     <Stack spacing={4}>
@@ -14,7 +14,7 @@ export default async function Page() {
         <Typography variant="h5">ユーザー一覧</Typography>
         <Typography variant="body1">UniProjectのメンバー一覧</Typography>
       </Stack>
-      <MembersDataGrid rows={users} isRoot={false} />
+      <MembersDataGrid rows={users} isRoot={true} />
     </Stack>
   );
 }

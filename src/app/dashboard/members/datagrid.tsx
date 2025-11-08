@@ -24,18 +24,18 @@ export default function MembersDataGrid({
       : []),
     { field: "period", headerName: "所属期", width: 150 },
     ...(isRoot
-      ? [
+      ? ([
           {
             field: "isEnable",
             headerName: "有効状態",
             width: 100,
-            valueFormatter: (params: any) => (params.value ? "有効" : "無効"),
+            type: "boolean",
           },
           {
             field: "isSuspended",
             headerName: "停止状態",
             width: 100,
-            valueFormatter: (params: any) => (params.value ? "停止中" : "有効"),
+            type: "boolean",
           },
           {
             field: "suspendedReason",
@@ -46,42 +46,54 @@ export default function MembersDataGrid({
             field: "suspendedUntil",
             headerName: "停止解除日",
             width: 150,
-            valueFormatter: (params: any) =>
-              params.value ? new Date(params.value).toLocaleDateString() : "",
+            type: "dateTime",
+            valueGetter: (value: Date) => {
+              return value ? new Date(value) : null;
+            },
           },
-        ]
+        ] as GridColDef[])
       : []),
     {
       field: "joinedAt",
-      headerName: "参加日",
+      headerName: "参加日時",
       width: 150,
-      type: "date",
+      type: "dateTime",
       valueGetter: (value: Date) => {
         return value ? new Date(value) : null;
       },
     },
     ...(isRoot
-      ? [
+      ? ([
           {
             field: "createdAt",
-            headerName: "作成日",
+            headerName: "作成日時",
             width: 150,
-            valueFormatter: (params: any) =>
-              params.value ? new Date(params.value).toLocaleDateString() : "",
+            type: "dateTime",
+            valueGetter: (value: Date) => {
+              return value ? new Date(value) : null;
+            },
           },
           {
             field: "updatedAt",
-            headerName: "更新日",
+            headerName: "更新日時",
             width: 150,
-            valueFormatter: (params: any) =>
-              params.value ? new Date(params.value).toLocaleDateString() : "",
+            type: "dateTime",
+            valueGetter: (value: Date) => {
+              return value ? new Date(value) : null;
+            },
           },
-        ]
+        ] as GridColDef[])
       : []),
   ];
   return (
-    <div style={{ height: 300, width: "100%" }}>
-      <DataGrid rows={rows} columns={columns} />
+    <div style={{ height: 600, width: "100%" }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        sx={{
+          maxWidth: "100%",
+        }}
+      />
     </div>
   );
 }
