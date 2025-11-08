@@ -56,25 +56,21 @@ export async function signUpAction(formData: FormData) {
       throw CSRFError;
     }
     console.log("Sign-up data:", { name, custom_id, external_email, password });
-    const res = await fetch(
-      `${process.env.RESOURCE_API_URL}/api/v1/auth/signup`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          custom_id,
-          external_email,
-          password,
-        }),
-      }
-    );
+    const res = await fetch(`${process.env.RESOURCE_API_URL}/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        custom_id,
+        external_email,
+        password,
+      }),
+    });
     if (!res.ok) {
-      const errorData = await res.json();
       throw new Error(
-        `Sign-up failed: ${res.status} ${res.statusText} - ${errorData.message}`
+        `Sign-up failed: ${res.status} ${res.statusText} - ${res}`
       );
     }
   } catch (error) {
