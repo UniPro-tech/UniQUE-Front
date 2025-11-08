@@ -8,8 +8,9 @@ import Tooltip from "@mui/material/Tooltip";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Session } from "@/lib/Session";
+import { deleteSession, Session } from "@/lib/Session";
 import { redirect } from "next/navigation";
+import { Box } from "@mui/material";
 
 export default function AccountMenu({ session }: { session: Session | null }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -95,17 +96,14 @@ export default function AccountMenu({ session }: { session: Session | null }) {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            redirect("/logout");
-          }}
-        >
-          <ListItemIcon>
-            <LogoutIcon fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
+        <Box component="form" action={deleteSession}>
+          <MenuItem component="button" type="submit" onClick={handleClose}>
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" />
+            </ListItemIcon>
+            Logout
+          </MenuItem>
+        </Box>
       </Menu>
     </React.Fragment>
   );

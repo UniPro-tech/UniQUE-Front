@@ -6,6 +6,7 @@ import nacl from "tweetnacl";
 import * as util from "tweetnacl-util";
 import { toCamelcase } from "./SnakeCamlUtil";
 import { User } from "@/types/User";
+import { redirect } from "next/navigation";
 
 // 秘密鍵をファイルから読み込む
 // 存在しない場合は新規作成
@@ -66,12 +67,12 @@ export const getSession = async (): Promise<Session | null> => {
   return toCamelcase<Session>(session);
 };
 
-export const deleteSession = async () => {
+export const deleteSession = async (_formdata: FormData) => {
   const session_id = (await getSession())?.id;
   if (!session_id) {
-    return null;
+    return;
   }
-  const res1 = (await cookies()).delete("sid");
+  (await cookies()).delete("sid");
   const res2 = await fetch(
     `${process.env.RESOURCE_API_URL}/sessions/${session_id}`,
     {
@@ -82,5 +83,5 @@ export const deleteSession = async () => {
   if (!res2.ok) {
     throw new Error("Failed to delete session");
   }
-  return { res1, res2: await res2.json() };
+  redirect("/signin");
 };
