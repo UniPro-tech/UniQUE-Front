@@ -65,3 +65,22 @@ export const getSession = async (): Promise<Session | null> => {
   ).json();
   return toCamelcase<Session>(session);
 };
+
+export const deleteSession = async () => {
+  const session_id = (await getSession())?.id;
+  if (!session_id) {
+    return null;
+  }
+  const res1 = (await cookies()).delete("sid");
+  const res2 = await fetch(
+    `${process.env.RESOURCE_API_URL}/sessions/${session_id}`,
+    {
+      method: "DELETE",
+      cache: "no-store",
+    }
+  );
+  if (!res2.ok) {
+    throw new Error("Failed to delete session");
+  }
+  return { res1, res2: await res2.json() };
+};
