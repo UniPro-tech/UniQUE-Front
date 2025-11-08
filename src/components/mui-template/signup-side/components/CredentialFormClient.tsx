@@ -10,7 +10,7 @@ import {
   Link,
   TextField,
 } from "@mui/material";
-import ForgotPassword from "./ForgotPassword";
+import ForgotPassword from "../../../Dialogs/ForgotPassword";
 
 const credentialSchema = z.object({
   name: z.string().min(1, { message: "名前を入力してください。" }),
