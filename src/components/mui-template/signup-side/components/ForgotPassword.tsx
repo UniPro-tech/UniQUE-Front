@@ -7,56 +7,78 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import OutlinedInput from "@mui/material/OutlinedInput";
+import { resetPasswordAction } from "../lib/ResetPasswordAction";
+import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 interface ForgotPasswordProps {
   open: boolean;
   handleClose: () => void;
+  csrfToken: string;
 }
 
 export default function ForgotPassword({
   open,
   handleClose,
+  csrfToken,
 }: ForgotPasswordProps) {
+  const [state, action, isPending] = React.useActionState(
+    resetPasswordAction,
+    null as null | FormStatus
+  );
+  React.useEffect(() => {
+    if (state) {
+      enqueueSnackbar(state.message, { variant: state.status });
+      handleClose();
+    }
+  }, [state]);
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      slotProps={{
-        paper: {
-          component: "form",
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            handleClose();
+    <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        slotProps={{
+          paper: {
+            sx: { backgroundImage: "none" },
           },
-          sx: { backgroundImage: "none" },
-        },
-      }}
-    >
-      <DialogTitle>パスワードリセット</DialogTitle>
-      <DialogContent
-        sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}
+        }}
       >
-        <DialogContentText>
-          アカウントのメールアドレスを入力してください。パスワードをリセットするためのリンクをお送りします。
-        </DialogContentText>
-        <OutlinedInput
-          autoFocus
-          required
-          margin="dense"
-          id="email"
-          name="email"
-          label="Email address"
-          placeholder="Email address"
-          type="email"
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions sx={{ pb: 3, px: 3 }}>
-        <Button onClick={handleClose}>キャンセル</Button>
-        <Button variant="contained" type="submit">
-          送信
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <form action={action} id="forgot-password-form">
+          <DialogTitle>パスワードリセット</DialogTitle>
+          <DialogContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              width: "100%",
+            }}
+          >
+            <DialogContentText>
+              アカウントのユーザーIDを入力してください。パスワードをリセットするためのリンクをお送りします。
+              <br />
+              ユーザーIDをお忘れの場合は管理者までお問い合わせください。
+            </DialogContentText>
+            <input type="hidden" name="csrfToken" value={csrfToken} />
+            <OutlinedInput
+              autoFocus
+              required
+              margin="dense"
+              id="username"
+              name="username"
+              label="ユーザーID"
+              placeholder="ユーザーID"
+              type="text"
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions sx={{ pb: 3, px: 3 }}>
+            <Button onClick={handleClose}>キャンセル</Button>
+            <Button variant="contained" type="submit">
+              送信
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </SnackbarProvider>
   );
 }
