@@ -12,3 +12,16 @@ export const getUserById = async (userId: string) => {
   const user = toCamelcase(await res.json()) as User;
   return user;
 };
+
+export const getUsersList = async (isRoot: boolean) => {
+  const res = await fetch(
+    `${process.env.RESOURCE_API_URL}/users/search${
+      !isRoot ? "?is_enable=true" : ""
+    }`,
+    {
+      cache: "no-store",
+    }
+  );
+  const users = await res.json();
+  return toCamelcase<User[]>(users.data);
+};
