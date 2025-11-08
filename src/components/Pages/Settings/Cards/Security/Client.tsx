@@ -12,6 +12,8 @@ import Base, { FormStatus } from "../Base";
 import { useActionState, useEffect } from "react";
 import { updateSettings } from "./action";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import ForgotPassword from "@/components/Dialogs/ForgotPassword";
+import React from "react";
 
 export default function SecuritySettingsCardClient({
   user,
@@ -24,6 +26,9 @@ export default function SecuritySettingsCardClient({
     updateSettings,
     null as null | FormStatus
   );
+  const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   useEffect(() => {
     if (lastResult) {
       enqueueSnackbar(lastResult.message, { variant: lastResult.status });
@@ -65,16 +70,24 @@ export default function SecuritySettingsCardClient({
           />
           <FormHelperText>
             パスワードを忘れた場合は、{" "}
-            <Link href="/reset-password" underline="hover">
-              パスワードリセット
+            <Link
+              onClick={handleClickOpen}
+              underline="hover"
+              style={{ cursor: "pointer" }}
+            >
+              こちら
             </Link>
-            から再設定できます。
           </FormHelperText>
         </Stack>
         <Button variant="contained" fullWidth type="submit">
           保存
         </Button>
       </Base>
+      <ForgotPassword
+        open={open}
+        handleClose={handleClose}
+        csrfToken={csrfToken}
+      />
     </SnackbarProvider>
   );
 }
