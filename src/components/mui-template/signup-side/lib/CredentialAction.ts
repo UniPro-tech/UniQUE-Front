@@ -45,8 +45,8 @@ export async function signInAction(formData: FormData) {
 
 export async function signUpAction(formData: FormData) {
   const name = formData.get("name") as string;
-  const username = formData.get("username") as string;
-  const email = formData.get("email") as string;
+  const custom_id = formData.get("username") as string;
+  const external_email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const csrfToken = formData.get("csrfToken") as string;
 
@@ -55,7 +55,24 @@ export async function signUpAction(formData: FormData) {
     if (!tokenVerified) {
       throw CSRFError;
     }
-    console.log("Sign-up data:", { name, username, email, password });
+    console.log("Sign-up data:", { name, custom_id, external_email, password });
+    const res = await fetch(`${process.env.RESOURCE_API_URL}/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        custom_id,
+        external_email,
+        password,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(
+        `Sign-up failed: ${res.status} ${res.statusText} - ${res}`
+      );
+    }
   } catch (error) {
     console.error("Sign-up error:", error);
     throw error;
