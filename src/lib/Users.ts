@@ -1,5 +1,6 @@
+"use server";
 import { User } from "@/types/User";
-import { toCamelcase } from "./SnakeCamlUtil";
+import { toCamelcase, toSnakecase } from "./SnakeCamlUtil";
 
 export const getUserById = async (userId: string) => {
   const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`);
@@ -24,4 +25,45 @@ export const getUsersList = async (isRoot: boolean) => {
   );
   const users = await res.json();
   return toCamelcase<User[]>(users.data);
+};
+
+export const saveUser = async (user: User): Promise<User> => {
+  try {
+    const res = await fetch(
+      `${process.env.RESOURCE_API_URL}/users/${user.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...toSnakecase<User>(user),
+        }),
+      }
+    );
+    if (!res.ok) {
+      throw new Error(
+        `HTTP error! status: ${res.status}, message: ${await res.text()}`
+      );
+    }
+    const data = await res.json();
+    return toCamelcase<User>(data);
+  } catch (error) {
+    throw new Error(`Error saving user: ${error}`);
+  }
+};
+
+export const deleteUser = async (userId: string) => {
+  try {
+    const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      throw new Error(
+        `HTTP error! status: ${res.status}, message: ${await res.text()}`
+      );
+    }
+  } catch (error) {
+    throw new Error(`Error deleting user: ${error}`);
+  }
 };

@@ -16,8 +16,9 @@ import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
 import { User } from "@/types/User";
-import { FormStatus } from "../Pages/Settings/Cards/Base";
-import DeleteDialog from "../Dialogs/Delete";
+import { FormStatus } from "../../Pages/Settings/Cards/Base";
+import DeleteDialog from "../../Dialogs/Delete";
+import { saveUser, deleteUser } from "@/lib/Users";
 
 export default function MembersDataGrid({
   rows,
@@ -31,15 +32,52 @@ export default function MembersDataGrid({
   const apiRef = useGridApiRef();
   const [hasUnsavedRows, setHasUnsavedRows] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [localRows, setLocalRows] = React.useState<User[]>(() =>
+    beforeJoined
+      ? rows.filter((row) => row.email.startsWith("temp_"))
+      : rows.filter((row) => !row.email.startsWith("temp_"))
+  );
+  React.useEffect(() => {
+    setLocalRows(
+      beforeJoined
+        ? rows.filter((row) => row.email.startsWith("temp_"))
+        : rows.filter((row) => !row.email.startsWith("temp_"))
+    );
+  }, [rows, beforeJoined]);
   const [undeletedRows, setUndeletedRows] = React.useState<GridRowId>();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const handleDelete = async (
     _prevState: FormStatus | null,
     formData: FormData | null
   ) => {
-    // TODO: Implement delete logic here
-    setDeleteDialogOpen(false);
-    return null;
+    try {
+      if (!undeletedRows) {
+        const res: FormStatus = {
+          status: "error",
+          message: "削除対象が選択されていません",
+        };
+        return res;
+      }
+      await deleteUser(String(undeletedRows));
+      // remove row from grid data
+      setLocalRows((prev) =>
+        prev.filter((r) => String(r.id) !== String(undeletedRows))
+      );
+      apiRef.current?.updateRows([{ id: undeletedRows, _action: "delete" }]);
+      setUndeletedRows(undefined);
+      setDeleteDialogOpen(false);
+      const res: FormStatus = {
+        status: "success",
+        message: "メンバーを削除しました",
+      };
+      return res;
+    } catch (error) {
+      const res: FormStatus = {
+        status: "error",
+        message: `削除に失敗しました: ${String(error)}`,
+      };
+      return res;
+    }
   };
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
@@ -69,6 +107,7 @@ export default function MembersDataGrid({
                       icon={<DeleteIcon />}
                       label="Delete"
                       onClick={() => {
+                        setUndeletedRows(id);
                         setDeleteDialogOpen(true);
                       }}
                     />,
@@ -241,21 +280,32 @@ export default function MembersDataGrid({
 
   const saveChanges = React.useCallback(async () => {
     try {
-      // Persist updates in the database
       setIsSaving(true);
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1000);
-      });
+      // persist changes to API
+      const unsaved = Object.values(unsavedChangesRef.current.unsavedRows);
+
+      for (const row of unsaved) {
+        try {
+          if (row._action === "delete") {
+            await deleteUser(String(row.id));
+            apiRef.current?.updateRows([{ id: row.id, _action: "delete" }]);
+            setLocalRows((prev) =>
+              prev.filter((r) => String(r.id) !== String(row.id))
+            );
+          } else {
+            const saved = await saveUser(row as unknown as User);
+            apiRef.current?.updateRows([saved]);
+            setLocalRows((prev) =>
+              prev.map((r) => (String(r.id) === String(saved.id) ? saved : r))
+            );
+          }
+        } catch (err) {
+          // ignore single row error but mark overall as failed later if needed
+          console.error("Save/Delete row failed:", err);
+        }
+      }
 
       setIsSaving(false);
-      const rowsToDelete = Object.values(
-        unsavedChangesRef.current.unsavedRows
-      ).filter((row) => row._action === "delete");
-      if (rowsToDelete.length > 0) {
-        rowsToDelete.forEach((row) => {
-          apiRef.current?.updateRows([row]);
-        });
-      }
 
       setHasUnsavedRows(false);
       unsavedChangesRef.current = {
@@ -279,17 +329,6 @@ export default function MembersDataGrid({
     }
     return "";
   }, []);
-  console.log(beforeJoined);
-
-  if (beforeJoined) {
-    rows = rows.filter((row) => {
-      return row.email.startsWith("temp_");
-    });
-  } else {
-    rows = rows.filter((row) => {
-      return !row.email.startsWith("temp_");
-    });
-  }
 
   return (
     <div style={{ width: "100%" }}>
@@ -315,7 +354,7 @@ export default function MembersDataGrid({
       )}
       <div style={{ height: 400 }}>
         <DataGrid
-          rows={rows}
+          rows={localRows}
           columns={columns}
           apiRef={apiRef}
           disableRowSelectionOnClick
