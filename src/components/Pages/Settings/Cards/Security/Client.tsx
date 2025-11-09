@@ -43,7 +43,9 @@ export default function SecuritySettingsCardClient({
         csrfToken={csrfToken}
       >
         <Stack>
-          <Typography variant="h6">セキュリティ設定</Typography>
+          <Typography variant="h5" component={"h3"}>
+            セキュリティ設定
+          </Typography>
           <Typography variant="body2">
             パスワードの変更や二段階認証の設定を行います。
           </Typography>
