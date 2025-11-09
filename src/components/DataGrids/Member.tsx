@@ -6,7 +6,6 @@ import {
   gridClasses,
   GridColDef,
   GridRowId,
-  GridRowsProp,
   GridValidRowModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
@@ -16,17 +15,32 @@ import RestoreIcon from "@mui/icons-material/Restore";
 import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
+import { User } from "@/types/User";
+import { FormStatus } from "../Pages/Settings/Cards/Base";
+import DeleteDialog from "../Dialogs/Delete";
 
 export default function MembersDataGrid({
   rows,
   canUpdate,
+  beforeJoined = false,
 }: {
-  rows: GridRowsProp;
+  rows: User[];
   canUpdate: boolean;
+  beforeJoined?: boolean;
 }) {
   const apiRef = useGridApiRef();
   const [hasUnsavedRows, setHasUnsavedRows] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [undeletedRows, setUndeletedRows] = React.useState<GridRowId>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const handleDelete = async (
+    _prevState: FormStatus | null,
+    formData: FormData | null
+  ) => {
+    // TODO: Implement delete logic here
+    setDeleteDialogOpen(false);
+    return null;
+  };
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -49,41 +63,53 @@ export default function MembersDataGrid({
                 id: GridRowId;
                 row: GridValidRowModel;
               }) => {
-                return [
-                  <GridActionsCellItem
-                    icon={<RestoreIcon />}
-                    label="Discard changes"
-                    disabled={
-                      unsavedChangesRef.current.unsavedRows[id] === undefined
-                    }
-                    onClick={() => {
-                      apiRef.current?.updateRows([
-                        unsavedChangesRef.current.rowsBeforeChange[id],
-                      ]);
-                      delete unsavedChangesRef.current.rowsBeforeChange[id];
-                      delete unsavedChangesRef.current.unsavedRows[id];
-                      setHasUnsavedRows(
-                        Object.keys(unsavedChangesRef.current.unsavedRows)
-                          .length > 0
-                      );
-                    }}
-                  />,
-                  <GridActionsCellItem
-                    icon={<DeleteIcon />}
-                    label="Delete"
-                    onClick={() => {
-                      unsavedChangesRef.current.unsavedRows[id] = {
-                        ...row,
-                        _action: "delete",
-                      };
-                      if (!unsavedChangesRef.current.rowsBeforeChange[id]) {
-                        unsavedChangesRef.current.rowsBeforeChange[id] = row;
+                if (beforeJoined) {
+                  return [
+                    <GridActionsCellItem
+                      icon={<DeleteIcon />}
+                      label="Delete"
+                      onClick={() => {
+                        setDeleteDialogOpen(true);
+                      }}
+                    />,
+                  ];
+                } else {
+                  return [
+                    <GridActionsCellItem
+                      icon={<RestoreIcon />}
+                      label="Discard changes"
+                      disabled={
+                        unsavedChangesRef.current.unsavedRows[id] === undefined
                       }
-                      setHasUnsavedRows(true);
-                      apiRef.current?.updateRows([row]); // to trigger row render
-                    }}
-                  />,
-                ];
+                      onClick={() => {
+                        apiRef.current?.updateRows([
+                          unsavedChangesRef.current.rowsBeforeChange[id],
+                        ]);
+                        delete unsavedChangesRef.current.rowsBeforeChange[id];
+                        delete unsavedChangesRef.current.unsavedRows[id];
+                        setHasUnsavedRows(
+                          Object.keys(unsavedChangesRef.current.unsavedRows)
+                            .length > 0
+                        );
+                      }}
+                    />,
+                    <GridActionsCellItem
+                      icon={<DeleteIcon />}
+                      label="Delete"
+                      onClick={() => {
+                        unsavedChangesRef.current.unsavedRows[id] = {
+                          ...row,
+                          _action: "delete",
+                        };
+                        if (!unsavedChangesRef.current.rowsBeforeChange[id]) {
+                          unsavedChangesRef.current.rowsBeforeChange[id] = row;
+                        }
+                        setHasUnsavedRows(true);
+                        apiRef.current?.updateRows([row]); // to trigger row render
+                      }}
+                    />,
+                  ];
+                }
               },
             },
             { field: "id", headerName: "ID", width: 250 },
@@ -253,10 +279,21 @@ export default function MembersDataGrid({
     }
     return "";
   }, []);
+  console.log(beforeJoined);
+
+  if (beforeJoined) {
+    rows = rows.filter((row) => {
+      return row.email.startsWith("temp_");
+    });
+  } else {
+    rows = rows.filter((row) => {
+      return !row.email.startsWith("temp_");
+    });
+  }
 
   return (
     <div style={{ width: "100%" }}>
-      {canUpdate && (
+      {canUpdate && !beforeJoined && (
         <div style={{ marginBottom: 8 }}>
           <Button
             disabled={!hasUnsavedRows}
@@ -284,6 +321,17 @@ export default function MembersDataGrid({
           disableRowSelectionOnClick
           processRowUpdate={processRowUpdate}
           ignoreValueFormatterDuringExport
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                email: !beforeJoined,
+                isSuspended: !beforeJoined,
+                suspendedReason: !beforeJoined,
+                suspendedUntil: !beforeJoined,
+              },
+            },
+          }}
+          showToolbar
           sx={{
             [`& .${gridClasses.row}.row--removed`]: {
               backgroundColor: (theme) => {
@@ -307,6 +355,12 @@ export default function MembersDataGrid({
           getRowClassName={getRowClassName}
         />
       </div>
+      <DeleteDialog
+        open={deleteDialogOpen}
+        dataAction={handleDelete}
+        handleClose={() => setDeleteDialogOpen(false)}
+        title="メンバー"
+      />
     </div>
   );
 }
