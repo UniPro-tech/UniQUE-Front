@@ -9,7 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "@/types/User";
-import { SnackbarProvider } from "notistack";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import { unlink } from "@/lib/SocialAccounts";
 
 export default function SocialAccountsCardClient({
   user,
@@ -43,13 +44,32 @@ export default function SocialAccountsCardClient({
             </Typography>
             <Divider sx={{ flexGrow: 1 }} />
           </Stack>
-          {user.discords ? (
+          {user.discords?.length !== 0 ? (
             <List>
-              {user.discords.map((discord) => (
+              {user.discords!.map((discord) => (
                 <ListItem key={discord.id}>
                   <Typography variant="body2">
                     {discord.discordCustomid} (ID: {discord.discordId})
                   </Typography>
+                  <Button
+                    onClick={() =>
+                      unlink("discord", discord.discordId)
+                        .then(() => {
+                          enqueueSnackbar(
+                            "Discordアカウントの連携を解除しました。",
+                            { variant: "success" }
+                          );
+                        })
+                        .catch((error) => {
+                          enqueueSnackbar(
+                            `Discordアカウントの連携解除に失敗しました: ${error.message}`,
+                            { variant: "error" }
+                          );
+                        })
+                    }
+                  >
+                    連携解除
+                  </Button>
                 </ListItem>
               ))}
             </List>
