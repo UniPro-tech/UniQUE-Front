@@ -1,4 +1,6 @@
+import { VerifyCSRFToken } from "@/lib/CSRF";
 import { getSession } from "@/lib/Session";
+import { unauthorized } from "next/navigation";
 
 export const GET = async (req: Request) => {
   const client_id = process.env.DISCORD_CLIENT_ID;
@@ -8,6 +10,13 @@ export const GET = async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
+
+  if (!state || VerifyCSRFToken(state) !== "discord_oauth") {
+    return Response.redirect(
+      `/dashboard/settings?oauth=discord&status=error`,
+      302
+    );
+  }
 
   if (!code) {
     return new Response("Missing code parameter", { status: 400 });
@@ -30,7 +39,10 @@ export const GET = async (req: Request) => {
 
   if (!tokenResponse.ok) {
     console.log(tokenResponse.status, await tokenResponse.text());
-    return new Response("Failed to fetch access token", { status: 500 });
+    return Response.redirect(
+      `/dashboard/settings?oauth=discord&status=error`,
+      302
+    );
   }
 
   const tokenData = await tokenResponse.json();
@@ -45,14 +57,17 @@ export const GET = async (req: Request) => {
 
   if (!userResponse.ok) {
     console.log(userResponse.status, await userResponse.text());
-    return new Response("Failed to fetch user info", { status: 500 });
+    return Response.redirect(
+      `/dashboard/settings?oauth=discord&status=error`,
+      302
+    );
   }
 
   const userData = await userResponse.json();
 
   const session = await getSession();
   if (!session?.user) {
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   const res = await fetch(
@@ -71,11 +86,14 @@ export const GET = async (req: Request) => {
 
   if (!res.ok) {
     console.log(res.status, await res.text());
-    return new Response("Failed to link Discord account", { status: 500 });
+    return Response.redirect(
+      `/dashboard/settings?oauth=discord&status=error`,
+      302
+    );
   }
 
-  return new Response(JSON.stringify(userData), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return Response.redirect(
+    `/dashboard/settings?oauth=discord&status=success`,
+    302
+  );
 };
