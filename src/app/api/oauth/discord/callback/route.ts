@@ -1,6 +1,7 @@
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { getSession } from "@/lib/Session";
 import { unauthorized } from "next/navigation";
+import { decodeBase64 } from "tweetnacl-util";
 
 export const GET = async (req: Request) => {
   const client_id = process.env.DISCORD_CLIENT_ID;
@@ -10,10 +11,20 @@ export const GET = async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
+  const baseUrl = `${url.protocol}//${url.host}`;
 
-  if (!state || VerifyCSRFToken(state) !== "discord_oauth") {
+  if (!state)
     return Response.redirect(
-      `/dashboard/settings?oauth=discord&status=error`,
+      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
+      302
+    );
+
+  const stateBytes = decodeBase64(state);
+  const stateDecoded = new TextDecoder().decode(stateBytes);
+
+  if (VerifyCSRFToken(stateDecoded, false) !== "discord_oauth") {
+    return Response.redirect(
+      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
       302
     );
   }
@@ -40,7 +51,7 @@ export const GET = async (req: Request) => {
   if (!tokenResponse.ok) {
     console.log(tokenResponse.status, await tokenResponse.text());
     return Response.redirect(
-      `/dashboard/settings?oauth=discord&status=error`,
+      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
       302
     );
   }
@@ -58,7 +69,7 @@ export const GET = async (req: Request) => {
   if (!userResponse.ok) {
     console.log(userResponse.status, await userResponse.text());
     return Response.redirect(
-      `/dashboard/settings?oauth=discord&status=error`,
+      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
       302
     );
   }
@@ -87,13 +98,13 @@ export const GET = async (req: Request) => {
   if (!res.ok) {
     console.log(res.status, await res.text());
     return Response.redirect(
-      `/dashboard/settings?oauth=discord&status=error`,
+      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
       302
     );
   }
 
   return Response.redirect(
-    `/dashboard/settings?oauth=discord&status=success`,
+    `${baseUrl}/dashboard/settings?oauth=discord&status=success`,
     302
   );
 };
