@@ -44,7 +44,9 @@ export default function AccountSettingsCardClient({
       csrfToken={csrfToken}
     >
       <Stack>
-        <Typography variant="h6">基本設定</Typography>
+        <Typography variant="h5" component={"h3"}>
+          基本設定
+        </Typography>
         <Typography variant="body2">
           ユーザー名、メールアドレスなどの変更を行います。
         </Typography>

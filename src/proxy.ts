@@ -5,6 +5,13 @@ import { getSession } from "./lib/Session";
 export async function proxy(request: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.redirect(new URL("/signin", request.url));
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-url", request.url);
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {
