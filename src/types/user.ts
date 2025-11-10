@@ -1,3 +1,5 @@
+import { Discord } from "./Discord";
+
 export interface User {
   id: string;
   name: string;
@@ -13,5 +15,5 @@ export interface User {
   joinedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  discords?: any[];
+  discords?: Discord[];
 }
