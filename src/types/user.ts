@@ -13,4 +13,5 @@ export interface User {
   joinedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  discords?: any[];
 }
