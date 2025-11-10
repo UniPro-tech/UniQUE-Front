@@ -4,7 +4,7 @@ import SocialAccountsSettingsCard from "@/components/Pages/Settings/Cards/Social
 import { getSession } from "@/lib/Session";
 import { Stack, Typography } from "@mui/material";
 import { VariantType } from "notistack";
-import ParamSnacks from "./paramSnacks";
+import ParamSnacks, { SnackbarData } from "./paramSnacks";
 
 export default async function Page({
   searchParams,
@@ -17,7 +17,7 @@ export default async function Page({
   const { oauth, status } = await searchParams;
   const session = await getSession();
   const user = session!.user;
-  const snacks = [
+  const snacks: SnackbarData[] = [
     ...(oauth
       ? [
           {
