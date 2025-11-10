@@ -1,7 +1,7 @@
 "use server";
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
-import { FormStatus } from "../Base";
+import { FormStatus } from "../../Base";
 
 export const updateSettings = async (
   _prevState: null | FormStatus,
