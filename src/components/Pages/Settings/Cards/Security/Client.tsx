@@ -1,30 +1,23 @@
 "use client";
-import {
-  Button,
-  Card,
-  Divider,
-  FormHelperText,
-  Link,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Card, Stack, Typography } from "@mui/material";
 import { User } from "@/types/User";
-import Base, { FormStatus } from "../Base";
-import { useActionState, useEffect } from "react";
-import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import { SnackbarProvider } from "notistack";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import React from "react";
 import PasswordSection from "./Password";
+import SessionsSection from "./Sessions";
+import { Session } from "@/lib/Session";
 
 export default function SecuritySettingsCardClient({
   user,
   csrfToken,
   sid,
+  sessions,
 }: {
   user: User;
   csrfToken: string;
   sid: string;
+  sessions: Session[];
 }) {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => setOpen(true);
@@ -48,6 +41,11 @@ export default function SecuritySettingsCardClient({
           sid={sid}
           csrfToken={csrfToken}
           handleClickOpen={handleClickOpen}
+        />
+        <SessionsSection
+          current_id={sid}
+          sessions={sessions}
+          csrfToken={csrfToken}
         />
       </Card>
       <ForgotPassword

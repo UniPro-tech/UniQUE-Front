@@ -3,6 +3,7 @@ import { User } from "@/types/User";
 import SecuritySettingsCardClient from "./Client";
 import { getSession } from "@/lib/Session";
 import { unauthorized } from "next/navigation";
+import { getAllSessions } from "./Sessions/getter";
 
 export default async function SecuritySettingsCard({ user }: { user: User }) {
   const uid = user.id;
@@ -11,11 +12,13 @@ export default async function SecuritySettingsCard({ user }: { user: User }) {
   if (!session) {
     unauthorized();
   }
+  const sessions = await getAllSessions(uid);
   return (
     <SecuritySettingsCardClient
       user={user}
       csrfToken={csrfToken}
       sid={session?.id}
+      sessions={sessions}
     />
   );
 }
