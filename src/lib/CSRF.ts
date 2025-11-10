@@ -31,23 +31,29 @@ if (fs.existsSync(secretKeyFile) && fs.existsSync(publicKeyFile)) {
   });
 }
 
-export const generateCSRFToken = (data: string): string => {
+export const generateCSRFToken = (
+  data: string,
+  exp: boolean | undefined = true
+): string => {
   const message = util.decodeUTF8(
-    data + "&exp=" + (Date.now() + 600000).toString()
+    `${data}${exp ? `&exp=${Date.now() + 10 * 60 * 1000}` : ""}`
   ); // 10分有効
   const signedMessage = nacl.sign(message, secretKey);
   return util.encodeBase64(signedMessage);
 };
 
-export const VerifyCSRFToken = (token: string): string | null => {
+export const VerifyCSRFToken = (
+  token: string,
+  exp: boolean | undefined = true
+): string | null => {
   try {
     const verified = nacl.sign.open(util.decodeBase64(token), publicKey);
     if (verified) {
       const expire = parseInt(util.encodeUTF8(verified).split("&exp=")[1]);
-      if (Date.now() > expire) {
+      if (Date.now() > expire && !exp) {
         return null;
       }
-      return util.encodeUTF8(verified);
+      return util.encodeUTF8(verified).split("&exp=")[0];
     } else {
       return null;
     }
