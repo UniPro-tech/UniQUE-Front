@@ -11,6 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import ForgotPassword from "../../../Dialogs/ForgotPassword";
+import { SignInCardMode } from "./SignInCard";
 
 const credentialSchema = z.object({
   name: z.string().min(1, { message: "名前を入力してください。" }),
@@ -34,7 +35,7 @@ const credentialSchema = z.object({
 });
 
 export default function CredentialFormClient(props: {
-  signUp?: boolean;
+  mode: SignInCardMode;
   csrfToken: string;
 }) {
   const [email, setEmail] = React.useState("");
@@ -115,7 +116,7 @@ export default function CredentialFormClient(props: {
   return (
     <>
       <input type="hidden" name="csrfToken" value={props.csrfToken} />
-      {props.signUp ? (
+      {props.mode === SignInCardMode.SignUp ? (
         <>
           <FormControl>
             <FormLabel htmlFor="name">名前 (ニックネーム可)</FormLabel>
@@ -199,7 +200,7 @@ export default function CredentialFormClient(props: {
       <FormControl>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <FormLabel htmlFor="password">パスワード</FormLabel>
-          {!props.signUp && (
+          {props.mode === SignInCardMode.SignIn && (
             <Link
               component="button"
               variant="body2"
@@ -227,7 +228,7 @@ export default function CredentialFormClient(props: {
           onBlur={(e) => validateField("password", e.target.value)}
         />
       </FormControl>
-      {!props.signUp ? (
+      {props.mode === SignInCardMode.SignIn ? (
         <FormControlLabel
           control={<Checkbox name="remember" color="primary" />}
           label="ログイン状態を保持する"
@@ -257,7 +258,9 @@ export default function CredentialFormClient(props: {
         />
       )}
       <Button type="submit" fullWidth variant="contained">
-        {props.signUp ? "メンバー登録を申請" : "サインイン"}
+        {props.mode === SignInCardMode.SignUp
+          ? "メンバー登録を申請"
+          : "サインイン"}
       </Button>
       <ForgotPassword
         open={open}

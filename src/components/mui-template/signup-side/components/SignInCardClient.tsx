@@ -10,11 +10,12 @@ import { SitemarkIcon } from "./CustomIcons";
 //import MailLockIcon from "@mui/icons-material/MailLock";
 import CredentialForm from "./CredentialForm";
 import { Link, Stack } from "@mui/material";
+import { SignInCardMode } from "./SignInCard";
 
 // we will apply equivalent styles via the `sx` prop on `MuiCard`
 
 export default function SignInCardClient(props: {
-  signUp?: boolean;
+  mode: SignInCardMode;
   csrfToken: string;
 }) {
   return (
@@ -46,21 +47,21 @@ export default function SignInCardClient(props: {
         variant="h4"
         sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
       >
-        {props.signUp ? "メンバー登録" : "サインイン"}
+        {props.mode === SignInCardMode.SignUp ? "メンバー登録" : "サインイン"}
       </Typography>
       <Stack direction="row" alignItems="center" sx={{ width: "100%" }} gap={1}>
-        {props.signUp
+        {props.mode === SignInCardMode.SignUp
           ? "アカウントをお持ちですか？"
           : "アカウントをお持ちでないですか？"}
         <Link
-          href={props.signUp ? "/signin" : "/signup"}
+          href={props.mode === SignInCardMode.SignUp ? "/signin" : "/signup"}
           variant="body2"
           sx={{ alignSelf: "center" }}
         >
-          {props.signUp ? "サインイン" : "サインアップ"}
+          {props.mode === SignInCardMode.SignUp ? "サインイン" : "サインアップ"}
         </Link>
       </Stack>
-      <CredentialForm signUp={props.signUp} csrfToken={props.csrfToken} />
+      <CredentialForm mode={props.mode} csrfToken={props.csrfToken} />
       {/*}
       <Divider>もしくは</Divider>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
