@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
@@ -10,7 +9,7 @@ import { SitemarkIcon } from "./CustomIcons";
 //import MailLockIcon from "@mui/icons-material/MailLock";
 import CredentialForm from "./CredentialForm";
 import { Link, Stack } from "@mui/material";
-import { SignInCardMode } from "./SignInCard";
+import { SignInCardMode } from "../types/SignInCardMode";
 
 // we will apply equivalent styles via the `sx` prop on `MuiCard`
 

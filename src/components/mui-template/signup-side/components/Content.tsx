@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -8,6 +7,7 @@ import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import HubIcon from "@mui/icons-material/Hub";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { SitemarkIcon } from "./CustomIcons";
+import { SignInCardMode } from "../types/SignInCardMode";
 
 const SignInItems = [
   {
@@ -68,16 +68,10 @@ const SignInItems = [
   },
 ];
 
-export enum ContentMode {
-  SignIn,
-  SignUp,
-  SignUpEmailValidated,
-}
-
 export default function Content({
-  mode = ContentMode.SignIn,
+  mode = SignInCardMode.SignIn,
 }: {
-  mode?: ContentMode;
+  mode?: SignInCardMode;
 }) {
   return (
     <Stack
@@ -91,7 +85,7 @@ export default function Content({
       <Box sx={{ display: { xs: "none", md: "flex" } }}>
         <SitemarkIcon />
       </Box>
-      {mode === ContentMode.SignUpEmailValidated ? (
+      {mode === SignInCardMode.SignUp ? (
         <Stack direction="row" gap={2}>
           <EmojiPeopleIcon sx={{ color: "text.secondary" }} />
           <Box display={"block"} width={"100%"}>

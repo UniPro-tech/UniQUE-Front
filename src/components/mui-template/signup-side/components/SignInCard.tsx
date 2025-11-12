@@ -3,12 +3,7 @@ import { generateCSRFToken } from "@/lib/CSRF";
 import SignInCardClient from "./SignInCardClient";
 import { getSession } from "@/lib/Session";
 import { redirect, RedirectType } from "next/navigation";
-
-export enum SignInCardMode {
-  SignIn,
-  SignUp,
-  SignInEmailValidated,
-}
+import { SignInCardMode } from "../types/SignInCardMode";
 
 export default async function SignInCard({
   mode = SignInCardMode.SignIn,

@@ -4,6 +4,7 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import { VariantType } from "notistack";
+import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
 
 export default async function Page({
   searchParams,
@@ -26,8 +27,8 @@ export default async function Page({
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
-      <Content isSignUp={false} />
-      <SignInCard signUp={false} />
+      <Content mode={SignInCardMode.SignIn} />
+      <SignInCard mode={SignInCardMode.SignIn} />
     </>
   );
 }

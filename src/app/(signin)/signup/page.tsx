@@ -1,9 +1,6 @@
-import Content, {
-  ContentMode,
-} from "@/components/mui-template/signup-side/components/Content";
-import SignInCard, {
-  SignInCardMode,
-} from "@/components/mui-template/signup-side/components/SignInCard";
+import Content from "@/components/mui-template/signup-side/components/Content";
+import SignInCard from "@/components/mui-template/signup-side/components/SignInCard";
+import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
@@ -31,8 +28,8 @@ export default async function Page({
     if (validatedRes) {
       return (
         <>
-          <Content mode={ContentMode.SignUpEmailValidated} />
-          <SignInCard mode={SignInCardMode.SignInEmailValidated} />
+          <Content mode={SignInCardMode.SignUpEmailValidated} />
+          <SignInCard mode={SignInCardMode.SignUpEmailValidated} />
         </>
       );
     } else {
@@ -42,7 +39,7 @@ export default async function Page({
   return (
     <>
       <TemporarySnackProvider snacks={snackbars} />
-      <Content mode={ContentMode.SignUp} />
+      <Content mode={SignInCardMode.SignUp} />
       <SignInCard mode={SignInCardMode.SignUp} />
     </>
   );

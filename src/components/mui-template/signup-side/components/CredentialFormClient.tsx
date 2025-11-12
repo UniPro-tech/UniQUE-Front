@@ -10,8 +10,8 @@ import {
   Link,
   TextField,
 } from "@mui/material";
-import ForgotPassword from "../../../Dialogs/ForgotPassword";
-import { SignInCardMode } from "./SignInCard";
+import ForgotPassword from "@/components/Dialogs/ForgotPassword";
+import { SignInCardMode } from "../types/SignInCardMode";
 
 const credentialSchema = z.object({
   name: z.string().min(1, { message: "名前を入力してください。" }),

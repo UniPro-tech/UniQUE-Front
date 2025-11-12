@@ -4,7 +4,7 @@ import {
   signInAction,
   signUpAction,
 } from "@/components/mui-template/signup-side/lib/CredentialAction";
-import { SignInCardMode } from "./SignInCard";
+import { SignInCardMode } from "../types/SignInCardMode";
 
 export default function CredentialForm(props: {
   mode: SignInCardMode;
