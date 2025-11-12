@@ -6,6 +6,8 @@ import { redirect, RedirectType } from "next/navigation";
 import { headers } from "next/headers";
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { CSRFError } from "@/lib/RequestErrors";
+import { generateMailVerificationTemplate } from "./template/mailVerification";
+import { sendEmail } from "@/lib/mail";
 
 export async function signInAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -49,6 +51,7 @@ export async function signUpAction(formData: FormData) {
   const external_email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const csrfToken = formData.get("csrfToken") as string;
+  let uid;
 
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
@@ -73,11 +76,50 @@ export async function signUpAction(formData: FormData) {
         `Sign-up failed: ${res.status} ${res.statusText} - ${res}`
       );
     }
+    const resData = await res.json();
+    uid = resData.id;
   } catch (error) {
     console.error("Sign-up error:", error);
     throw error;
   }
+  try {
+    const apiRes = await fetch(
+      `${process.env.RESOURCE_API_URL}/users/${uid}/email_verify`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          verification_code: crypto.randomUUID().toString(),
+          expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
+        }),
+      }
+    );
+    if (!apiRes.ok) {
+      throw new Error(
+        `Post email verify action failed: ${apiRes.status} ${
+          apiRes.statusText
+        }, ${await apiRes.text()}`
+      );
+    }
+    const resData = await apiRes.json();
+    console.log("Email verify response data:", resData);
+    const verificationCode = resData.verification_code as string;
+    console.log("Verification code:", verificationCode);
+    const template = await generateMailVerificationTemplate(verificationCode);
+    const res = await sendEmail(
+      external_email,
+      "【UniQUE】仮登録完了 メールアドレス認証",
+      template.text,
+      template.html
+    );
+    console.log("Email sent info:", res);
+  } catch (error) {
+    console.error("Post sign-up error:", error);
+    throw error;
+  }
 
   // 成功時のリダイレクト
-  redirect("/signin");
+  redirect("/signin?mail=sended", RedirectType.push);
 }

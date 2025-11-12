@@ -38,8 +38,8 @@ export async function sendEmail(
 
   try {
     let info = await transporter.sendMail(mailOptions);
-    console.log(`Message sent: ${info.messageId}`);
+    return info;
   } catch (error) {
-    console.error(`Error occurred: ${(error as Error).message}`);
+    throw error;
   }
 }
