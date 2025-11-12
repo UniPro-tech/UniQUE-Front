@@ -68,7 +68,17 @@ const SignInItems = [
   },
 ];
 
-export default function Content({ isSignUp = false }: { isSignUp?: boolean }) {
+export enum ContentMode {
+  SignIn,
+  SignUp,
+  SignUpEmailValidated,
+}
+
+export default function Content({
+  mode = ContentMode.SignIn,
+}: {
+  mode?: ContentMode;
+}) {
   return (
     <Stack
       sx={{
@@ -81,7 +91,7 @@ export default function Content({ isSignUp = false }: { isSignUp?: boolean }) {
       <Box sx={{ display: { xs: "none", md: "flex" } }}>
         <SitemarkIcon />
       </Box>
-      {isSignUp ? (
+      {mode === ContentMode.SignUpEmailValidated ? (
         <Stack direction="row" gap={2}>
           <EmojiPeopleIcon sx={{ color: "text.secondary" }} />
           <Box display={"block"} width={"100%"}>

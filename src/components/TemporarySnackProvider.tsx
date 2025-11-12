@@ -3,6 +3,7 @@
 import { enqueueSnackbar, SnackbarProvider, VariantType } from "notistack";
 import { useEffect } from "react";
 import { replacePath } from "@/lib/replacePathAction";
+import { usePathname } from "next/navigation";
 
 export interface SnackbarData {
   message: string;
@@ -22,13 +23,16 @@ export default function TemporarySnackProvider({
 }: {
   snacks: SnackbarData[];
 }) {
+  const path = usePathname();
   useEffect(() => {
     snacks.forEach((snack) => {
       enqueueSnackbar(snack.message, { variant: snack.variant });
     });
     if (snacks.length > 0) {
-      replacePath();
+      replacePath(path);
     }
   }, [snacks]);
-  return <SnackbarProvider></SnackbarProvider>;
+  return (
+    <SnackbarProvider maxSnack={3} autoHideDuration={6000}></SnackbarProvider>
+  );
 }

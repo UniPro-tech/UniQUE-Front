@@ -7,8 +7,7 @@ import { redirect, RedirectType } from "next/navigation";
  * 現在のパスを/dashboard/settingsに置き換える関数
  * @returns void
  */
-export const replacePath = async () => {
-  const headersList = await headers();
-  const ignoredQueryPath = headersList.get("x-url")?.split("?")[0] || "/";
+export const replacePath = async (path: string) => {
+  const ignoredQueryPath = path;
   redirect(`${ignoredQueryPath}`, RedirectType.replace);
 };

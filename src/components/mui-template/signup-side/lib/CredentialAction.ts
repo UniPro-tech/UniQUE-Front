@@ -8,6 +8,7 @@ import { VerifyCSRFToken } from "@/lib/CSRF";
 import { CSRFError } from "@/lib/RequestErrors";
 import { generateMailVerificationTemplate } from "./template/mailVerification";
 import { sendEmail } from "@/lib/mail";
+import { generateVerificationCode } from "@/lib/EmailVerification";
 
 export async function signInAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -83,30 +84,7 @@ export async function signUpAction(formData: FormData) {
     throw error;
   }
   try {
-    const apiRes = await fetch(
-      `${process.env.RESOURCE_API_URL}/users/${uid}/email_verify`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          verification_code: crypto.randomUUID().toString(),
-          expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-        }),
-      }
-    );
-    if (!apiRes.ok) {
-      throw new Error(
-        `Post email verify action failed: ${apiRes.status} ${
-          apiRes.statusText
-        }, ${await apiRes.text()}`
-      );
-    }
-    const resData = await apiRes.json();
-    console.log("Email verify response data:", resData);
-    const verificationCode = resData.verification_code as string;
-    console.log("Verification code:", verificationCode);
+    const verificationCode = await generateVerificationCode(uid);
     const template = await generateMailVerificationTemplate(verificationCode);
     const res = await sendEmail(
       external_email,

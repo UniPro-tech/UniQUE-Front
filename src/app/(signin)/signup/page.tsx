@@ -1,10 +1,46 @@
-import Content from "@/components/mui-template/signup-side/components/Content";
+import Content, {
+  ContentMode,
+} from "@/components/mui-template/signup-side/components/Content";
 import SignInCard from "@/components/mui-template/signup-side/components/SignInCard";
+import TemporarySnackProvider, {
+  SnackbarData,
+} from "@/components/TemporarySnackProvider";
+import { verifyEmailCode } from "@/lib/EmailVerification";
+import { redirect, RedirectType } from "next/navigation";
 
-export default function Page() {
+enum ErrorType {
+  InvalidVerificationCode = "invalid_verification_code",
+}
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ code?: string; error?: string }>;
+}) {
+  const { code, error } = await searchParams;
+  const snackbars =
+    error === ErrorType.InvalidVerificationCode
+      ? ([
+          { message: "無効な認証コードです。", variant: "error" as const },
+        ] as SnackbarData[])
+      : [];
+  if (code) {
+    const validatedRes = await verifyEmailCode(code);
+    if (validatedRes) {
+      return (
+        <>
+          <Content mode={ContentMode.SignUpEmailValidated} />
+          <SignInCard signUp={true} />
+        </>
+      );
+    } else {
+      redirect("/signup?error=invalid_verification_code");
+    }
+  }
   return (
     <>
-      <Content isSignUp={true} />
+      <TemporarySnackProvider snacks={snackbars} />
+      <Content mode={ContentMode.SignUp} />
       <SignInCard signUp={true} />
     </>
   );
