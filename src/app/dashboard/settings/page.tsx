@@ -4,7 +4,9 @@ import SocialAccountsSettingsCard from "@/components/Pages/Settings/Cards/Social
 import { getSession } from "@/lib/Session";
 import { Stack, Typography } from "@mui/material";
 import { VariantType } from "notistack";
-import ParamSnacks, { SnackbarData } from "./paramSnacks";
+import TemporarySnackProvider, {
+  SnackbarData,
+} from "@/components/TemporarySnackProvider";
 
 export default async function Page({
   searchParams,
@@ -31,7 +33,7 @@ export default async function Page({
   ];
   return (
     <Stack spacing={4}>
-      <ParamSnacks snacks={snacks} />
+      <TemporarySnackProvider snacks={snacks} />
       <Stack>
         <Typography variant="h4" component={"h2"}>
           アカウント設定
