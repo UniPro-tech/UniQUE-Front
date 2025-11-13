@@ -46,20 +46,38 @@ export default function SignInCardClient(props: {
         variant="h4"
         sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
       >
-        {props.mode === SignInCardMode.SignUp ? "メンバー登録" : "サインイン"}
+        {(() => {
+          switch (props.mode) {
+            case SignInCardMode.SignUp:
+              return "メンバー登録申請";
+            case SignInCardMode.SignUpEmailValidated:
+              return "メンバー登録申請";
+            default:
+              return "サインイン";
+          }
+        })()}
       </Typography>
-      <Stack direction="row" alignItems="center" sx={{ width: "100%" }} gap={1}>
-        {props.mode === SignInCardMode.SignUp
-          ? "アカウントをお持ちですか？"
-          : "アカウントをお持ちでないですか？"}
-        <Link
-          href={props.mode === SignInCardMode.SignUp ? "/signin" : "/signup"}
-          variant="body2"
-          sx={{ alignSelf: "center" }}
+      {props.mode !== SignInCardMode.SignUpEmailValidated && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          sx={{ width: "100%" }}
+          gap={1}
         >
-          {props.mode === SignInCardMode.SignUp ? "サインイン" : "サインアップ"}
-        </Link>
-      </Stack>
+          {props.mode === SignInCardMode.SignUp
+            ? "アカウントをお持ちですか？"
+            : "アカウントをお持ちでないですか？"}
+          <Link
+            href={props.mode === SignInCardMode.SignUp ? "/signin" : "/signup"}
+            variant="body2"
+            sx={{ alignSelf: "center" }}
+          >
+            {props.mode === SignInCardMode.SignUp
+              ? "サインイン"
+              : "サインアップ"}
+          </Link>
+        </Stack>
+      )}
       <CredentialForm mode={props.mode} csrfToken={props.csrfToken} />
       {/*}
       <Divider>もしくは</Divider>

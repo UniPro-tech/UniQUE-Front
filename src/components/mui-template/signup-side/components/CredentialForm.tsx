@@ -13,9 +13,15 @@ export default function CredentialForm(props: {
   return (
     <Box
       component="form"
-      action={
-        props.mode === SignInCardMode.SignUp ? signUpAction : signInAction
-      }
+      action={(() => {
+        switch (props.mode) {
+          case SignInCardMode.SignUp:
+          case SignInCardMode.SignUpEmailValidated:
+            return signUpAction;
+          case SignInCardMode.SignIn:
+            return signInAction;
+        }
+      })()}
       sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
     >
       <CredentialFormClient mode={props.mode} csrfToken={props.csrfToken} />
