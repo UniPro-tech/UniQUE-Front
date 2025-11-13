@@ -40,6 +40,7 @@ const credentialSchema = z.object({
   password: z
     .string()
     .min(8, { message: "パスワードは8文字以上で入力してください。" }),
+  birthdate: z.string().min(1, { message: "生年月日を入力してください。" }), // Add more validation if needed
 });
 
 export default function CredentialFormClient(props: {
@@ -52,6 +53,7 @@ export default function CredentialFormClient(props: {
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
   const [username, setUsername] = React.useState("");
+  const [birthdate, setBirthdate] = React.useState("");
 
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState("");
@@ -61,6 +63,8 @@ export default function CredentialFormClient(props: {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
   const [usernameError, setUsernameError] = React.useState(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = React.useState("");
+  const [birthdateError, setBirthdateError] = React.useState(false);
+  const [birthdateErrorMessage, setBirthdateErrorMessage] = React.useState("");
 
   const [open, setOpen] = React.useState(false);
 
@@ -90,6 +94,11 @@ export default function CredentialFormClient(props: {
         setUsernameError(false);
         setUsernameErrorMessage("");
       }
+      if (name === "birthdate") {
+        // Add validation for birthdate if needed
+        setBirthdateError(false);
+        setBirthdateErrorMessage("");
+      }
     } catch (err) {
       if (err instanceof z.ZodError) {
         for (const issue of err.issues) {
@@ -108,6 +117,10 @@ export default function CredentialFormClient(props: {
           if (issue.path[0] === "username") {
             setUsernameError(true);
             setUsernameErrorMessage(issue.message);
+          }
+          if (issue.path[0] === "birthdate") {
+            setBirthdateError(true);
+            setBirthdateErrorMessage(issue.message);
           }
         }
       }
@@ -245,6 +258,37 @@ export default function CredentialFormClient(props: {
                 >
                   Discordアカウントを連携する
                 </Button>
+                <FormControl>
+                  <Stack direction={"row"} alignItems="center" spacing={1}>
+                    <Typography variant="h6" textAlign={"left"}>
+                      生年月日
+                    </Typography>
+                    <Divider sx={{ flexGrow: 1 }} />
+                  </Stack>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    未成年者保護の観点から、生年月日の提供をお願いしております。
+                  </Typography>
+                  <TextField
+                    error={birthdate.length > 0 && birthdateError}
+                    helperText={birthdate.length > 0 && birthdateErrorMessage}
+                    id="birthdate"
+                    type="date"
+                    name="birthdate"
+                    placeholder="birthdate"
+                    autoFocus
+                    required
+                    fullWidth
+                    variant="outlined"
+                    color={
+                      birthdate.length > 0 && birthdateError
+                        ? "error"
+                        : "primary"
+                    }
+                    value={birthdate}
+                    onChange={(e) => setBirthdate(e.target.value)}
+                    onBlur={(e) => validateField("birthdate", e.target.value)}
+                  />
+                </FormControl>
               </>
             );
           case SignInCardMode.SignIn:
