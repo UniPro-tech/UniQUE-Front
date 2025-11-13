@@ -8,5 +8,5 @@ import { redirect, RedirectType } from "next/navigation";
  */
 export const replacePath = async (path: string) => {
   const ignoredQueryPath = path;
-  redirect(`${ignoredQueryPath}`, RedirectType.replace);
+  redirect(`${ignoredQueryPath}`, RedirectType.push);
 };
