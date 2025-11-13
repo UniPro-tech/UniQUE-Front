@@ -208,6 +208,12 @@ export default function CredentialFormClient(props: {
           case SignInCardMode.SignUpEmailValidated:
             return (
               <>
+                <input
+                  type="hidden"
+                  name="userId"
+                  value={props.user?.id || ""}
+                />
+                <input type="hidden" name="code" value={props.code || ""} />
                 <Stack direction={"row"} alignItems="center" spacing={1}>
                   <Typography variant="h6" textAlign={"left"}>
                     Discordアカウント

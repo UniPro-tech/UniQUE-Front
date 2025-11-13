@@ -1,3 +1,4 @@
+import Complete from "@/components/mui-template/signup-side/components/Complete";
 import Content from "@/components/mui-template/signup-side/components/Content";
 import SignInCard from "@/components/mui-template/signup-side/components/SignInCard";
 import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
@@ -20,9 +21,10 @@ export default async function Page({
     error?: string;
     oauth?: string;
     status?: string;
+    completed?: boolean;
   }>;
 }) {
-  const { code, error, oauth, status } = await searchParams;
+  const { code, error, oauth, status, completed } = await searchParams;
   const snackbars =
     error === ErrorType.InvalidVerificationCode
       ? ([
@@ -68,8 +70,14 @@ export default async function Page({
   return (
     <>
       <TemporarySnackProvider snacks={snackbars} />
-      <Content mode={SignInCardMode.SignUp} />
-      <SignInCard mode={SignInCardMode.SignUp} />
+      {completed ? (
+        <Complete />
+      ) : (
+        <>
+          <Content mode={SignInCardMode.SignUp} />
+          <SignInCard mode={SignInCardMode.SignUp} />
+        </>
+      )}
     </>
   );
 }

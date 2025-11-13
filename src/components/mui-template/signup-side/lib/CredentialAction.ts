@@ -74,7 +74,7 @@ export async function signUpAction(formData: FormData) {
     });
     if (!res.ok) {
       throw new Error(
-        `Sign-up failed: ${res.status} ${res.statusText} - ${res}`
+        `Sign-up failed: ${res.status} ${res.statusText} - ${await res.text()}`
       );
     }
     const resData = await res.json();
@@ -100,4 +100,60 @@ export async function signUpAction(formData: FormData) {
 
   // 成功時のリダイレクト
   redirect("/signin?mail=sended", RedirectType.push);
+}
+
+export async function applyCompleteAction(formData: FormData) {
+  const userId = formData.get("userId") as string;
+  const birthday = formData.get("birthdate") as string;
+  const csrfToken = formData.get("csrfToken") as string;
+  const code = formData.get("code") as string;
+
+  try {
+    const tokenVerified = VerifyCSRFToken(csrfToken);
+    if (!tokenVerified) {
+      throw CSRFError;
+    }
+    console.log("Sign-up data:", { userId, birthday });
+    const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        birthdate: birthday,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(
+        `Sign-up failed: ${res.status} ${res.statusText} - ${res}`
+      );
+    }
+  } catch (error) {
+    console.error("Sign-up error:", error);
+    throw error;
+  }
+  try {
+    const res = await fetch(
+      `${process.env.RESOURCE_API_URL}/email_verify/${encodeURIComponent(
+        code || ""
+      )}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error(
+        `Delete email verify code failed: ${res.status} ${res.statusText} - ${res}`
+      );
+    }
+  } catch (error) {
+    console.error("Post sign-up error:", error);
+    throw error;
+  }
+
+  // 成功時のリダイレクト
+  redirect("/signup?completed=true", RedirectType.push);
 }

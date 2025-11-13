@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import CredentialFormClient from "./CredentialFormClient";
 import {
+  applyCompleteAction,
   signInAction,
   signUpAction,
 } from "@/components/mui-template/signup-side/lib/CredentialAction";
@@ -19,8 +20,9 @@ export default function CredentialForm(props: {
       action={(() => {
         switch (props.mode) {
           case SignInCardMode.SignUp:
-          case SignInCardMode.SignUpEmailValidated:
             return signUpAction;
+          case SignInCardMode.SignUpEmailValidated:
+            return applyCompleteAction;
           case SignInCardMode.SignIn:
             return signInAction;
         }
