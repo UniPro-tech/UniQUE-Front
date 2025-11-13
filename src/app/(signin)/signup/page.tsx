@@ -5,7 +5,7 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import { verifyEmailCode } from "@/lib/EmailVerification";
-import { redirect, RedirectType } from "next/navigation";
+import { redirect } from "next/navigation";
 
 enum ErrorType {
   InvalidVerificationCode = "invalid_verification_code",

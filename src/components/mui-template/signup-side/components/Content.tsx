@@ -8,6 +8,7 @@ import HubIcon from "@mui/icons-material/Hub";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { SitemarkIcon } from "./CustomIcons";
 import { SignInCardMode } from "../types/SignInCardMode";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 const SignInItems = [
   {
@@ -85,53 +86,83 @@ export default function Content({
       <Box sx={{ display: { xs: "none", md: "flex" } }}>
         <SitemarkIcon />
       </Box>
-      {mode === SignInCardMode.SignUp ? (
-        <Stack direction="row" gap={2}>
-          <EmojiPeopleIcon sx={{ color: "text.secondary" }} />
-          <Box display={"block"} width={"100%"}>
-            <Typography gutterBottom sx={{ fontWeight: "medium" }}>
-              UniProjectへようこそ！
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "text.secondary",
-                wordBreak: "keep-all",
-                width: "100%",
-              }}
-            >
-              UniProjectに興味をお持ちいただき、ありがとうございます。
-              <wbr />
-              参加するには、当サービス「UniQUE」への登録が必要です。
-              <wbr />
-              右側のフォームに必要事項を入力して、登録申請を送信してください。
-              <wbr />
-              たくさんのご参加をお待ちしています。
-            </Typography>
-          </Box>
-        </Stack>
-      ) : (
-        SignInItems.map((item, index) => (
-          <Stack key={index} direction="row" sx={{ gap: 2 }}>
-            {item.icon}
-            <Box sx={{ display: "block", width: "100%" }}>
-              <Typography gutterBottom sx={{ fontWeight: "medium" }}>
-                {item.title}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "text.secondary",
-                  wordBreak: "keep-all",
-                  width: "100%",
-                }}
-              >
-                {item.description}
-              </Typography>
-            </Box>
-          </Stack>
-        ))
-      )}
+      {(() => {
+        switch (mode) {
+          case SignInCardMode.SignUp:
+            return (
+              <Stack direction="row" gap={2}>
+                <EmojiPeopleIcon sx={{ color: "text.secondary" }} />
+                <Box display={"block"} width={"100%"}>
+                  <Typography gutterBottom sx={{ fontWeight: "medium" }}>
+                    UniProjectへようこそ！
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      wordBreak: "keep-all",
+                      width: "100%",
+                    }}
+                  >
+                    UniProjectに興味をお持ちいただき、ありがとうございます。
+                    <wbr />
+                    参加するには、当サービス「UniQUE」への登録が必要です。
+                    <wbr />
+                    右側のフォームに必要事項を入力して、登録申請を送信してください。
+                    <wbr />
+                    たくさんのご参加をお待ちしています。
+                  </Typography>
+                </Box>
+              </Stack>
+            );
+          case SignInCardMode.SignIn:
+            return SignInItems.map((item, index) => (
+              <Stack key={index} direction="row" sx={{ gap: 2 }}>
+                {item.icon}
+                <Box sx={{ display: "block", width: "100%" }}>
+                  <Typography gutterBottom sx={{ fontWeight: "medium" }}>
+                    {item.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      wordBreak: "keep-all",
+                      width: "100%",
+                    }}
+                  >
+                    {item.description}
+                  </Typography>
+                </Box>
+              </Stack>
+            ));
+          case SignInCardMode.SignUpEmailValidated:
+            return (
+              <Stack direction="row" gap={2}>
+                <TaskAltIcon sx={{ color: "text.secondary" }} />
+                <Box display={"block"} width={"100%"}>
+                  <Typography gutterBottom sx={{ fontWeight: "medium" }}>
+                    メールアドレスの認証が完了しました！
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      wordBreak: "keep-all",
+                      width: "100%",
+                    }}
+                  >
+                    認証ありがとうございます。
+                    <wbr />
+                    これで登録手続きはほぼ完了です。
+                    <wbr />
+                    あとは右側のフォームに残りの必要事項を入力して、登録を完了させてください。
+                  </Typography>
+                </Box>
+              </Stack>
+            );
+        }
+      })()}
     </Stack>
   );
 }
