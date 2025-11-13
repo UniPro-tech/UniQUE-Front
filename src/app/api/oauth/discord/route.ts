@@ -5,7 +5,7 @@ import { encodeBase64 } from "tweetnacl-util";
 export const GET = async (req: Request) => {
   const client_id = process.env.DISCORD_CLIENT_ID;
   const redirect_uri = process.env.DISCORD_REDIRECT_URI;
-  const scope = "openid+identify";
+  const scope = "openid+identify+guilds.join";
   const state = generateCSRFToken("discord_oauth", false);
   const signupParam = new URL(req.url).searchParams.get("signup");
   if (signupParam) {
