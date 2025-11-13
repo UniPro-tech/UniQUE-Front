@@ -4,15 +4,22 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
   Link,
+  List,
+  ListItem,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import { SignInCardMode } from "../types/SignInCardMode";
+import { enqueueSnackbar } from "notistack";
+import { User } from "@/types/User";
+import { unlink } from "@/lib/SocialAccounts";
 
 const credentialSchema = z.object({
   name: z.string().min(1, { message: "名前を入力してください。" }),
@@ -38,6 +45,8 @@ const credentialSchema = z.object({
 export default function CredentialFormClient(props: {
   mode: SignInCardMode;
   csrfToken: string;
+  user?: User;
+  code?: string;
 }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -185,9 +194,58 @@ export default function CredentialFormClient(props: {
             );
           case SignInCardMode.SignUpEmailValidated:
             return (
-              <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-                メンバー登録申請
-              </Typography>
+              <>
+                <Stack direction={"row"} alignItems="center" spacing={1}>
+                  <Typography variant="h6" textAlign={"left"}>
+                    Discordアカウント
+                  </Typography>
+                  <Divider sx={{ flexGrow: 1 }} />
+                </Stack>
+                <Typography variant="body2">
+                  サークル参加にあたって、Discordアカウントの連携を行います。
+                </Typography>
+                {props.user!.discords?.length !== 0 ? (
+                  <List>
+                    {props.user!.discords!.map((discord) => (
+                      <ListItem key={discord.discordCustomid}>
+                        <Typography variant="body2">
+                          {discord.discordCustomid} (ID: {discord.discordId})
+                        </Typography>
+                        <Button
+                          onClick={() =>
+                            unlink("discord", discord.discordId)
+                              .then(() => {
+                                enqueueSnackbar(
+                                  "Discordアカウントの連携を解除しました。",
+                                  { variant: "success" }
+                                );
+                              })
+                              .catch((error) => {
+                                enqueueSnackbar(
+                                  `Discordアカウントの連携解除に失敗しました: ${error.message}`,
+                                  { variant: "error" }
+                                );
+                              })
+                          }
+                        >
+                          連携解除
+                        </Button>
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Typography variant="body2">
+                    現在、Discordアカウントは連携されていません。
+                  </Typography>
+                )}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href={`/api/oauth/discord?signup=${props.code}`}
+                >
+                  Discordアカウントを連携する
+                </Button>
+              </>
             );
           case SignInCardMode.SignIn:
             return (

@@ -5,6 +5,7 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import { verifyEmailCode } from "@/lib/EmailVerification";
+import { getUserById } from "@/lib/Users";
 import { redirect } from "next/navigation";
 
 enum ErrorType {
@@ -14,22 +15,50 @@ enum ErrorType {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string; error?: string }>;
+  searchParams: Promise<{
+    code?: string;
+    error?: string;
+    oauth?: string;
+    status?: string;
+  }>;
 }) {
-  const { code, error } = await searchParams;
+  const { code, error, oauth, status } = await searchParams;
   const snackbars =
     error === ErrorType.InvalidVerificationCode
       ? ([
           { message: "無効な認証コードです。", variant: "error" as const },
         ] as SnackbarData[])
+      : oauth === "discord" && status === "success"
+      ? ([
+          {
+            message: "Discordアカウントの連携に成功しました。",
+            variant: "success" as const,
+          },
+        ] as SnackbarData[])
+      : oauth === "discord" && status === "error"
+      ? ([
+          {
+            message: "Discordアカウントの連携に失敗しました。",
+            variant: "error" as const,
+          },
+        ] as SnackbarData[])
       : [];
   if (code) {
     const validatedRes = await verifyEmailCode(code);
     if (validatedRes) {
+      const userId = validatedRes.user_id;
+      const user = await getUserById(userId);
+      if (!user) {
+        redirect("/signup?error=invalid_verification_code");
+      }
       return (
         <>
           <Content mode={SignInCardMode.SignUpEmailValidated} />
-          <SignInCard mode={SignInCardMode.SignUpEmailValidated} />
+          <SignInCard
+            mode={SignInCardMode.SignUpEmailValidated}
+            user={user}
+            code={code}
+          />
         </>
       );
     } else {

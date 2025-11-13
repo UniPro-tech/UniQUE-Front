@@ -1,5 +1,7 @@
 import { VerifyCSRFToken } from "@/lib/CSRF";
+import { verifyEmailCode } from "@/lib/EmailVerification";
 import { getSession } from "@/lib/Session";
+import { cookies } from "next/headers";
 import { unauthorized } from "next/navigation";
 import { decodeBase64 } from "tweetnacl-util";
 
@@ -11,22 +13,23 @@ export const GET = async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  const baseUrl = `${url.protocol}//${url.host}`;
+  const cookieStore = await cookies();
+  const signupCode = cookieStore.get("signup_code")?.value;
+  if (signupCode) {
+    cookieStore.delete("signup_code");
+  }
+  const baseUrl = `${url.protocol}//${url.host}/${
+    !signupCode ? "dashboard/settings?" : "signup?code=" + signupCode + "&"
+  }`;
 
   if (!state)
-    return Response.redirect(
-      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
-      302
-    );
+    return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
 
   const stateBytes = decodeBase64(state);
   const stateDecoded = new TextDecoder().decode(stateBytes);
 
   if (VerifyCSRFToken(stateDecoded, false) !== "discord_oauth") {
-    return Response.redirect(
-      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
-      302
-    );
+    return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
   }
 
   if (!code) {
@@ -50,10 +53,7 @@ export const GET = async (req: Request) => {
 
   if (!tokenResponse.ok) {
     console.log(tokenResponse.status, await tokenResponse.text());
-    return Response.redirect(
-      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
-      302
-    );
+    return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
   }
 
   const tokenData = await tokenResponse.json();
@@ -68,21 +68,20 @@ export const GET = async (req: Request) => {
 
   if (!userResponse.ok) {
     console.log(userResponse.status, await userResponse.text());
-    return Response.redirect(
-      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
-      302
-    );
+    return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
   }
 
   const userData = await userResponse.json();
 
   const session = await getSession();
-  if (!session?.user) {
+  const emailverify = await verifyEmailCode(signupCode || "");
+  if (!session?.user && !emailverify) {
     unauthorized();
   }
+  const userId = session?.user.id || emailverify?.user_id;
 
   const res = await fetch(
-    `${process.env.RESOURCE_API_URL}/users/${session?.user.id}/discord`,
+    `${process.env.RESOURCE_API_URL}/users/${userId}/discord`,
     {
       method: "PUT",
       headers: {
@@ -97,14 +96,8 @@ export const GET = async (req: Request) => {
 
   if (!res.ok) {
     console.log(res.status, await res.text());
-    return Response.redirect(
-      `${baseUrl}/dashboard/settings?oauth=discord&status=error`,
-      302
-    );
+    return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
   }
 
-  return Response.redirect(
-    `${baseUrl}/dashboard/settings?oauth=discord&status=success`,
-    302
-  );
+  return Response.redirect(`${baseUrl}oauth=discord&status=success`, 302);
 };

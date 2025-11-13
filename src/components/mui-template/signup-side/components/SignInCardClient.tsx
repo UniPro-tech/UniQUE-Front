@@ -10,12 +10,15 @@ import { SitemarkIcon } from "./CustomIcons";
 import CredentialForm from "./CredentialForm";
 import { Link, Stack } from "@mui/material";
 import { SignInCardMode } from "../types/SignInCardMode";
+import { User } from "@/types/User";
 
 // we will apply equivalent styles via the `sx` prop on `MuiCard`
 
 export default function SignInCardClient(props: {
   mode: SignInCardMode;
   csrfToken: string;
+  user?: User;
+  code?: string;
 }) {
   return (
     <MuiCard
@@ -78,7 +81,12 @@ export default function SignInCardClient(props: {
           </Link>
         </Stack>
       )}
-      <CredentialForm mode={props.mode} csrfToken={props.csrfToken} />
+      <CredentialForm
+        mode={props.mode}
+        csrfToken={props.csrfToken}
+        user={props.user}
+        code={props.code}
+      />
       {/*}
       <Divider>もしくは</Divider>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
