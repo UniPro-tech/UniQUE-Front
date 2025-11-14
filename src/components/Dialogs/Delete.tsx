@@ -9,7 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
-interface ForgotPasswordProps {
+interface DeleteDialogProps {
   open: boolean;
   dataAction: (
     _prevState: FormStatus | null,
@@ -24,7 +24,7 @@ export default function DeleteDialog({
   dataAction,
   handleClose,
   title,
-}: ForgotPasswordProps) {
+}: DeleteDialogProps) {
   const [state, action, isPending] = React.useActionState(
     dataAction,
     null as null | FormStatus
