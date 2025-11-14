@@ -89,7 +89,7 @@ export default function ApproveRegistApplyDialog({
               fullWidth
               variant="outlined"
               placeholder="メールアドレスを入力してください"
-              value={user?.email || ""}
+              defaultValue={user?.email || ""}
             />
             <FormHelperText>
               メールアドレスはtemp_を削除し、(所属期).xxxxx@uniproject.jpの形式としてください。
