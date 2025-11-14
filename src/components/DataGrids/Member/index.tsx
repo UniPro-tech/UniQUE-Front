@@ -83,53 +83,6 @@ export default function MembersDataGrid({
   };
   const [approveDialogOpen, setApproveDialogOpen] = React.useState(false);
   const [approvedUser, setApprovedUser] = React.useState<User | null>(null);
-  const handleApprove = async (
-    _prevState: FormStatus | null,
-    formData: FormData | null
-  ) => {
-    try {
-      if (!undeletedRows) {
-        const res: FormStatus = {
-          status: "error",
-          message: "承認対象が選択されていません",
-        };
-        return res;
-      }
-      const userToApprove = localRows.find(
-        (u) => String(u.id) === String(undeletedRows)
-      );
-      if (!userToApprove) {
-        const res: FormStatus = {
-          status: "error",
-          message: "承認対象のユーザーが見つかりません",
-        };
-        return res;
-      }
-      userToApprove.email = userToApprove.email.replace(
-        /^temp_/,
-        ""
-      ); /* 仮メールアドレスから本来のメールアドレスに変更 */
-      await saveUser(userToApprove);
-      // remove row from grid data
-      setLocalRows((prev) =>
-        prev.filter((r) => String(r.id) !== String(undeletedRows))
-      );
-      apiRef.current?.updateRows([{ id: undeletedRows, _action: "delete" }]);
-      setUndeletedRows(undefined);
-      setApproveDialogOpen(false);
-      const res: FormStatus = {
-        status: "success",
-        message: "メンバーを承認しました",
-      };
-      return res;
-    } catch (error) {
-      const res: FormStatus = {
-        status: "error",
-        message: `承認に失敗しました: ${String(error)}`,
-      };
-      return res;
-    }
-  };
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -464,7 +417,6 @@ export default function MembersDataGrid({
       />
       <ApproveRegistApplyDialog
         open={approveDialogOpen}
-        dataAction={handleApprove}
         handleClose={() => setApproveDialogOpen(false)}
         user={approvedUser}
       />

@@ -11,30 +11,27 @@ import { enqueueSnackbar, SnackbarProvider } from "notistack";
 import { User } from "@/types/User";
 import {
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
+import { approveRegistApplyAction } from "./actions/approveRegistApplyAction";
 
 interface ApproveRegistApplyProps {
   open: boolean;
-  dataAction: (
-    _prevState: FormStatus | null,
-    formData: FormData | null
-  ) => FormStatus | null | Promise<FormStatus | null>;
   handleClose: () => void;
   user: User | null;
 }
 
 export default function ApproveRegistApplyDialog({
   open,
-  dataAction,
   handleClose,
   user,
 }: ApproveRegistApplyProps) {
   const [state, action, isPending] = React.useActionState(
-    dataAction,
+    approveRegistApplyAction,
     null as null | FormStatus
   );
   React.useEffect(() => {
@@ -69,7 +66,9 @@ export default function ApproveRegistApplyDialog({
             </DialogContentText>
             <input type="hidden" name="userId" value={user?.id || ""} />
             <FormControl fullWidth>
-              <InputLabel id="period-label">所属期</InputLabel>
+              <InputLabel id="period-label" required>
+                所属期
+              </InputLabel>
               <Select
                 labelId="period-label"
                 name="period"
@@ -84,6 +83,19 @@ export default function ApproveRegistApplyDialog({
               </Select>
             </FormControl>
             <TextField
+              label="メールアドレス"
+              type="email"
+              name="email"
+              required
+              fullWidth
+              variant="outlined"
+              placeholder="メールアドレスを入力してください"
+              value={user?.email || ""}
+            />
+            <FormHelperText>
+              メールアドレスはtemp_を削除し、(所属期).xxxxx@uniproject.jpの形式としてください。
+            </FormHelperText>
+            <TextField
               label="メールボックスのパスワード"
               type="password"
               name="mailboxPassword"
@@ -93,10 +105,17 @@ export default function ApproveRegistApplyDialog({
               placeholder="メールボックスのパスワードを入力してください"
               disabled={isPending}
             />
+            <FormHelperText>
+              メールボックスのパスワードは初期パスワードとしてメンバーに通知されます。
+              <br />
+              さくらのメールボックスで操作してから承認してください。
+            </FormHelperText>
           </DialogContent>
           <DialogActions sx={{ pb: 3, px: 3 }}>
-            <Button onClick={handleClose}>キャンセル</Button>
-            <Button variant="contained" type="submit">
+            <Button onClick={handleClose} disabled={isPending}>
+              キャンセル
+            </Button>
+            <Button variant="contained" type="submit" disabled={isPending}>
               承認
             </Button>
           </DialogActions>
