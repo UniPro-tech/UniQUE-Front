@@ -63,7 +63,7 @@ export default function DeleteDialog({
           </DialogContent>
           <DialogActions sx={{ pb: 3, px: 3 }}>
             <Button onClick={handleClose}>キャンセル</Button>
-            <Button variant="contained" type="submit">
+            <Button variant="contained" type="submit" color="error">
               削除
             </Button>
           </DialogActions>
