@@ -16,8 +16,8 @@ import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
 import { User } from "@/types/User";
-import { FormStatus } from "../../Pages/Settings/Cards/Base";
-import DeleteDialog from "../../Dialogs/Delete";
+import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import DeleteDialog from "@/components/Dialogs/Delete";
 import { saveUser, deleteUser } from "@/lib/Users";
 
 export default function MembersDataGrid({
