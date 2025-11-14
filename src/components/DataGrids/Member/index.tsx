@@ -12,6 +12,7 @@ import {
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
+import CheckIcon from "@mui/icons-material/Check";
 import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
@@ -19,6 +20,7 @@ import { User } from "@/types/User";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import { saveUser, deleteUser } from "@/lib/Users";
+import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
 
 export default function MembersDataGrid({
   rows,
@@ -79,6 +81,55 @@ export default function MembersDataGrid({
       return res;
     }
   };
+  const [approveDialogOpen, setApproveDialogOpen] = React.useState(false);
+  const [approvedUser, setApprovedUser] = React.useState<User | null>(null);
+  const handleApprove = async (
+    _prevState: FormStatus | null,
+    formData: FormData | null
+  ) => {
+    try {
+      if (!undeletedRows) {
+        const res: FormStatus = {
+          status: "error",
+          message: "承認対象が選択されていません",
+        };
+        return res;
+      }
+      const userToApprove = localRows.find(
+        (u) => String(u.id) === String(undeletedRows)
+      );
+      if (!userToApprove) {
+        const res: FormStatus = {
+          status: "error",
+          message: "承認対象のユーザーが見つかりません",
+        };
+        return res;
+      }
+      userToApprove.email = userToApprove.email.replace(
+        /^temp_/,
+        ""
+      ); /* 仮メールアドレスから本来のメールアドレスに変更 */
+      await saveUser(userToApprove);
+      // remove row from grid data
+      setLocalRows((prev) =>
+        prev.filter((r) => String(r.id) !== String(undeletedRows))
+      );
+      apiRef.current?.updateRows([{ id: undeletedRows, _action: "delete" }]);
+      setUndeletedRows(undefined);
+      setApproveDialogOpen(false);
+      const res: FormStatus = {
+        status: "success",
+        message: "メンバーを承認しました",
+      };
+      return res;
+    } catch (error) {
+      const res: FormStatus = {
+        status: "error",
+        message: `承認に失敗しました: ${String(error)}`,
+      };
+      return res;
+    }
+  };
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -103,6 +154,17 @@ export default function MembersDataGrid({
               }) => {
                 if (beforeJoined) {
                   return [
+                    <GridActionsCellItem
+                      icon={<CheckIcon />}
+                      label="Approve"
+                      onClick={() => {
+                        setApprovedUser(
+                          localRows.find((u) => String(u.id) === String(id)) ||
+                            null
+                        );
+                        setApproveDialogOpen(true);
+                      }}
+                    />,
                     <GridActionsCellItem
                       icon={<DeleteIcon />}
                       label="Delete"
@@ -399,6 +461,12 @@ export default function MembersDataGrid({
         dataAction={handleDelete}
         handleClose={() => setDeleteDialogOpen(false)}
         title="メンバー"
+      />
+      <ApproveRegistApplyDialog
+        open={approveDialogOpen}
+        dataAction={handleApprove}
+        handleClose={() => setApproveDialogOpen(false)}
+        user={approvedUser}
       />
     </div>
   );
