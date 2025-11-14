@@ -18,6 +18,7 @@ import {
   TextField,
 } from "@mui/material";
 import { approveRegistApplyAction } from "./actions/approveRegistApplyAction";
+import PeriodSelectorOptions from "@/lib/PeriodSelectorOptions";
 
 interface ApproveRegistApplyProps {
   open: boolean;
@@ -77,9 +78,7 @@ export default function ApproveRegistApplyDialog({
                 color="primary"
                 variant="outlined"
               >
-                <MenuItem value={1}>1期</MenuItem>
-                <MenuItem value={2}>2期</MenuItem>
-                <MenuItem value={3}>3期</MenuItem>
+                <PeriodSelectorOptions />
               </Select>
             </FormControl>
             <TextField
