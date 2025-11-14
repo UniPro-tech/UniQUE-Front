@@ -121,6 +121,7 @@ export async function applyCompleteAction(formData: FormData) {
       },
       body: JSON.stringify({
         birthdate: birthday,
+        email_verified: true,
       }),
     });
     if (!res.ok) {
