@@ -1,4 +1,11 @@
-import { MenuItem, Typography } from "@mui/material";
+"use client";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 
 /**
  * ## PeriodSelectorOptions
@@ -42,21 +49,42 @@ export default function PeriodSelectorOptions() {
   }
 
   return (
-    <>
-      {periods.map((period) => (
-        <MenuItem key={period} value={period}>
-          <Typography>{period}期</Typography>
-          <Typography variant="caption" sx={{ ml: 1, color: "text.secondary" }}>
-            ({startYear + parseInt(period) - 1}年度{" "}
-            {period.slice(0) == "0"
-              ? "早期活動者"
-              : `${
-                  quoter.find((q) => q.name === period.slice(1))?.month
-                }月以降`}
-            )
-          </Typography>
-        </MenuItem>
-      ))}
-    </>
+    <FormControl fullWidth>
+      <InputLabel id="period-label" required>
+        所属期
+      </InputLabel>
+      <Select
+        labelId="period-label"
+        name="period"
+        fullWidth
+        label="所属期"
+        color="primary"
+        variant="outlined"
+        required
+        sx={{ display: "flex", flexDirection: "row" }}
+      >
+        {periods.map((period) => (
+          <MenuItem
+            key={period}
+            value={period}
+            sx={{ display: "flex", flexDirection: "row" }}
+          >
+            <Typography>{period}期</Typography>
+            <Typography
+              variant="caption"
+              sx={{ ml: 1, color: "text.secondary" }}
+            >
+              ({startYear + parseInt(period) - 1}年度{" "}
+              {period.slice(0) == "0"
+                ? "早期活動者"
+                : `${
+                    quoter.find((q) => q.name === period.slice(1))?.month
+                  }月以降`}
+              )
+            </Typography>
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 }

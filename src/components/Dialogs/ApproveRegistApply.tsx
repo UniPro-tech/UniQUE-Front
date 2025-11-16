@@ -14,9 +14,9 @@ import {
   FormHelperText,
   InputLabel,
   MenuItem,
-  Select,
   TextField,
 } from "@mui/material";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { approveRegistApplyAction } from "./actions/approveRegistApplyAction";
 import PeriodSelectorOptions from "@/lib/PeriodSelectorOptions";
 
@@ -41,6 +41,8 @@ export default function ApproveRegistApplyDialog({
       handleClose();
     }
   }, [state]);
+
+  const [period, setPeriod] = React.useState<string>("");
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
       <Dialog
@@ -66,21 +68,7 @@ export default function ApproveRegistApplyDialog({
               下記の情報を入力後、承認ボタンを押してください。
             </DialogContentText>
             <input type="hidden" name="userId" value={user?.id || ""} />
-            <FormControl fullWidth>
-              <InputLabel id="period-label" required>
-                所属期
-              </InputLabel>
-              <Select
-                labelId="period-label"
-                name="period"
-                fullWidth
-                label="所属期"
-                color="primary"
-                variant="outlined"
-              >
-                <PeriodSelectorOptions />
-              </Select>
-            </FormControl>
+            <PeriodSelectorOptions />
             <TextField
               label="メールアドレス"
               type="email"
