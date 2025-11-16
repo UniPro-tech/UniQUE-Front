@@ -35,7 +35,6 @@ export default function ApproveRegistApplyDialog({
     }
   }, [state]);
 
-  const [period, setPeriod] = React.useState<string>("");
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
       <Dialog
