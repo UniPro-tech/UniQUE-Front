@@ -9,13 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 import { User } from "@/types/User";
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { FormHelperText, TextField } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { approveRegistApplyAction } from "./actions/approveRegistApplyAction";
 import PeriodSelectorOptions from "@/lib/PeriodSelectorOptions";
