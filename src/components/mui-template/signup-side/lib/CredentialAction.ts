@@ -6,6 +6,9 @@ import { redirect, RedirectType } from "next/navigation";
 import { headers } from "next/headers";
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { CSRFError } from "@/lib/RequestErrors";
+import { generateMailVerificationTemplate } from "./template/mailVerification";
+import { sendEmail } from "@/lib/mail";
+import { generateVerificationCode } from "@/lib/EmailVerification";
 
 export async function signInAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -49,6 +52,7 @@ export async function signUpAction(formData: FormData) {
   const external_email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const csrfToken = formData.get("csrfToken") as string;
+  let uid;
 
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
@@ -70,6 +74,58 @@ export async function signUpAction(formData: FormData) {
     });
     if (!res.ok) {
       throw new Error(
+        `Sign-up failed: ${res.status} ${res.statusText} - ${await res.text()}`
+      );
+    }
+    const resData = await res.json();
+    uid = resData.id;
+  } catch (error) {
+    console.error("Sign-up error:", error);
+    throw error;
+  }
+  try {
+    const verificationCode = await generateVerificationCode(uid);
+    const template = await generateMailVerificationTemplate(verificationCode);
+    const res = await sendEmail(
+      external_email,
+      "【UniQUE】仮登録完了 メールアドレス認証",
+      template.text,
+      template.html
+    );
+    console.log("Email sent info:", res);
+  } catch (error) {
+    console.error("Post sign-up error:", error);
+    throw error;
+  }
+
+  // 成功時のリダイレクト
+  redirect("/signin?mail=sended", RedirectType.push);
+}
+
+export async function applyCompleteAction(formData: FormData) {
+  const userId = formData.get("userId") as string;
+  const birthday = formData.get("birthdate") as string;
+  const csrfToken = formData.get("csrfToken") as string;
+  const code = formData.get("code") as string;
+
+  try {
+    const tokenVerified = VerifyCSRFToken(csrfToken);
+    if (!tokenVerified) {
+      throw CSRFError;
+    }
+    console.log("Sign-up data:", { userId, birthday });
+    const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        birthdate: birthday,
+        email_verified: true,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(
         `Sign-up failed: ${res.status} ${res.statusText} - ${res}`
       );
     }
@@ -77,7 +133,28 @@ export async function signUpAction(formData: FormData) {
     console.error("Sign-up error:", error);
     throw error;
   }
+  try {
+    const res = await fetch(
+      `${process.env.RESOURCE_API_URL}/email_verify/${encodeURIComponent(
+        code || ""
+      )}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error(
+        `Delete email verify code failed: ${res.status} ${res.statusText} - ${res}`
+      );
+    }
+  } catch (error) {
+    console.error("Post sign-up error:", error);
+    throw error;
+  }
 
   // 成功時のリダイレクト
-  redirect("/signin");
+  redirect("/signup?completed=true", RedirectType.push);
 }

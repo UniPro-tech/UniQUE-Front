@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
@@ -10,12 +9,16 @@ import { SitemarkIcon } from "./CustomIcons";
 //import MailLockIcon from "@mui/icons-material/MailLock";
 import CredentialForm from "./CredentialForm";
 import { Link, Stack } from "@mui/material";
+import { SignInCardMode } from "../types/SignInCardMode";
+import { User } from "@/types/User";
 
 // we will apply equivalent styles via the `sx` prop on `MuiCard`
 
 export default function SignInCardClient(props: {
-  signUp?: boolean;
+  mode: SignInCardMode;
   csrfToken: string;
+  user?: User;
+  code?: string;
 }) {
   return (
     <MuiCard
@@ -46,21 +49,44 @@ export default function SignInCardClient(props: {
         variant="h4"
         sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
       >
-        {props.signUp ? "メンバー登録" : "サインイン"}
+        {(() => {
+          switch (props.mode) {
+            case SignInCardMode.SignUp:
+              return "メンバー登録申請";
+            case SignInCardMode.SignUpEmailValidated:
+              return "メンバー登録申請";
+            default:
+              return "サインイン";
+          }
+        })()}
       </Typography>
-      <Stack direction="row" alignItems="center" sx={{ width: "100%" }} gap={1}>
-        {props.signUp
-          ? "アカウントをお持ちですか？"
-          : "アカウントをお持ちでないですか？"}
-        <Link
-          href={props.signUp ? "/signin" : "/signup"}
-          variant="body2"
-          sx={{ alignSelf: "center" }}
+      {props.mode !== SignInCardMode.SignUpEmailValidated && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          sx={{ width: "100%" }}
+          gap={1}
         >
-          {props.signUp ? "サインイン" : "サインアップ"}
-        </Link>
-      </Stack>
-      <CredentialForm signUp={props.signUp} csrfToken={props.csrfToken} />
+          {props.mode === SignInCardMode.SignUp
+            ? "アカウントをお持ちですか？"
+            : "アカウントをお持ちでないですか？"}
+          <Link
+            href={props.mode === SignInCardMode.SignUp ? "/signin" : "/signup"}
+            variant="body2"
+            sx={{ alignSelf: "center" }}
+          >
+            {props.mode === SignInCardMode.SignUp
+              ? "サインイン"
+              : "サインアップ"}
+          </Link>
+        </Stack>
+      )}
+      <CredentialForm
+        mode={props.mode}
+        csrfToken={props.csrfToken}
+        user={props.user}
+        code={props.code}
+      />
       {/*}
       <Divider>もしくは</Divider>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

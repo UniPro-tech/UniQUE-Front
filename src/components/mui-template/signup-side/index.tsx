@@ -1,5 +1,4 @@
 "use client";
-import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
 import AppTheme from "@/components/mui-template/shared-theme/AppTheme";
