@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import * as React from "react";
 import { Theme, alpha, Components } from "@mui/material/styles";
 import { SvgIconProps } from "@mui/material/SvgIcon";
@@ -9,7 +10,6 @@ import { tabClasses } from "@mui/material/Tab";
 import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 import { gray, brand } from "../themePrimitives";
 
- 
 export const navigationCustomizations: Components<Theme> = {
   MuiMenuItem: {
     styleOverrides: {

@@ -108,6 +108,7 @@ export default function MembersDataGrid({
                 if (beforeJoined) {
                   return [
                     <GridActionsCellItem
+                      key={"approve"}
                       icon={<CheckIcon />}
                       label="Approve"
                       onClick={() => {
@@ -119,6 +120,7 @@ export default function MembersDataGrid({
                       }}
                     />,
                     <GridActionsCellItem
+                      key={"delete-row"}
                       icon={<DeleteIcon />}
                       label="Delete"
                       onClick={() => {
@@ -130,6 +132,7 @@ export default function MembersDataGrid({
                 } else {
                   return [
                     <GridActionsCellItem
+                      key={"discard-changes"}
                       icon={<RestoreIcon />}
                       label="Discard changes"
                       disabled={
@@ -148,6 +151,7 @@ export default function MembersDataGrid({
                       }}
                     />,
                     <GridActionsCellItem
+                      key={"delete-row"}
                       icon={<DeleteIcon />}
                       label="Delete"
                       onClick={() => {
@@ -267,7 +271,7 @@ export default function MembersDataGrid({
           ] as GridColDef[])
         : []),
     ];
-  }, [unsavedChangesRef, apiRef]);
+  }, [unsavedChangesRef, apiRef, canUpdate, beforeJoined, localRows]);
 
   const processRowUpdate = React.useCallback<
     NonNullable<DataGridProps["processRowUpdate"]>
