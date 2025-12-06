@@ -1,6 +1,7 @@
 "use server";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { getUserById, saveUser } from "@/lib/Users";
 import { Discord } from "@/types/Discord";
 
 export const approveRegistApplyAction = async (
@@ -46,6 +47,43 @@ export const approveRegistApplyAction = async (
     const discordId = discordData.data[0]?.discordId;
 
     const discordToken = process.env.DISCORD_BOT_TOKEN;
+
+    const roleAddRes = await fetch(
+      `https://discord.com/api/v10/guilds/${process.env.DISCORD_GUILD_ID}/members/${discordId}/roles/${process.env.DISCORD_MEMBER_ROLE_ID}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bot ${discordToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!roleAddRes.ok) {
+      const errorData = await roleAddRes.json();
+      console.error("Failed to add role to user", roleAddRes.status, errorData);
+      return {
+        status: "error",
+        message:
+          "メンバーの役職付与に失敗しました。ユーザーがサーバーに参加しているか確認してください:" +
+          (errorData.message || ""),
+      };
+    }
+
+    const user = await getUserById(userId);
+    if (!user) {
+      return {
+        status: "error",
+        message: "該当するユーザーが見つかりません。",
+      };
+    }
+
+    // Update user status
+    user.email = email;
+    user.period = period;
+    user.joinedAt = new Date();
+    user.isEnable = true;
+    await saveUser(user);
 
     const response = await fetch(
       `https://discord.com/api/v10/users/@me/channels`,

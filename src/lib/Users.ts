@@ -1,6 +1,7 @@
 "use server";
 import { User } from "@/types/User";
 import { toCamelcase, toSnakecase } from "./SnakeCamlUtil";
+import { convertToDateTime } from "./DateTimeUtils";
 
 export const getUserById = async (userId: string) => {
   const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`);
@@ -37,7 +38,7 @@ export const saveUser = async (user: User): Promise<User> => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...toSnakecase<User>(user),
+          ...toSnakecase<User>(convertToDateTime(user)),
         }),
       }
     );
