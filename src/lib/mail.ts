@@ -20,7 +20,7 @@ export async function sendEmail(
   });
 
   // メールオプションを設定
-  let mailOptions = {
+  const mailOptions = {
     from: `"${MailConfig.fromName}" <${MailConfig.fromEmail}>`, // 送信元の設定
     to: to,
     subject: subject,
@@ -37,7 +37,7 @@ export async function sendEmail(
   };
 
   try {
-    let info = await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
     return info;
   } catch (error) {
     throw error;

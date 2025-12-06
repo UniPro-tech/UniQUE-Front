@@ -271,7 +271,17 @@ export default function MiniDrawer({
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 1, sm: 2, md: 3 },
+          width: { xs: "100%", sm: "auto" },
+          maxWidth: "100%",
+          overflow: "auto",
+          boxSizing: "border-box",
+        }}
+      >
         <DrawerHeader />
         {children}
       </Box>
