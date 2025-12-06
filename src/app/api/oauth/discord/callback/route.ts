@@ -89,7 +89,7 @@ export const GET = async (req: Request) => {
       },
       body: JSON.stringify({
         discord_id: userData.id,
-        discord_customid: userData.username,
+        custom_id: userData.username,
       }),
     }
   );
