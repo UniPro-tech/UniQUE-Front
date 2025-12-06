@@ -1,4 +1,4 @@
 export interface Discord {
   discordId: string;
-  discordCustomid: string;
+  customId: string;
 }

@@ -47,9 +47,9 @@ export default function SocialAccountsCardClient({
           {user.discords?.length !== 0 ? (
             <List>
               {user.discords!.map((discord) => (
-                <ListItem key={discord.id}>
+                <ListItem key={discord.discordId}>
                   <Typography variant="body2">
-                    {discord.discordCustomid} (ID: {discord.discordId})
+                    {discord.customId} (ID: {discord.discordId})
                   </Typography>
                   <Button
                     onClick={() =>

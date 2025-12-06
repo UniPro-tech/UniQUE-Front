@@ -226,9 +226,9 @@ export default function CredentialFormClient(props: {
                 {props.user!.discords?.length !== 0 ? (
                   <List>
                     {props.user!.discords!.map((discord) => (
-                      <ListItem key={discord.discordCustomid}>
+                      <ListItem key={discord.discordId}>
                         <Typography variant="body2">
-                          {discord.discordCustomid} (ID: {discord.discordId})
+                          {discord.customId} (ID: {discord.discordId})
                         </Typography>
                         <Button
                           onClick={() =>
