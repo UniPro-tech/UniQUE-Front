@@ -1,4 +1,5 @@
 import { Discord } from "./Discord";
+import { Role } from "./Role";
 
 export interface User {
   id: string;
@@ -16,4 +17,5 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   discords?: Discord[];
+  roles?: Role[];
 }
