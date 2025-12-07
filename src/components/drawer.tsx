@@ -17,11 +17,12 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import { Session } from "@/lib/Session";
+import HomeIcon from "@mui/icons-material/Home";
+import PeopleIcon from "@mui/icons-material/People";
+import { getSession, Session } from "@/lib/Session";
 import AccountButton from "./Sidebar/AccountButton";
 import { Stack } from "@mui/material";
+import { PermissionBitsFields } from "@/types/PermissionBits";
 
 const drawerWidth = 240;
 
@@ -107,6 +108,12 @@ const Drawer = styled(MuiDrawer, {
   ],
 }));
 
+interface NavLink {
+  text: string;
+  href: string;
+  icon: React.ReactNode;
+}
+
 export default function MiniDrawer({
   session,
   children,
@@ -114,6 +121,33 @@ export default function MiniDrawer({
   session: Session | null;
   children: React.ReactNode;
 }) {
+  const isAdmin = session?.user.roles?.some(
+    (role) =>
+      role.permission & PermissionBitsFields.USER_CREATE &&
+      role.permission & PermissionBitsFields.USER_DELETE &&
+      role.permission & PermissionBitsFields.ROLE_MANAGE &&
+      role.permission & PermissionBitsFields.USER_DISABLE &&
+      role.permission & PermissionBitsFields.USER_UPDATE &&
+      role.permission & PermissionBitsFields.PERMISSION_MANAGE
+  );
+  const NAVIGSTION_LINKS: NavLink[][] = [
+    [
+      { text: "Home", href: "/dashboard", icon: <HomeIcon /> },
+      { text: "Members", href: "/dashboard/members", icon: <PeopleIcon /> },
+    ],
+    ...(isAdmin
+      ? [
+          [
+            {
+              text: "Messages",
+              href: "/dashboard/messages",
+              icon: <PeopleIcon />,
+            },
+          ],
+        ]
+      : []),
+  ];
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -167,109 +201,45 @@ export default function MiniDrawer({
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                  },
-                  open
-                    ? {
-                        justifyContent: "initial",
-                      }
-                    : {
-                        justifyContent: "center",
-                      },
-                ]}
-              >
-                <ListItemIcon
-                  sx={[
-                    {
-                      minWidth: 0,
-                      justifyContent: "center",
-                    },
-                    open
-                      ? {
-                          mr: 3,
-                        }
-                      : {
-                          mr: "auto",
-                        },
-                  ]}
+        {NAVIGSTION_LINKS.map((section, index) => (
+          <>
+            <List key={index}>
+              {section.map((link) => (
+                <ListItem
+                  key={link.text}
+                  disablePadding
+                  sx={{ display: "block" }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
-                        },
-                  ]}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                  },
-                  open
-                    ? {
-                        justifyContent: "initial",
-                      }
-                    : {
+                  <ListItemButton
+                    href={link.href}
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
                         justifyContent: "center",
-                      },
-                ]}
-              >
-                <ListItemIcon
-                  sx={[
-                    {
-                      minWidth: 0,
-                      justifyContent: "center",
-                    },
-                    open
-                      ? {
-                          mr: 3,
-                        }
-                      : {
-                          mr: "auto",
-                        },
-                  ]}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
-                        },
-                  ]}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+                      }}
+                    >
+                      {link.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={link.text}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+            {index < NAVIGSTION_LINKS.length - 1 && (
+              <Divider key={"divider-" + index} />
+            )}
+          </>
+        ))}
       </Drawer>
       <Box
         component="main"
