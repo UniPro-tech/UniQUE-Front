@@ -4,6 +4,7 @@ import Stack from "@mui/material/Stack";
 import AppTheme from "@/components/mui-template/shared-theme/AppTheme";
 import SignInCard from "./components/SignInCard";
 import Content from "./components/Content";
+import { SignInCardMode } from "./types/SignInCardMode";
 
 export default function SignInSide(props: {
   disableCustomTheme?: boolean;
@@ -50,8 +51,12 @@ export default function SignInSide(props: {
             m: "auto",
           }}
         >
-          <Content isSignUp={props.signUp} />
-          <SignInCard signUp={props.signUp} />
+          <Content
+            mode={props.signUp ? SignInCardMode.SignUp : SignInCardMode.SignIn}
+          />
+          <SignInCard
+            mode={props.signUp ? SignInCardMode.SignUp : SignInCardMode.SignIn}
+          />
         </Stack>
       </Stack>
     </AppTheme>
