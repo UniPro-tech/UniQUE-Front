@@ -28,7 +28,7 @@ export default async function DashboardPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                バグ報告フォーム
+                UniQUE Discord スレッド
               </Link>
             </Typography>
           </Card>
