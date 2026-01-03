@@ -59,6 +59,9 @@ export interface Session {
 export const getSession = async (): Promise<Session | null> => {
   const cookieStore = await cookies();
   const sid = cookieStore.get("sid")?.value || null;
+  if (!sid) {
+    return null;
+  }
   const session = await (
     await fetch(`${process.env.RESOURCE_API_URL}/sessions/${sid}`, {
       cache: "no-store",
