@@ -18,5 +18,5 @@ EXPOSE 3000
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV UV_THREADPOOL_SIZE=1
 
-RUN chmod +x /entrypoint.sh
-CMD ["/entrypoint.sh"]
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]
