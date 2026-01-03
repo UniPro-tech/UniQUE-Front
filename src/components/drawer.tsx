@@ -16,10 +16,11 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
-import { getSession, Session } from "@/lib/Session";
+import { Session } from "@/lib/Session";
 import AccountButton from "./Sidebar/AccountButton";
 import { Stack } from "@mui/material";
 import { PermissionBitsFields } from "@/types/PermissionBits";
@@ -131,17 +132,19 @@ export default function MiniDrawer({
       role.permission & PermissionBitsFields.PERMISSION_MANAGE
   );
   const NAVIGSTION_LINKS: NavLink[][] = [
-    [
-      { text: "Home", href: "/dashboard", icon: <HomeIcon /> },
-      { text: "Members", href: "/dashboard/members", icon: <PeopleIcon /> },
-    ],
+    [{ text: "ホーム", href: "/dashboard", icon: <HomeIcon /> }],
     ...(isAdmin
       ? [
           [
             {
-              text: "Messages",
-              href: "/dashboard/messages",
+              text: "メンバー管理",
+              href: "/dashboard/members",
               icon: <PeopleIcon />,
+            },
+            {
+              text: "メンバー申請管理",
+              href: "/dashboard/requests",
+              icon: <PersonAddIcon />,
             },
           ],
         ]
