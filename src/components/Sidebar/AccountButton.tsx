@@ -83,7 +83,7 @@ export default function AccountMenu({ session }: { session: Session | null }) {
           <ListItemIcon>
             <PersonIcon fontSize="small" />
           </ListItemIcon>
-          Profile
+          プロフィール
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -94,14 +94,14 @@ export default function AccountMenu({ session }: { session: Session | null }) {
           <ListItemIcon>
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
-          Settings
+          個人設定
         </MenuItem>
         <Box component="form" action={deleteSession}>
           <MenuItem component="button" type="submit" onClick={handleClose}>
             <ListItemIcon>
               <LogoutIcon fontSize="small" />
             </ListItemIcon>
-            Logout
+            ログアウト
           </MenuItem>
         </Box>
       </Menu>
