@@ -15,5 +15,8 @@ RUN bun run build
 # Expose the application port
 EXPOSE 3000
 
-# Start the application
-CMD ["sh", "-c", "bun run build && bun run start"]
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV UV_THREADPOOL_SIZE=1
+
+RUN chmod +x /entrypoint.sh
+CMD ["/entrypoint.sh"]

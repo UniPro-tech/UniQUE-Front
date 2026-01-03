@@ -1,0 +1,14 @@
+.next
+.keys
+node_modules
+.DS_Store
+.vscode
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.github
+_enb
+.gitignore
+
