@@ -381,7 +381,7 @@ export default function CredentialFormClient(props: {
                       プライバシーポリシー
                     </Link>
                     、
-                    <Link href="/cookie-policy" target="_blank">
+                    <Link href="/club-terms" target="_blank">
                       サークル規約
                     </Link>
                     に
