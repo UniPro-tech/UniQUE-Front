@@ -7,7 +7,6 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
-import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -24,6 +23,8 @@ import { Session } from "@/lib/Session";
 import AccountButton from "./Sidebar/AccountButton";
 import { Stack } from "@mui/material";
 import { PermissionBitsFields } from "@/types/PermissionBits";
+import Image from "next/image";
+// use native img to avoid next/image dev-time optimization errors for this small logo
 
 const drawerWidth = 240;
 
@@ -165,7 +166,14 @@ export default function MiniDrawer({
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar
+        position="fixed"
+        open={open}
+        style={{
+          background: "#e6ecec",
+          color: "#000000",
+        }}
+      >
         <Toolbar>
           <Stack
             direction="row"
@@ -185,9 +193,13 @@ export default function MiniDrawer({
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              UniQUE Front (Dev)
-            </Typography>
+            <img
+              src="/unique_logotype.png"
+              alt="UniQUE Logo"
+              width={128}
+              height={42}
+              style={{ display: "block", objectFit: "contain" }}
+            />
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
           <AccountButton session={session} />
@@ -205,7 +217,7 @@ export default function MiniDrawer({
         </DrawerHeader>
         <Divider />
         {NAVIGSTION_LINKS.map((section, index) => (
-          <>
+          <div key={index}>
             <List key={index}>
               {section.map((link) => (
                 <ListItem
@@ -241,7 +253,7 @@ export default function MiniDrawer({
             {index < NAVIGSTION_LINKS.length - 1 && (
               <Divider key={"divider-" + index} />
             )}
-          </>
+          </div>
         ))}
       </Drawer>
       <Box
