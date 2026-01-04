@@ -7,8 +7,8 @@ export async function proxy(request: NextRequest) {
   const session = await getSession();
   if (!session) {
     const cookieStore = await cookies();
-    const sid = cookieStore.get("sid")?.value || null;
-    if (sid) cookieStore.delete("sid");
+    const sid = cookieStore.get("unique-sid")?.value || null;
+    if (sid) cookieStore.delete("unique-sid");
     return NextResponse.redirect(new URL("/signin", request.url));
   }
   const requestHeaders = new Headers(request.headers);

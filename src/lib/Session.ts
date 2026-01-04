@@ -37,11 +37,13 @@ if (fs.existsSync(secretKeyFile) && fs.existsSync(publicKeyFile)) {
 }
 
 export const createSession = async (sessionId: string, expires: Date) => {
-  const res = (await cookies()).set("sid", sessionId, {
+  const res = (await cookies()).set("unique-sid", sessionId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     expires,
     path: "/",
+    domain:
+      process.env.NODE_ENV === "production" ? ".uniproject.jp" : "localhost",
   });
   return res;
 };
@@ -58,7 +60,7 @@ export interface Session {
 
 export const getSession = async (): Promise<Session | null> => {
   const cookieStore = await cookies();
-  const sid = cookieStore.get("sid")?.value || null;
+  const sid = cookieStore.get("unique-sid")?.value || null;
   if (!sid) {
     return null;
   }
@@ -75,7 +77,7 @@ export const deleteSession = async (_formdata: FormData) => {
   if (!session_id) {
     return;
   }
-  (await cookies()).delete("sid");
+  (await cookies()).delete("unique-sid");
   const res2 = await fetch(
     `${process.env.RESOURCE_API_URL}/sessions/${session_id}`,
     {
