@@ -69,7 +69,7 @@ export default async function Page({
         scope={scope}
         redirect_uri={redirect_uri}
         state={state}
-        action={`${process.env.AUTH_API_URL}/auth`}
+        action={`${process.env.NEXT_PUBLIC_AUTH_API_URL}/auth`}
       />
     </>
   );
