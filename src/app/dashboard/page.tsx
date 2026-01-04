@@ -35,7 +35,7 @@ export default async function DashboardPage() {
           <Card variant="outlined" sx={{ padding: 2 }}>
             <Typography variant="h6">🛠️ サービス停止のお知らせ</Typography>
             <Typography variant="body1">
-              2025年1月10日午後20時から午後25時までサービスが一時的に停止します。
+              2025年1月10日午後8時から11月午前1時までサービスが一時的に停止します。
             </Typography>
           </Card>
         </Stack>
