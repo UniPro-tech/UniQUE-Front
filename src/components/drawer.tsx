@@ -24,6 +24,7 @@ import AccountButton from "./Sidebar/AccountButton";
 import { Stack } from "@mui/material";
 import { PermissionBitsFields } from "@/types/PermissionBits";
 import Image from "next/image";
+import Link from "next/link";
 // use native img to avoid next/image dev-time optimization errors for this small logo
 
 const drawerWidth = 240;
@@ -193,13 +194,15 @@ export default function MiniDrawer({
             >
               <MenuIcon />
             </IconButton>
-            <img
-              src="/unique_logotype.png"
-              alt="UniQUE Logo"
-              width={128}
-              height={42}
-              style={{ display: "block", objectFit: "contain" }}
-            />
+            <Link href="/dashboard">
+              <img
+                src="/unique_logotype.png"
+                alt="UniQUE Logo"
+                width={128}
+                height={42}
+                style={{ display: "block", objectFit: "contain" }}
+              />
+            </Link>
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
           <AccountButton session={session} />
