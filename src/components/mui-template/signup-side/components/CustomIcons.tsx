@@ -1,36 +1,14 @@
-import * as React from "react";
 import SvgIcon from "@mui/material/SvgIcon";
+import Image from "next/image";
 
 export function SitemarkIcon() {
   return (
-    <SvgIcon sx={{ height: 28, width: 120, mr: 2 }}>
-      <svg
-        width={120}
-        height={28}
-        viewBox="0 0 120 28"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Circle mark */}
-        <circle cx="20" cy="14" r="12" fill="#00D3AB" />
-        {/* Stylized 'y' mark inside circle */}
-        <path
-          d="M14 11 L18 16 L22 9"
-          stroke="#fff"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* Wordmark: yomunity (simplified rectangles to avoid font embedding) */}
-        <g transform="translate(42,6)">
-          <rect x="0" y="0" width="6" height="16" rx="1" fill="#4876EE" />
-          <rect x="10" y="0" width="22" height="6" rx="1" fill="#4876EE" />
-          <rect x="10" y="10" width="22" height="6" rx="1" fill="#4876EE" />
-          <rect x="36" y="0" width="6" height="16" rx="1" fill="#4876EE" />
-          <rect x="44" y="0" width="6" height="16" rx="1" fill="#4876EE" />
-        </g>
-      </svg>
-    </SvgIcon>
+    <Image
+      src="/unique_logotype.png"
+      alt="Sitemark Icon"
+      width={128}
+      height={42}
+    />
   );
 }
 
