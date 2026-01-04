@@ -195,7 +195,7 @@ export default function MiniDrawer({
               <MenuIcon />
             </IconButton>
             <Link href="/dashboard">
-              <img
+              <Image
                 src="/unique_logotype.png"
                 alt="UniQUE Logo"
                 width={128}
