@@ -173,7 +173,9 @@ export async function migrateAction(formData: FormData) {
       throw CSRFError;
     }
     const internalEmail = `${
-      period ? `${period.toUpperCase()}.` : ""
+      period && period != "00" && period != "0"
+        ? `${period.toUpperCase()}.`
+        : ""
     }${custom_id}@uniproject.jp`;
     const verifyRes = await fetch(
       `${process.env.GAS_MIGRATE_API_URL}?external_email=${encodeURIComponent(
