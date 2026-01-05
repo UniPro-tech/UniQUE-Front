@@ -4,10 +4,8 @@ import { Stack, Typography } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
 
 export default async function Page() {
-  const session = await getSession();
-  const user = session!.user;
+  //TODO: RBAC
   const users = await getUsersList(true);
-  console.log(users);
   return (
     <Stack spacing={4}>
       <Stack>

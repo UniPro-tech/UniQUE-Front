@@ -16,7 +16,6 @@ export const updateAccountSettings = async (
   const displayName = formData.get("display_name") as string;
   const externalEmail = formData.get("external_email") as string;
   const id = formData.get("id") as string;
-  console.log("Updating account settings for user ID:", id);
 
   // ここでデータベースの更新などの処理を行う
   const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${id}`, {
@@ -31,7 +30,6 @@ export const updateAccountSettings = async (
   });
 
   const user = toCamelcase(await res.json()) as User;
-  console.log("Account settings updated:", user, "status:", res.status);
 
   if (!res.ok)
     return {

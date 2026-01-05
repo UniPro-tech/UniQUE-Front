@@ -24,7 +24,6 @@ export interface AuthResponse {
 export const authenticationRequest = async (
   credentials: Credentials
 ): Promise<AuthResponse> => {
-  console.log("Authentication request with credentials:", credentials);
   const response = await fetch(`${process.env.AUTH_API_URL}/authentication`, {
     method: "POST",
     headers: {

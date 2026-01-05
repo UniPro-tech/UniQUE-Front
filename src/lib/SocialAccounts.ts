@@ -42,9 +42,6 @@ export const unlink = async (provider: string, id: string) => {
           throw new Error(`Unexpected error: ${response.statusText}`);
       }
     }
-
-    // Optionally, you can handle success (e.g., show a notification or refresh the data)
-    console.log("Social account unlinked successfully");
   } catch (error) {
     console.error("Error unlinking social account:", error);
   }

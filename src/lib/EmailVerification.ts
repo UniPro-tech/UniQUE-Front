@@ -32,7 +32,6 @@ export const verifyEmailCode = async (code: string) => {
     );
   }
   const resData = await apiRes.json();
-  console.log("Email verified successfully:", resData);
   return resData as VerifyEmailResponse;
 };
 

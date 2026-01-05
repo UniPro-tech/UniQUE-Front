@@ -12,7 +12,7 @@ export const updateSettings = async (
   const isVerified = await VerifyCSRFToken(csrfToken);
   if (!isVerified) throw new Error("CSRF token verification failed");
   const id = formData.get("id") as string;
-  console.log("Updating account settings for user ID:", id);
+
   const currentPassword = formData.get("current_password") as string;
   const newPassword = formData.get("new_password") as string;
   const confirmNewPassword = formData.get("confirm_new_password") as string;
@@ -40,7 +40,6 @@ export const updateSettings = async (
   );
 
   if (!res.ok) {
-    console.log("Failed to update password:", res.status, res.statusText);
     // const errorData = await res.json();
     if (res.status == 401) {
       return {

@@ -59,7 +59,6 @@ export async function signUpAction(formData: FormData) {
     if (!tokenVerified) {
       throw CSRFError;
     }
-    console.log("Sign-up data:", { name, custom_id, external_email, password });
     const res = await fetch(`${process.env.RESOURCE_API_URL}/users`, {
       method: "POST",
       headers: {
@@ -80,21 +79,18 @@ export async function signUpAction(formData: FormData) {
     const resData = await res.json();
     uid = resData.id;
   } catch (error) {
-    console.error("Sign-up error:", error);
     throw error;
   }
   try {
     const verificationCode = await generateVerificationCode(uid);
     const template = await generateMailVerificationTemplate(verificationCode);
-    const res = await sendEmail(
+    await sendEmail(
       external_email,
       "【UniQUE】仮登録完了 メールアドレス認証",
       template.text,
       template.html
     );
-    console.log("Email sent info:", res);
   } catch (error) {
-    console.error("Post sign-up error:", error);
     throw error;
   }
 
@@ -113,7 +109,6 @@ export async function applyCompleteAction(formData: FormData) {
     if (!tokenVerified) {
       throw CSRFError;
     }
-    console.log("Sign-up data:", { userId, birthday });
     const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`, {
       method: "PATCH",
       headers: {
@@ -130,7 +125,6 @@ export async function applyCompleteAction(formData: FormData) {
       );
     }
   } catch (error) {
-    console.error("Sign-up error:", error);
     throw error;
   }
   try {
@@ -151,7 +145,6 @@ export async function applyCompleteAction(formData: FormData) {
       );
     }
   } catch (error) {
-    console.error("Post sign-up error:", error);
     throw error;
   }
 
@@ -193,7 +186,6 @@ export async function migrateAction(formData: FormData) {
         } - ${await verifyRes.text()}`
       );
     } else if (verifyData.status != "200") {
-      console.log("Migrate verify failed:", verifyData);
       throw new Error(
         `メンバー情報に誤りがあります。再度ご確認の上、正しい情報を入力してください。`
       );
@@ -221,10 +213,8 @@ export async function migrateAction(formData: FormData) {
         `Migrate failed: ${res.status} ${res.statusText} - ${await res.text()}`
       );
     }
-    const resData = await res.json();
-    console.log("Migrate success:", resData);
+    await res.json();
   } catch (error) {
-    console.error("Migrate error:", error);
     throw error;
   }
 

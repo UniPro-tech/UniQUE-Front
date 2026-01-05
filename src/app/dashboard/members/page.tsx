@@ -1,13 +1,10 @@
-import { getSession } from "@/lib/Session";
 import { getUsersList } from "@/lib/Users";
 import { Link, Stack, Typography } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
 
 export default async function Page() {
-  const session = await getSession();
-  const user = session!.user;
   const users = await getUsersList(true);
-  console.log(users);
+  // TODO: RBAC
   return (
     <Stack spacing={4}>
       <Stack>

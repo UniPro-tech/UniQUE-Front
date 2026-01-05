@@ -9,7 +9,6 @@ export const approveRegistApplyAction = async (
   formData: FormData | null
 ): Promise<FormStatus | null> => {
   if (!formData) {
-    console.log("No form data");
     return {
       status: "error",
       message: "不正なフォームデータです。",
@@ -31,11 +30,6 @@ export const approveRegistApplyAction = async (
       }
     );
     if (!discordDataRes.ok) {
-      console.log(
-        "Failed to fetch Discord data",
-        discordDataRes.status,
-        await discordDataRes.text()
-      );
       return {
         status: "error",
         message: "メンバーのDiscord情報の取得に失敗しました。",

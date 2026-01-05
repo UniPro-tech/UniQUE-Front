@@ -52,7 +52,6 @@ export const GET = async (req: Request) => {
   });
 
   if (!tokenResponse.ok) {
-    console.log(tokenResponse.status, await tokenResponse.text());
     return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
   }
 
@@ -67,7 +66,6 @@ export const GET = async (req: Request) => {
   });
 
   if (!userResponse.ok) {
-    console.log(userResponse.status, await userResponse.text());
     return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
   }
 
@@ -112,8 +110,6 @@ export const GET = async (req: Request) => {
   );
 
   if (res.status !== 201 || (res2.status !== 201 && res2.status !== 204)) {
-    console.log(res.status, await res.text());
-    console.log(res2.status, await res2.text());
     return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
   }
 

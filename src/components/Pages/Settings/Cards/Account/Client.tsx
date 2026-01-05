@@ -30,7 +30,6 @@ export default function AccountSettingsCardClient({
   );
   useEffect(() => {
     if (lastResult.status) {
-      console.log("Account settings update status:", lastResult.status);
       enqueueSnackbar(lastResult.status.message, {
         variant: lastResult.status.status,
       });
