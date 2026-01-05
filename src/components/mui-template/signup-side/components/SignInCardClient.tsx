@@ -20,6 +20,52 @@ export default function SignInCardClient(props: {
   user?: User;
   code?: string;
 }) {
+  const IF_YOUR_TEXTS = (() => {
+    switch (props.mode) {
+      case SignInCardMode.SignUp:
+        return [
+          {
+            text: "アカウントをお持ちですか？",
+            linkText: "サインイン",
+            linkHref: "/signin",
+          },
+          {
+            text: "既存メンバーですか？",
+            linkText: "アカウント移行",
+            linkHref: "/migrate",
+          },
+        ];
+      case SignInCardMode.SignUpEmailValidated:
+        return [];
+      case SignInCardMode.Migrate:
+        return [
+          {
+            text: "アカウントをお持ちですか？",
+            linkText: "サインアップ",
+            linkHref: "/signup",
+          },
+          {
+            text: "メンバー登録申請がまだですか？",
+            linkText: "サインアップ",
+            linkHref: "/signup",
+          },
+        ];
+      case SignInCardMode.SignIn:
+        return [
+          {
+            text: "メンバー登録申請がまだですか？",
+            linkText: "サインアップ",
+            linkHref: "/signup",
+          },
+          {
+            text: "アカウント移行がまだですか？",
+            linkText: "アカウント移行",
+            linkHref: "/migrate",
+          },
+        ];
+    }
+  })();
+
   return (
     <MuiCard
       variant="outlined"
@@ -55,32 +101,37 @@ export default function SignInCardClient(props: {
               return "メンバー登録申請";
             case SignInCardMode.SignUpEmailValidated:
               return "メンバー登録申請";
+            case SignInCardMode.Migrate:
+              return "アカウント移行";
             default:
               return "サインイン";
           }
         })()}
       </Typography>
-      {props.mode !== SignInCardMode.SignUpEmailValidated && (
+      {IF_YOUR_TEXTS.map((item, index) => (
         <Stack
           direction="row"
           alignItems="center"
           sx={{ width: "100%" }}
           gap={1}
+          key={index}
         >
-          {props.mode === SignInCardMode.SignUp
-            ? "アカウントをお持ちですか？"
-            : "アカウントをお持ちでないですか？"}
-          <Link
-            href={props.mode === SignInCardMode.SignUp ? "/signin" : "/signup"}
+          <Typography
+            key={index}
             variant="body2"
-            sx={{ alignSelf: "center" }}
+            sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
           >
-            {props.mode === SignInCardMode.SignUp
-              ? "サインイン"
-              : "サインアップ"}
-          </Link>
+            {item.text}
+            <Link
+              href={item.linkHref}
+              underline="hover"
+              sx={{ cursor: "pointer" }}
+            >
+              {item.linkText}
+            </Link>
+          </Typography>
         </Stack>
-      )}
+      ))}
       <CredentialForm
         mode={props.mode}
         csrfToken={props.csrfToken}

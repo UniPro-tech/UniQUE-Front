@@ -7,6 +7,7 @@ import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import HubIcon from "@mui/icons-material/Hub";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { SitemarkIcon } from "./CustomIcons";
+import CachedIcon from "@mui/icons-material/Cached";
 import { SignInCardMode } from "../types/SignInCardMode";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
@@ -136,6 +137,29 @@ export default function Content({
                 </Box>
               </Stack>
             ));
+          case SignInCardMode.Migrate:
+            return (
+              <Stack direction="row" gap={2}>
+                <CachedIcon sx={{ color: "text.secondary" }} />
+                <Box display={"block"} width={"100%"}>
+                  <Typography gutterBottom sx={{ fontWeight: "medium" }}>
+                    UniProjectアカウント移行手続き
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      wordBreak: "keep-all",
+                      width: "100%",
+                    }}
+                  >
+                    既存のUniProjectアカウントを新しい認証システムに移行します。
+                    <wbr />
+                    右側のフォームに必要事項を入力して、移行手続きを完了させてください。
+                  </Typography>
+                </Box>
+              </Stack>
+            );
           case SignInCardMode.SignUpEmailValidated:
             return (
               <Stack direction="row" gap={2}>

@@ -11,10 +11,9 @@ export default async function Page({
 }: {
   searchParams: Promise<{
     mail?: string;
-    migrated?: string;
   }>;
 }) {
-  const { mail, migrated } = await searchParams;
+  const { mail } = await searchParams;
   const snacks: SnackbarData[] = [
     ...(mail
       ? [
@@ -24,20 +23,12 @@ export default async function Page({
           },
         ]
       : []),
-    ...(migrated
-      ? [
-          {
-            message: `アカウントの移行が完了しました。サインインしてください。`,
-            variant: "success" as VariantType,
-          },
-        ]
-      : []),
   ];
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
-      <Content mode={SignInCardMode.SignIn} />
-      <SignInCard mode={SignInCardMode.SignIn} />
+      <Content mode={SignInCardMode.Migrate} />
+      <SignInCard mode={SignInCardMode.Migrate} />
     </>
   );
 }

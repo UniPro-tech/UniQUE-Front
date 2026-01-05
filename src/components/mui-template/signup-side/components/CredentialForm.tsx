@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import CredentialFormClient from "./CredentialFormClient";
 import {
   applyCompleteAction,
+  migrateAction,
   signInAction,
   signUpAction,
 } from "@/components/mui-template/signup-side/lib/CredentialAction";
@@ -25,6 +26,8 @@ export default function CredentialForm(props: {
             return applyCompleteAction;
           case SignInCardMode.SignIn:
             return signInAction;
+          case SignInCardMode.Migrate:
+            return migrateAction;
         }
       })()}
       sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}

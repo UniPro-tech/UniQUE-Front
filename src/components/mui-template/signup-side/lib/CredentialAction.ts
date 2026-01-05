@@ -158,3 +158,101 @@ export async function applyCompleteAction(formData: FormData) {
   // 成功時のリダイレクト
   redirect("/signup?completed=true", RedirectType.push);
 }
+
+export async function migrateAction(formData: FormData) {
+  const name = formData.get("name") as string;
+  const custom_id = formData.get("username") as string;
+  const external_email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const period = formData.get("period") as string;
+  const csrfToken = formData.get("csrfToken") as string;
+
+  try {
+    const tokenVerified = VerifyCSRFToken(csrfToken);
+    if (!tokenVerified) {
+      throw CSRFError;
+    }
+    console.log("Migrate data:", {
+      period,
+      custom_id,
+      external_email,
+      password,
+    });
+    const internalEmail = `${
+      period ? `${period.toUpperCase()}.` : ""
+    }${custom_id}@uniproject.jp`;
+    console.log("Internal email:", internalEmail);
+    const verifyRes = await fetch(
+      `${process.env.GAS_MIGRATE_API_URL}?external_email=${encodeURIComponent(
+        external_email
+      )}&internal_email=${encodeURIComponent(internalEmail)}`,
+      {
+        method: "GET",
+      }
+    );
+    console.log(
+      `${process.env.GAS_MIGRATE_API_URL}?external_email=${encodeURIComponent(
+        external_email
+      )}&internal_email=${encodeURIComponent(internalEmail)}`
+    );
+    const verifyData = await verifyRes.json();
+    if (!verifyRes.ok) {
+      throw new Error(
+        `Migrate failed: ${verifyRes.status} ${
+          verifyRes.statusText
+        } - ${await verifyRes.text()}`
+      );
+    } else if (verifyData.status != "200") {
+      console.log("Migrate verify failed:", verifyData);
+      throw new Error(
+        `メンバー情報に誤りがあります。再度ご確認の上、正しい情報を入力してください。`
+      );
+    }
+    const joinedAt = new Date(verifyData.joined_at);
+    const res = await fetch(`${process.env.RESOURCE_API_URL}/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        custom_id,
+        external_email,
+        email: internalEmail,
+        email_verified: true,
+        password,
+        is_enable: true,
+        period,
+        joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
+      }),
+    });
+    console.log(
+      JSON.stringify({
+        name,
+        custom_id,
+        external_email,
+        email: internalEmail,
+        email_verified: true,
+        password,
+        is_enable: true,
+        period,
+        joined_at: joinedAt
+          .toLocaleTimeString("ja-jp")
+          .replace(/\.\d{3}Z$/, ""),
+      })
+    );
+    if (!res.ok) {
+      throw new Error(
+        `Migrate failed: ${res.status} ${res.statusText} - ${await res.text()}`
+      );
+    }
+    const resData = await res.json();
+    console.log("Migrate success:", resData);
+  } catch (error) {
+    console.error("Migrate error:", error);
+    throw error;
+  }
+
+  // 成功時のリダイレクト
+  redirect("/signin?migrated=true", RedirectType.push);
+}

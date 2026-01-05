@@ -7,6 +7,7 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   FormLabel,
   Link,
   List,
@@ -53,6 +54,7 @@ export default function CredentialFormClient(props: {
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
   const [username, setUsername] = React.useState("");
+  const [period, setPeriod] = React.useState("");
   const [birthdate, setBirthdate] = React.useState("");
 
   const [nameError, setNameError] = React.useState(false);
@@ -321,9 +323,98 @@ export default function CredentialFormClient(props: {
                 />
               </FormControl>
             );
+          case SignInCardMode.Migrate:
+            return (
+              <>
+                <FormControl>
+                  <FormLabel htmlFor="name">名前 (ニックネーム可)</FormLabel>
+                  <TextField
+                    error={name.length > 0 && nameError}
+                    helperText={name.length > 0 && nameErrorMessage}
+                    id="name"
+                    type="text"
+                    name="name"
+                    placeholder="ゆに太郎"
+                    autoFocus
+                    required
+                    fullWidth
+                    variant="outlined"
+                    color={name.length > 0 && nameError ? "error" : "primary"}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onBlur={(e) => validateField("name", e.target.value)}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="email">外部メールアドレス</FormLabel>
+                  <TextField
+                    error={email.length > 0 && emailError}
+                    helperText={email.length > 0 && emailErrorMessage}
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="example@exsample.com"
+                    autoComplete="email"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    color={email.length > 0 && emailError ? "error" : "primary"}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onBlur={(e) => validateField("email", e.target.value)}
+                  />
+                  <FormHelperText>
+                    UniProに登録している外部のメールアドレス(@uniproject.jpではないもの)を入力してください。
+                  </FormHelperText>
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="period">所属期</FormLabel>
+                  <TextField
+                    id="period"
+                    type="text"
+                    name="period"
+                    placeholder="01A"
+                    autoFocus
+                    required
+                    fullWidth
+                    variant="outlined"
+                    value={period}
+                    onChange={(e) => setPeriod(e.target.value)}
+                    onBlur={(e) => validateField("period", e.target.value)}
+                  />
+                  <FormHelperText>例:01A、02C、00など</FormHelperText>
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="username">ユーザー名</FormLabel>
+                  <TextField
+                    error={username.length > 0 && usernameError}
+                    helperText={username.length > 0 && usernameErrorMessage}
+                    id="username"
+                    type="text"
+                    name="username"
+                    placeholder="username"
+                    autoFocus
+                    required
+                    fullWidth
+                    variant="outlined"
+                    color={
+                      username.length > 0 && usernameError ? "error" : "primary"
+                    }
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onBlur={(e) => validateField("username", e.target.value)}
+                  />
+                  <FormHelperText>
+                    メールアドレス&lt;所属期&gt;.xxxx@uniproject.jpのxxxx部分を
+                    <wbr />
+                    入力してください。
+                  </FormHelperText>
+                </FormControl>
+              </>
+            );
         }
       })()}
-      {props.mode !== SignInCardMode.SignUpEmailValidated && (
+      {![SignInCardMode.SignUpEmailValidated].includes(props.mode) && (
         <FormControl>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <FormLabel htmlFor="password">パスワード</FormLabel>
@@ -366,6 +457,7 @@ export default function CredentialFormClient(props: {
               />
             );
           case SignInCardMode.SignUp:
+          case SignInCardMode.Migrate:
           case SignInCardMode.SignUpEmailValidated:
             return (
               <FormControlLabel
@@ -402,6 +494,8 @@ export default function CredentialFormClient(props: {
               return "申請を完了する";
             case SignInCardMode.SignIn:
               return "サインイン";
+            case SignInCardMode.Migrate:
+              return "アカウント移行を完了する";
           }
         })()}
       </Button>
