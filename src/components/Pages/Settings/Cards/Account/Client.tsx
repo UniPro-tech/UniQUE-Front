@@ -95,7 +95,7 @@ export default function AccountSettingsCardClient({
       />
       <TextField
         label="所属期"
-        defaultValue={lastResult.user.period!}
+        defaultValue={lastResult.user.period!.toUpperCase()}
         disabled
       />
       <Button variant="contained" fullWidth type="submit">

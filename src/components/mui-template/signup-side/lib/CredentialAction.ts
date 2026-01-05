@@ -210,7 +210,7 @@ export async function migrateAction(formData: FormData) {
         email_verified: true,
         password,
         is_enable: true,
-        period,
+        period: period.toLowerCase(),
         joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
       }),
     });
