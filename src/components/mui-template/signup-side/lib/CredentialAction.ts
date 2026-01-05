@@ -172,16 +172,9 @@ export async function migrateAction(formData: FormData) {
     if (!tokenVerified) {
       throw CSRFError;
     }
-    console.log("Migrate data:", {
-      period,
-      custom_id,
-      external_email,
-      password,
-    });
     const internalEmail = `${
       period ? `${period.toUpperCase()}.` : ""
     }${custom_id}@uniproject.jp`;
-    console.log("Internal email:", internalEmail);
     const verifyRes = await fetch(
       `${process.env.GAS_MIGRATE_API_URL}?external_email=${encodeURIComponent(
         external_email
@@ -189,11 +182,6 @@ export async function migrateAction(formData: FormData) {
       {
         method: "GET",
       }
-    );
-    console.log(
-      `${process.env.GAS_MIGRATE_API_URL}?external_email=${encodeURIComponent(
-        external_email
-      )}&internal_email=${encodeURIComponent(internalEmail)}`
     );
     const verifyData = await verifyRes.json();
     if (!verifyRes.ok) {
@@ -226,21 +214,6 @@ export async function migrateAction(formData: FormData) {
         joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
       }),
     });
-    console.log(
-      JSON.stringify({
-        name,
-        custom_id,
-        external_email,
-        email: internalEmail,
-        email_verified: true,
-        password,
-        is_enable: true,
-        period,
-        joined_at: joinedAt
-          .toLocaleTimeString("ja-jp")
-          .replace(/\.\d{3}Z$/, ""),
-      })
-    );
     if (!res.ok) {
       throw new Error(
         `Migrate failed: ${res.status} ${res.statusText} - ${await res.text()}`
