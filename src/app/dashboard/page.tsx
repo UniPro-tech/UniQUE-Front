@@ -1,6 +1,11 @@
 import { Card, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 
+export const metadata = {
+  title: "ダッシュボード",
+  description: "ユーザーダッシュボードページ",
+};
+
 export default async function DashboardPage() {
   return (
     <Stack>

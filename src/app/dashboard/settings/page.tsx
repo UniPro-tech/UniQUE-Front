@@ -8,6 +8,11 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 
+export const metadata = {
+  title: "アカウント設定",
+  description: "ユーザーアカウントの各種設定を管理するページ",
+};
+
 export default async function Page({
   searchParams,
 }: {

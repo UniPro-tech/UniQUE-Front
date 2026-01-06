@@ -2,6 +2,11 @@ import { getUsersList } from "@/lib/Users";
 import { Link, Stack, Typography } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
 
+export const metadata = {
+  title: "ユーザー一覧",
+  description: "UniProjectのメンバー一覧ページ",
+};
+
 export default async function Page() {
   const users = await getUsersList(true);
   // TODO: RBAC

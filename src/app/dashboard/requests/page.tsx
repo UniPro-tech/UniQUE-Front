@@ -3,6 +3,11 @@ import { getUsersList } from "@/lib/Users";
 import { Stack, Typography } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
 
+export const metadata = {
+  title: "メンバー申請一覧",
+  description: "メンバー申請の一覧ページ",
+};
+
 export default async function Page() {
   //TODO: RBAC
   const users = await getUsersList(true);

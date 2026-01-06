@@ -1,6 +1,11 @@
 import { getSession } from "@/lib/Session";
 import { Card, Stack, Typography } from "@mui/material";
 
+export const metadata = {
+  title: "プロフィール",
+  description: "ユーザープロフィールページ",
+};
+
 export default async function ProfilePage() {
   const user = (await getSession())!.user;
   return (
