@@ -4,6 +4,11 @@ import fs from "fs";
 import path from "path";
 import Link from "next/link";
 
+export const metadata = {
+  title: "利用規約",
+  description: "UniQUEの利用規約ページです。",
+};
+
 export default function TOSPage() {
   const file = fs.readFileSync(path.join("./src/app/terms/terms.md"), "utf8");
   return (

@@ -6,6 +6,12 @@ import TemporarySnackProvider, {
 import { VariantType } from "notistack";
 import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
 
+export const metadata = {
+  title: "アカウント移行",
+  description:
+    "UniQUEのアカウント移行ページです。UniQUE完成以前のメンバーの情報を移行します。",
+};
+
 export default async function Page({
   searchParams,
 }: {

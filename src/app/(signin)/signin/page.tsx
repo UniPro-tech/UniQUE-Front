@@ -6,6 +6,11 @@ import TemporarySnackProvider, {
 import { VariantType } from "notistack";
 import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
 
+export const metadata = {
+  title: "サインイン",
+  description: "UniQUEのサインインページです。UniQUEにサインインします。",
+};
+
 export default async function Page({
   searchParams,
 }: {

@@ -13,6 +13,12 @@ enum ErrorType {
   InvalidVerificationCode = "invalid_verification_code",
 }
 
+export const metadata = {
+  title: "メンバー登録申請",
+  description:
+    "UniQUEのサインアップページです。UniProjectメンバーになるための申請を行います。",
+};
+
 export default async function Page({
   searchParams,
 }: {
