@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { CSRFError } from "@/lib/RequestErrors";
 import { generateMailVerificationTemplate } from "./template/mailVerification";
-import { sendEmail } from "@/lib/mail";
+import { sendEmail } from "@/lib/mailManager";
 import { generateVerificationCode } from "@/lib/EmailVerification";
 import { apiPost, apiPatch, apiDelete } from "@/lib/apiClient";
 

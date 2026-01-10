@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import { sendEmail } from "@/lib/mail";
+import { sendEmail } from "@/lib/mailManager";
 
 import { toEmail } from "./config";
 
