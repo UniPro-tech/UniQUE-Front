@@ -7,6 +7,7 @@ import * as util from "tweetnacl-util";
 import { toCamelcase } from "./SnakeCamlUtil";
 import { User } from "@/types/User";
 import { redirect } from "next/navigation";
+import { getAllCookies } from "./getAllCookie";
 
 // 秘密鍵をファイルから読み込む
 // 存在しない場合は新規作成
@@ -66,7 +67,12 @@ export const getSession = async (): Promise<Session | null> => {
   }
   const session = await (
     await fetch(`${process.env.RESOURCE_API_URL}/sessions/${sid}`, {
+      headers: {
+        "Content-Type": "application/json",
+        cookie: await getAllCookies(),
+      },
       cache: "no-store",
+      credentials: "include",
     })
   ).json();
   return toCamelcase<Session>(session);
@@ -83,6 +89,7 @@ export const deleteSession = async (_formdata: FormData) => {
     {
       method: "DELETE",
       cache: "no-store",
+      credentials: "include",
     }
   );
   if (!res2.ok) {

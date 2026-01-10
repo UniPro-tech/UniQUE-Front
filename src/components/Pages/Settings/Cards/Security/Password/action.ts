@@ -2,6 +2,7 @@
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { FormStatus } from "../../Base";
+import { getAllCookies } from "@/lib/getAllCookie";
 
 export const updateSettings = async (
   _prevState: null | FormStatus,
@@ -31,11 +32,13 @@ export const updateSettings = async (
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        cookie: await getAllCookies(),
       },
       body: JSON.stringify({
         current_password: currentPassword,
         new_password: newPassword,
       }),
+      credentials: "include",
     }
   );
 

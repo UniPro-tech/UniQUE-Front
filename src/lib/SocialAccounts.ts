@@ -1,4 +1,5 @@
 "use server";
+import { getAllCookies } from "./getAllCookie";
 import { getSession } from "./Session";
 
 export const unlink = async (provider: string, id: string) => {
@@ -14,7 +15,9 @@ export const unlink = async (provider: string, id: string) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          cookie: await getAllCookies(),
         },
+        credentials: "include",
       }
     );
 

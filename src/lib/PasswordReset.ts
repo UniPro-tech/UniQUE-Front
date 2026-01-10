@@ -1,3 +1,5 @@
+import { getAllCookies } from "./getAllCookie";
+
 export const PasswordResetRequest = async (username: string) => {
   const response = await fetch(
     `${process.env.RESOURCE_API_URL}/users/password/reset`,
@@ -5,6 +7,7 @@ export const PasswordResetRequest = async (username: string) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        cookie: await getAllCookies(),
       },
       body: JSON.stringify({ username }),
     }

@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { redirect, unauthorized } from "next/navigation";
 import { FormStatus } from "../../Base";
 import { getAllSessions } from "./getter";
+import { getAllCookies } from "@/lib/getAllCookie";
 
 export const logoutSession = async (
   prevState: { sessions: Session[]; status: null | FormStatus },
@@ -25,6 +26,11 @@ export const logoutSession = async (
 
   const res = await fetch(`${process.env.RESOURCE_API_URL}/sessions/${id}`, {
     method: "DELETE",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      cookie: await getAllCookies(),
+    },
   });
 
   if (!res.ok) {

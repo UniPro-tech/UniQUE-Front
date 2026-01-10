@@ -4,6 +4,7 @@ import { VerifyCSRFToken } from "@/lib/CSRF";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { User } from "@/types/User";
 import { FormStatus } from "../Base";
+import { getAllCookies } from "@/lib/getAllCookie";
 
 export const updateAccountSettings = async (
   _prevState: { user: User; status: FormStatus | null },
@@ -22,11 +23,13 @@ export const updateAccountSettings = async (
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      cookie: await getAllCookies(),
     },
     body: JSON.stringify({
       display_name: displayName,
       external_email: externalEmail,
     }),
+    credentials: "include",
   });
 
   const user = toCamelcase(await res.json()) as User;

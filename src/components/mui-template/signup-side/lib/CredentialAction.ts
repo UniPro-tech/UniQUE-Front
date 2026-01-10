@@ -9,6 +9,7 @@ import { CSRFError } from "@/lib/RequestErrors";
 import { generateMailVerificationTemplate } from "./template/mailVerification";
 import { sendEmail } from "@/lib/mail";
 import { generateVerificationCode } from "@/lib/EmailVerification";
+import { getAllCookies } from "@/lib/getAllCookie";
 
 export async function signInAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -63,6 +64,7 @@ export async function signUpAction(formData: FormData) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        cookie: await getAllCookies(),
       },
       body: JSON.stringify({
         name,
@@ -70,6 +72,7 @@ export async function signUpAction(formData: FormData) {
         external_email,
         password,
       }),
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error(
@@ -113,11 +116,13 @@ export async function applyCompleteAction(formData: FormData) {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        cookie: await getAllCookies(),
       },
       body: JSON.stringify({
         birthdate: birthday,
         email_verified: true,
       }),
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error(
@@ -136,6 +141,7 @@ export async function applyCompleteAction(formData: FormData) {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          cookie: await getAllCookies(),
         },
       }
     );
@@ -195,6 +201,7 @@ export async function migrateAction(formData: FormData) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        cookie: await getAllCookies(),
       },
       body: JSON.stringify({
         name,
@@ -207,6 +214,7 @@ export async function migrateAction(formData: FormData) {
         period: period.toLowerCase(),
         joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
       }),
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error(

@@ -2,6 +2,7 @@
 import { User } from "@/types/User";
 import { toCamelcase, toSnakecase } from "./SnakeCamlUtil";
 import { convertToDateTime } from "./DateTimeUtils";
+import { getAllCookies } from "./getAllCookie";
 
 export const getUserById = async (userId: string) => {
   const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`);
@@ -21,7 +22,12 @@ export const getUsersList = async (isRoot: boolean) => {
       !isRoot ? "?filter=is_enable:true,is_suspended:false" : ""
     }`,
     {
+      headers: {
+        "Content-Type": "application/json",
+        cookie: await getAllCookies(),
+      },
       cache: "no-store",
+      credentials: "include",
     }
   );
   const users = await res.json();
@@ -40,6 +46,7 @@ export const saveUser = async (user: User): Promise<User> => {
         body: JSON.stringify({
           ...toSnakecase<User>(convertToDateTime(user)),
         }),
+        credentials: "include",
       }
     );
     if (!res.ok) {
@@ -58,6 +65,7 @@ export const deleteUser = async (userId: string) => {
   try {
     const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`, {
       method: "DELETE",
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error(

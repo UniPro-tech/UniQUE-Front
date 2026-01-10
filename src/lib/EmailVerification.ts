@@ -1,3 +1,5 @@
+import { getAllCookies } from "./getAllCookie";
+
 interface VerifyEmailResponse {
   created_at: Date;
   expires_at: Date;
@@ -18,7 +20,9 @@ export const verifyEmailCode = async (code: string) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        cookie: await getAllCookies(),
       },
+      credentials: "include",
     }
   );
   if (!apiRes.ok) {
@@ -48,10 +52,12 @@ export const generateVerificationCode = async (userId: string) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        cookie: await getAllCookies(),
       },
       body: JSON.stringify({
         expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
       }),
+      credentials: "include",
     }
   );
   if (!apiRes.ok) {

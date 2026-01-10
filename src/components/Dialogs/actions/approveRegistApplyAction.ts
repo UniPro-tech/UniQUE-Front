@@ -1,5 +1,6 @@
 "use server";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { getAllCookies } from "@/lib/getAllCookie";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { getUserById, saveUser } from "@/lib/Users";
 import { Discord } from "@/types/Discord";
@@ -26,7 +27,9 @@ export const approveRegistApplyAction = async (
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          cookie: await getAllCookies(),
         },
+        credentials: "include",
       }
     );
     if (!discordDataRes.ok) {
