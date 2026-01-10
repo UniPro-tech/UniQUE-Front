@@ -2,6 +2,7 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import ConsentCard from "@/components/mui-template/signup-side/components/ConsentCard";
+import { createApiClient } from "@/lib/apiClient";
 import { getSession } from "@/lib/resources/Session";
 import { redirect, RedirectType } from "next/navigation";
 
@@ -30,8 +31,7 @@ export default async function Page({
 
   const snacks: SnackbarData[] = [];
 
-  const api = process.env.RESOURCE_API_URL;
-  if (!client_id || !api) {
+  if (!client_id) {
     snacks.push({ message: "不正なリクエストです。", variant: "error" });
     return (
       <>
@@ -44,7 +44,8 @@ export default async function Page({
     );
   }
 
-  const appRes = await fetch(`${api}/apps/${client_id}`, { cache: "no-store" });
+  const apiClient = createApiClient();
+  const appRes = await apiClient.get(`/apps/${encodeURIComponent(client_id)}`);
   if (!appRes.ok) {
     snacks.push({ message: "不正なクライアントIDです。", variant: "error" });
     return (
