@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use server";
+import "server-only";
 import { getAllCookies } from "./getAllCookie";
 
 const BASE = process.env.RESOURCE_API_URL || "";
