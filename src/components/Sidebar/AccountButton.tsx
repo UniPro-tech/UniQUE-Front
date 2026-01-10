@@ -8,7 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { deleteSession, Session } from "@/lib/Session";
+import { deleteSession, Session } from "@/lib/resources/Session";
 import { redirect } from "next/navigation";
 import { Box } from "@mui/material";
 

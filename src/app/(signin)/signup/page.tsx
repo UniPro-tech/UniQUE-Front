@@ -6,7 +6,7 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import { verifyEmailCode } from "@/lib/EmailVerification";
-import { getUserById } from "@/lib/Users";
+import { getUserById } from "@/lib/resources/Users";
 import { redirect } from "next/navigation";
 
 enum ErrorType {

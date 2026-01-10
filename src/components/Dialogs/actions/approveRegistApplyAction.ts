@@ -3,7 +3,7 @@ import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { getAllCookies } from "@/lib/getAllCookie";
 import { apiGet } from "@/lib/apiClient";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
-import { getUserById, saveUser } from "@/lib/Users";
+import { getUserById, saveUser } from "@/lib/resources/Users";
 import { Discord } from "@/types/Discord";
 
 export const approveRegistApplyAction = async (

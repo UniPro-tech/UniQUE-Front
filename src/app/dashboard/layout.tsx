@@ -1,5 +1,5 @@
 import Drawer from "@/components/drawer";
-import { getSession } from "@/lib/Session";
+import { getSession } from "@/lib/resources/Session";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 export default async function RootLayout({

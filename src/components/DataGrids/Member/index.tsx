@@ -19,7 +19,7 @@ import { jaJP } from "@mui/x-data-grid/locales";
 import { User } from "@/types/User";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import DeleteDialog from "@/components/Dialogs/Delete";
-import { saveUser, deleteUser } from "@/lib/Users";
+import { saveUser, deleteUser } from "@/lib/resources/Users";
 import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
 
 export default function MembersDataGrid({

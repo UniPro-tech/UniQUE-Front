@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { User } from "@/types/User";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
-import { unlink } from "@/lib/SocialAccounts";
+import { unlink } from "@/lib/resources/SocialAccounts";
 
 export default function SocialAccountsCardClient({
   user,

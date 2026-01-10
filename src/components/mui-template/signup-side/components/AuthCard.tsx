@@ -1,7 +1,7 @@
 "use server";
 import { generateCSRFToken } from "@/lib/CSRF";
 import SignInCardClient from "./SignInCardClient";
-import { getSession } from "@/lib/Session";
+import { getSession } from "@/lib/resources/Session";
 import { redirect, RedirectType } from "next/navigation";
 import { SignInCardMode } from "../types/SignInCardMode";
 import { User } from "@/types/User";

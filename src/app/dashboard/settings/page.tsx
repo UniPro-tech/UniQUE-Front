@@ -1,7 +1,7 @@
 import AccountSettingsCard from "@/components/Pages/Settings/Cards/Account";
 import SecuritySettingsCard from "@/components/Pages/Settings/Cards/Security";
 import SocialAccountsSettingsCard from "@/components/Pages/Settings/Cards/SocialAccounts";
-import { getSession } from "@/lib/Session";
+import { getSession } from "@/lib/resources/Session";
 import { Stack, Typography } from "@mui/material";
 import { VariantType } from "notistack";
 import TemporarySnackProvider, {

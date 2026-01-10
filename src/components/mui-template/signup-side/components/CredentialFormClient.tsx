@@ -20,7 +20,7 @@ import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import { SignInCardMode } from "../types/SignInCardMode";
 import { enqueueSnackbar } from "notistack";
 import { User } from "@/types/User";
-import { unlink } from "@/lib/SocialAccounts";
+import { unlink } from "@/lib/resources/SocialAccounts";
 
 const credentialSchema = z.object({
   name: z.string().min(1, { message: "名前を入力してください。" }),

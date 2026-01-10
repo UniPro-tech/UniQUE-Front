@@ -1,4 +1,4 @@
-import { getUsersList } from "@/lib/Users";
+import { getUsersList } from "@/lib/resources/Users";
 import { Link, Stack, Typography } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
 

@@ -11,7 +11,7 @@ import {
   Box,
 } from "@mui/material";
 import { logoutSession } from "./action";
-import { Session } from "@/lib/Session";
+import { Session } from "@/lib/resources/Session";
 import { parseUA } from "@/lib/UserAgent";
 import { useActionState, useEffect, useState } from "react";
 import { FormStatus } from "../../Base";

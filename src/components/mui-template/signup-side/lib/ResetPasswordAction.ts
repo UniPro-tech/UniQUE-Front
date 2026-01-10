@@ -2,7 +2,7 @@
 
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { VerifyCSRFToken } from "@/lib/CSRF";
-import { PasswordResetRequest } from "@/lib/PasswordReset";
+import { PasswordResetRequest } from "@/lib/resources/PasswordReset";
 import { CSRFError } from "@/lib/RequestErrors";
 
 export async function resetPasswordAction(

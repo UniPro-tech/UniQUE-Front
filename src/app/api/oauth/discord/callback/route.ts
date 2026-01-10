@@ -1,7 +1,7 @@
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { verifyEmailCode } from "@/lib/EmailVerification";
 import { apiPut } from "@/lib/apiClient";
-import { getSession } from "@/lib/Session";
+import { getSession } from "@/lib/resources/Session";
 import { cookies } from "next/headers";
 import { unauthorized } from "next/navigation";
 import { decodeBase64 } from "tweetnacl-util";

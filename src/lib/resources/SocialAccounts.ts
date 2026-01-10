@@ -1,5 +1,4 @@
 "use server";
-import { getAllCookies } from "./getAllCookie";
 import { getSession } from "./Session";
 import { apiDelete } from "@/lib/apiClient";
 

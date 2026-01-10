@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getSession } from "./lib/Session";
+import { getSession } from "./lib/resources/Session";
 import { cookies } from "next/headers";
 
 // This function can be marked `async` if using `await` inside

@@ -1,6 +1,6 @@
 "use server";
 
-import { Session } from "@/lib/Session";
+import { Session } from "@/lib/resources/Session";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { apiGet } from "@/lib/apiClient";
 

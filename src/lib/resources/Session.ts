@@ -7,7 +7,6 @@ import * as util from "tweetnacl-util";
 import { toCamelcase } from "./SnakeCamlUtil";
 import { User } from "@/types/User";
 import { redirect } from "next/navigation";
-import { getAllCookies } from "./getAllCookie";
 import { apiGet, apiDelete } from "@/lib/apiClient";
 
 // 秘密鍵をファイルから読み込む

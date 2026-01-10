@@ -1,7 +1,7 @@
 "use server";
 
 import { authenticationRequest } from "@/lib/Authentication";
-import { createSession } from "@/lib/Session";
+import { createSession } from "@/lib/resources/Session";
 import { redirect, RedirectType } from "next/navigation";
 import { headers } from "next/headers";
 import { VerifyCSRFToken } from "@/lib/CSRF";

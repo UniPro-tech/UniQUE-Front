@@ -1,7 +1,7 @@
 import { generateCSRFToken } from "@/lib/CSRF";
 import { User } from "@/types/User";
 import SecuritySettingsCardClient from "./Client";
-import { getSession } from "@/lib/Session";
+import { getSession } from "@/lib/resources/Session";
 import { unauthorized } from "next/navigation";
 import { getAllSessions } from "./Sessions/getter";
 

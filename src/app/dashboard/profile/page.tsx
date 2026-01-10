@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/Session";
+import { getSession } from "@/lib/resources/Session";
 import { Card, Stack, Typography } from "@mui/material";
 
 export const metadata = {

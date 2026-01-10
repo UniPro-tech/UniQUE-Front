@@ -1,7 +1,7 @@
 "use server";
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
-import { getSession, Session } from "@/lib/Session";
+import { getSession, Session } from "@/lib/resources/Session";
 import { unauthorized } from "next/navigation";
 import { FormStatus } from "../../Base";
 import { getAllSessions } from "./getter";

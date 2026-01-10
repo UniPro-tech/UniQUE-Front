@@ -6,7 +6,7 @@ import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import React from "react";
 import PasswordSection from "./Password";
 import SessionsSection from "./Sessions";
-import { Session } from "@/lib/Session";
+import { Session } from "@/lib/resources/Session";
 
 export default function SecuritySettingsCardClient({
   user,

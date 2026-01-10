@@ -2,7 +2,7 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import ConsentCard from "@/components/mui-template/signup-side/components/ConsentCard";
-import { getSession } from "@/lib/Session";
+import { getSession } from "@/lib/resources/Session";
 import { redirect, RedirectType } from "next/navigation";
 
 export default async function Page({
