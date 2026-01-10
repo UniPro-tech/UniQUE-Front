@@ -1,6 +1,7 @@
 "use server";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { getAllCookies } from "@/lib/getAllCookie";
+import { apiGet } from "@/lib/apiClient";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { getUserById, saveUser } from "@/lib/Users";
 import { Discord } from "@/types/Discord";
@@ -21,17 +22,7 @@ export const approveRegistApplyAction = async (
   const mailboxPassword = formData.get("mailboxPassword") as string;
 
   try {
-    const discordDataRes = await fetch(
-      `${process.env.RESOURCE_API_URL}/users/${userId}/discord`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          cookie: await getAllCookies(),
-        },
-        credentials: "include",
-      }
-    );
+    const discordDataRes = await apiGet(`/users/${userId}/discord`);
     if (!discordDataRes.ok) {
       return {
         status: "error",

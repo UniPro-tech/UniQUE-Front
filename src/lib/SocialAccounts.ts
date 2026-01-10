@@ -1,6 +1,7 @@
 "use server";
 import { getAllCookies } from "./getAllCookie";
 import { getSession } from "./Session";
+import { apiDelete } from "@/lib/apiClient";
 
 export const unlink = async (provider: string, id: string) => {
   try {
@@ -9,17 +10,7 @@ export const unlink = async (provider: string, id: string) => {
     if (!user) {
       throw new Error("User not authenticated");
     }
-    const response = await fetch(
-      `${process.env.RESOURCE_API_URL}/users/${user.id}/${provider}/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          cookie: await getAllCookies(),
-        },
-        credentials: "include",
-      }
-    );
+    const response = await apiDelete(`/users/${user.id}/${provider}/${id}`);
 
     if (!response.ok) {
       switch (response.status) {

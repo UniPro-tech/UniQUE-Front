@@ -8,6 +8,7 @@ import { toCamelcase } from "./SnakeCamlUtil";
 import { User } from "@/types/User";
 import { redirect } from "next/navigation";
 import { getAllCookies } from "./getAllCookie";
+import { apiGet, apiDelete } from "@/lib/apiClient";
 
 // 秘密鍵をファイルから読み込む
 // 存在しない場合は新規作成
@@ -65,16 +66,9 @@ export const getSession = async (): Promise<Session | null> => {
   if (!sid) {
     return null;
   }
-  const session = await (
-    await fetch(`${process.env.RESOURCE_API_URL}/sessions/${sid}`, {
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      cache: "no-store",
-      credentials: "include",
-    })
-  ).json();
+  const res = await apiGet(`/sessions/${sid}`, { cache: "no-store" });
+  if (!res.ok) return null;
+  const session = await res.json();
   return toCamelcase<Session>(session);
 };
 
@@ -84,14 +78,9 @@ export const deleteSession = async (_formdata: FormData) => {
     return;
   }
   (await cookies()).delete("unique-sid");
-  const res2 = await fetch(
-    `${process.env.RESOURCE_API_URL}/sessions/${session_id}`,
-    {
-      method: "DELETE",
-      cache: "no-store",
-      credentials: "include",
-    }
-  );
+  const res2 = await apiDelete(`/sessions/${session_id}`, {
+    cache: "no-store",
+  });
   if (!res2.ok) {
     throw new Error("Failed to delete session");
   }

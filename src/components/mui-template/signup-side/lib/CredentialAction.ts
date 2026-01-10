@@ -9,7 +9,7 @@ import { CSRFError } from "@/lib/RequestErrors";
 import { generateMailVerificationTemplate } from "./template/mailVerification";
 import { sendEmail } from "@/lib/mail";
 import { generateVerificationCode } from "@/lib/EmailVerification";
-import { getAllCookies } from "@/lib/getAllCookie";
+import { apiPost, apiPatch, apiDelete } from "@/lib/apiClient";
 
 export async function signInAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -60,19 +60,11 @@ export async function signUpAction(formData: FormData) {
     if (!tokenVerified) {
       throw CSRFError;
     }
-    const res = await fetch(`${process.env.RESOURCE_API_URL}/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      body: JSON.stringify({
-        name,
-        custom_id,
-        external_email,
-        password,
-      }),
-      credentials: "include",
+    const res = await apiPost(`/users`, {
+      name,
+      custom_id,
+      external_email,
+      password,
     });
     if (!res.ok) {
       throw new Error(
@@ -112,17 +104,9 @@ export async function applyCompleteAction(formData: FormData) {
     if (!tokenVerified) {
       throw CSRFError;
     }
-    const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      body: JSON.stringify({
-        birthdate: birthday,
-        email_verified: true,
-      }),
-      credentials: "include",
+    const res = await apiPatch(`/users/${userId}`, {
+      birthdate: birthday,
+      email_verified: true,
     });
     if (!res.ok) {
       throw new Error(
@@ -133,17 +117,8 @@ export async function applyCompleteAction(formData: FormData) {
     throw error;
   }
   try {
-    const res = await fetch(
-      `${process.env.RESOURCE_API_URL}/email_verify/${encodeURIComponent(
-        code || ""
-      )}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          cookie: await getAllCookies(),
-        },
-      }
+    const res = await apiDelete(
+      `/email_verify/${encodeURIComponent(code || "")}`
     );
     if (!res.ok) {
       throw new Error(
@@ -197,24 +172,16 @@ export async function migrateAction(formData: FormData) {
       );
     }
     const joinedAt = new Date(verifyData.joined_at);
-    const res = await fetch(`${process.env.RESOURCE_API_URL}/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      body: JSON.stringify({
-        name,
-        custom_id,
-        external_email,
-        email: internalEmail,
-        email_verified: false,
-        password,
-        is_enable: true,
-        period: period.toLowerCase(),
-        joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
-      }),
-      credentials: "include",
+    const res = await apiPost(`/users`, {
+      name,
+      custom_id,
+      external_email,
+      email: internalEmail,
+      email_verified: false,
+      password,
+      is_enable: true,
+      period: period.toLowerCase(),
+      joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
     });
     if (!res.ok) {
       throw new Error(

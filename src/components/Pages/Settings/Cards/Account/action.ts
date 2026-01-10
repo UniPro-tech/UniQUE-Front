@@ -4,7 +4,7 @@ import { VerifyCSRFToken } from "@/lib/CSRF";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { User } from "@/types/User";
 import { FormStatus } from "../Base";
-import { getAllCookies } from "@/lib/getAllCookie";
+import { apiPatch } from "@/lib/apiClient";
 
 export const updateAccountSettings = async (
   _prevState: { user: User; status: FormStatus | null },
@@ -19,17 +19,9 @@ export const updateAccountSettings = async (
   const id = formData.get("id") as string;
 
   // ここでデータベースの更新などの処理を行う
-  const res = await fetch(`${process.env.RESOURCE_API_URL}/users/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      cookie: await getAllCookies(),
-    },
-    body: JSON.stringify({
-      display_name: displayName,
-      external_email: externalEmail,
-    }),
-    credentials: "include",
+  const res = await apiPatch(`/users/${id}`, {
+    display_name: displayName,
+    external_email: externalEmail,
   });
 
   const user = toCamelcase(await res.json()) as User;

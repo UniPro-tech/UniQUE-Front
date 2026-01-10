@@ -2,11 +2,10 @@
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { getSession, Session } from "@/lib/Session";
-import { cookies } from "next/headers";
-import { redirect, unauthorized } from "next/navigation";
+import { unauthorized } from "next/navigation";
 import { FormStatus } from "../../Base";
 import { getAllSessions } from "./getter";
-import { getAllCookies } from "@/lib/getAllCookie";
+import { apiDelete } from "@/lib/apiClient";
 
 export const logoutSession = async (
   prevState: { sessions: Session[]; status: null | FormStatus },
@@ -24,15 +23,7 @@ export const logoutSession = async (
     throw new Error("セッションIDがありません。");
   }
 
-  const res = await fetch(`${process.env.RESOURCE_API_URL}/sessions/${id}`, {
-    method: "DELETE",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      cookie: await getAllCookies(),
-    },
-  });
-
+  const res = await apiDelete(`/sessions/${id}`);
   if (!res.ok) {
     throw new Error("セッションの削除に失敗しました。");
   }

@@ -2,7 +2,7 @@
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { FormStatus } from "../../Base";
-import { getAllCookies } from "@/lib/getAllCookie";
+import { apiPut } from "@/lib/apiClient";
 
 export const updateSettings = async (
   _prevState: null | FormStatus,
@@ -26,21 +26,10 @@ export const updateSettings = async (
   }
 
   // ここでデータベースの更新などの処理を行う
-  const res = await fetch(
-    `${process.env.RESOURCE_API_URL}/users/${id}/password/change`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      body: JSON.stringify({
-        current_password: currentPassword,
-        new_password: newPassword,
-      }),
-      credentials: "include",
-    }
-  );
+  const res = await apiPut(`/users/${id}/password/change`, {
+    current_password: currentPassword,
+    new_password: newPassword,
+  });
 
   if (!res.ok) {
     // const errorData = await res.json();

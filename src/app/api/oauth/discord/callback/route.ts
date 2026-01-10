@@ -1,6 +1,6 @@
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { verifyEmailCode } from "@/lib/EmailVerification";
-import { getAllCookies } from "@/lib/getAllCookie";
+import { apiPut } from "@/lib/apiClient";
 import { getSession } from "@/lib/Session";
 import { cookies } from "next/headers";
 import { unauthorized } from "next/navigation";
@@ -79,21 +79,10 @@ export const GET = async (req: Request) => {
   }
   const userId = session?.user.id || emailverify?.user_id;
 
-  const res = await fetch(
-    `${process.env.RESOURCE_API_URL}/users/${userId}/discord`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      body: JSON.stringify({
-        discord_id: userData.id,
-        custom_id: userData.username,
-      }),
-      credentials: "include",
-    }
-  );
+  const res = await apiPut(`/users/${userId}/discord`, {
+    discord_id: userData.id,
+    custom_id: userData.username,
+  });
 
   const res2 = await fetch(
     "https://discord.com/api/guilds/" +

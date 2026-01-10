@@ -1,4 +1,4 @@
-import { getAllCookies } from "./getAllCookie";
+import { apiGet, apiPost } from "@/lib/apiClient";
 
 interface VerifyEmailResponse {
   created_at: Date;
@@ -14,17 +14,7 @@ interface VerifyEmailResponse {
  * @returns VerifyEmailResponse
  */
 export const verifyEmailCode = async (code: string) => {
-  const apiRes = await fetch(
-    `${process.env.RESOURCE_API_URL}/email_verify/${encodeURIComponent(code)}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      credentials: "include",
-    }
-  );
+  const apiRes = await apiGet(`/email_verify/${encodeURIComponent(code)}`);
   if (!apiRes.ok) {
     if (apiRes.status === 404) {
       return null;
@@ -46,20 +36,9 @@ export const verifyEmailCode = async (code: string) => {
  * @returns string 認証用コード
  */
 export const generateVerificationCode = async (userId: string) => {
-  const apiRes = await fetch(
-    `${process.env.RESOURCE_API_URL}/users/${userId}/email_verify`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: await getAllCookies(),
-      },
-      body: JSON.stringify({
-        expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-      }),
-      credentials: "include",
-    }
-  );
+  const apiRes = await apiPost(`/users/${userId}/email_verify`, {
+    expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
+  });
   if (!apiRes.ok) {
     throw new Error(
       `Post email verify action failed: ${apiRes.status} ${
@@ -73,9 +52,4 @@ export const generateVerificationCode = async (userId: string) => {
     throw new Error("Verification code not found in response");
   }
   return verificationCode;
-};
-
-export default {
-  verifyEmailCode,
-  generateVerificationCode,
 };

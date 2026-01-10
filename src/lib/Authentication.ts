@@ -4,6 +4,7 @@ import {
   AuthorizeError,
   ServerError,
 } from "./RequestErrors";
+import { createApiClient } from "@/lib/apiClient";
 
 export type Credentials = {
   username: string;
@@ -21,17 +22,12 @@ export interface AuthResponse {
   max_age: number;
 }
 
+const authApi = createApiClient(process.env.AUTH_API_URL);
+
 export const authenticationRequest = async (
   credentials: Credentials
 ): Promise<AuthResponse> => {
-  const response = await fetch(`${process.env.AUTH_API_URL}/authentication`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-    credentials: "include",
-  });
+  const response = await authApi.post(`/authentication`, credentials);
   if (!response.ok) {
     switch (response.status) {
       case 400:
