@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import path from "path";
 import nacl from "tweetnacl";
 import * as util from "tweetnacl-util";
-import { toCamelcase } from "./SnakeCamlUtil";
+import { toCamelcase } from "../SnakeCamlUtil";
 import { User } from "@/types/User";
 import { redirect } from "next/navigation";
 import { apiGet, apiDelete } from "@/lib/apiClient";
