@@ -20,7 +20,7 @@ export const updateAccountSettings = async (
 
   // ここでデータベースの更新などの処理を行う
   const res = await apiPatch(`/users/${id}`, {
-    display_name: displayName,
+    name: displayName,
     external_email: externalEmail,
   });
 
