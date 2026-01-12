@@ -271,17 +271,25 @@ export async function migrateAction(formData: FormData) {
       throw AuthenticationErrors.MigrationError;
     }
     const joinedAt = new Date(verifyData.joined_at);
-    const res = await apiPost(`/users`, {
-      name,
-      custom_id,
-      external_email,
-      email: internalEmail.toLowerCase(),
-      email_verified: false,
-      password,
-      is_enable: true,
-      period: period.toLowerCase(),
-      joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
-    });
+    const res = await apiPost(
+      `/users`,
+      {
+        name,
+        custom_id,
+        external_email,
+        email: internalEmail.toLowerCase(),
+        email_verified: false,
+        password,
+        is_enable: true,
+        period: period.toLowerCase(),
+        joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
+      },
+      {
+        headers: {
+          "X-Api-Key": process.env.RESOURCE_API_KEY || "",
+        },
+      }
+    );
     if (!res.ok) {
       // TODO: Logging
       throw AuthenticationErrors.MigrationError;
