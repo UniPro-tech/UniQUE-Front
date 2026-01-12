@@ -1,0 +1,101 @@
+import * as React from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import { User } from "@/types/User";
+import { TextField } from "@mui/material";
+import { userIdChangeApplyAction } from "./actions/approveRegistApplyAction";
+
+interface UserIdChangeApplyProps {
+  open: boolean;
+  handleClose: () => void;
+  user: User | null;
+}
+
+export default function UserIdChangeApply({
+  open,
+  handleClose,
+  user,
+}: UserIdChangeApplyProps) {
+  const [state, action, isPending] = React.useActionState(
+    userIdChangeApplyAction,
+    null as null | FormStatus
+  );
+  React.useEffect(() => {
+    if (state) {
+      enqueueSnackbar(state.message, { variant: state.status });
+      handleClose();
+    }
+  }, [state, handleClose]);
+
+  return (
+    <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        slotProps={{
+          paper: {
+            sx: { backgroundImage: "none" },
+          },
+        }}
+      >
+        <form action={action} id="approve-regist-apply-data-dialog">
+          <DialogTitle>ユーザーIDの変更申請</DialogTitle>
+          <DialogContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              width: "100%",
+            }}
+          >
+            <DialogContentText>
+              <strong>ユーザーIDの変更は原則としてできません。</strong>
+              <br />
+              特別な事情がある場合に限り、管理者が承認した場合のみ変更されます。
+              <br />
+              また、原則として、<strong>メールアドレスも変更となります</strong>
+              ので、ご了承ください。
+            </DialogContentText>
+            <input type="hidden" name="userId" value={user?.id || ""} />
+            <TextField
+              label="新しいユーザーID"
+              type="text"
+              name="newCustomId"
+              required
+              fullWidth
+              variant="outlined"
+              placeholder="hogehoge"
+              disabled={isPending}
+              helperText="@を除いたユーザーIDを入力してください。"
+            />
+            <TextField
+              label="変更理由"
+              type="text"
+              name="changeReason"
+              required
+              fullWidth
+              variant="outlined"
+              placeholder="変更理由を入力してください"
+              disabled={isPending}
+              helperText="変更理由を入力してください。"
+            />
+          </DialogContent>
+          <DialogActions sx={{ pb: 3, px: 3 }}>
+            <Button onClick={handleClose} disabled={isPending}>
+              キャンセル
+            </Button>
+            <Button variant="contained" type="submit" disabled={isPending}>
+              申請を送信
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </SnackbarProvider>
+  );
+}

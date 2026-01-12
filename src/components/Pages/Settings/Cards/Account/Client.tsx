@@ -10,9 +10,10 @@ import {
 import { User } from "@/types/User";
 import Base from "../Base";
 import { FormStatus } from "../Base";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { updateAccountSettings } from "./action";
 import { enqueueSnackbar } from "notistack";
+import UserIdChangeApply from "../../Dialogs/UserIdChangeApply";
 
 export default function AccountSettingsCardClient({
   user,
@@ -35,6 +36,8 @@ export default function AccountSettingsCardClient({
       });
     }
   }, [lastResult.status]);
+
+  const [openUserIdChangeDialog, setOpenUserIdChangeDialog] = useState(false);
   return (
     <Base
       sid={user.id}
@@ -71,7 +74,10 @@ export default function AccountSettingsCardClient({
           disabled
         />
         <FormHelperText>
-          ユーザーIDを変更するには申請が必要です。<Link href="#">申請する</Link>
+          ユーザーIDを変更するには申請が必要です。
+          <Link href="#" onClick={() => setOpenUserIdChangeDialog(true)}>
+            申請する
+          </Link>
         </FormHelperText>
       </Stack>
       <Stack>
@@ -82,8 +88,7 @@ export default function AccountSettingsCardClient({
           disabled
         />
         <FormHelperText>
-          メールアドレスを変更するには申請が必要です。
-          <Link href="#">申請する</Link>
+          メールアドレスは原則として所属期とユーザーIDに基づいて自動生成されます。
         </FormHelperText>
       </Stack>
       <TextField
@@ -100,6 +105,11 @@ export default function AccountSettingsCardClient({
       <Button variant="contained" fullWidth type="submit">
         保存
       </Button>
+      <UserIdChangeApply
+        open={openUserIdChangeDialog}
+        handleClose={() => setOpenUserIdChangeDialog(false)}
+        user={user}
+      />
     </Base>
   );
 }
