@@ -275,7 +275,7 @@ export async function migrateAction(formData: FormData) {
       name,
       custom_id,
       external_email,
-      email: internalEmail,
+      email: internalEmail.toLowerCase(),
       email_verified: false,
       password,
       is_enable: true,
