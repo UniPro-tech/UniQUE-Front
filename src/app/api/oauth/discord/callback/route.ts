@@ -1,7 +1,7 @@
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { verifyEmailCode } from "@/lib/EmailVerification";
 import { apiPut } from "@/lib/apiClient";
-import { getSession } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { cookies } from "next/headers";
 import { unauthorized } from "next/navigation";
 import { decodeBase64 } from "tweetnacl-util";
@@ -72,7 +72,7 @@ export const GET = async (req: Request) => {
 
   const userData = await userResponse.json();
 
-  const session = await getSession();
+  const session = await Session.get();
   const emailverify = await verifyEmailCode(signupCode || "");
   if (!session?.user && !emailverify) {
     unauthorized();

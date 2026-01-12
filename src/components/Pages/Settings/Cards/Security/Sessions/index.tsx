@@ -11,11 +11,11 @@ import {
   Box,
 } from "@mui/material";
 import { logoutSession } from "./action";
-import { Session } from "@/lib/resources/Session";
 import { parseUA } from "@/lib/UserAgent";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { FormStatus } from "../../Base";
 import { enqueueSnackbar } from "notistack";
+import Session from "@/types/Session";
 
 export default function SessionsSection({
   current_id,
@@ -26,7 +26,7 @@ export default function SessionsSection({
   sessions: Session[];
   csrfToken: string;
 }) {
-  const [latestResult, action, isPending] = useActionState(logoutSession, {
+  const [latestResult, action] = useActionState(logoutSession, {
     sessions,
     status: null as null | FormStatus,
   });

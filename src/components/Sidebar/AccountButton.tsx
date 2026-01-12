@@ -8,7 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { deleteSession, Session } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { redirect } from "next/navigation";
 import { Box } from "@mui/material";
 
@@ -96,7 +96,14 @@ export default function AccountMenu({ session }: { session: Session | null }) {
           </ListItemIcon>
           個人設定
         </MenuItem>
-        <Box component="form" action={deleteSession}>
+        <Box
+          component="form"
+          action={async () => {
+            await fetch("/api/auth/signout", { method: "POST" });
+            redirect("/signin?signouted=true");
+          }}
+          method="POST"
+        >
           <MenuItem component="button" type="submit" onClick={handleClose}>
             <ListItemIcon>
               <LogoutIcon fontSize="small" />

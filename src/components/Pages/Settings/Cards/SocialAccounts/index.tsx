@@ -8,6 +8,6 @@ export default async function SocialAccountsSettingsCard({
   user: User;
 }) {
   const sid = user.id;
-  const csrfToken = await generateCSRFToken(sid);
+  const csrfToken = generateCSRFToken(sid!);
   return <SocialAccountsCardClietnt user={user} csrfToken={csrfToken} />;
 }

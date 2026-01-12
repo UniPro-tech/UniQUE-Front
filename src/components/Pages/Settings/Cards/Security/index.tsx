@@ -1,18 +1,17 @@
 import { generateCSRFToken } from "@/lib/CSRF";
 import { User } from "@/types/User";
 import SecuritySettingsCardClient from "./Client";
-import { getSession } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { unauthorized } from "next/navigation";
-import { getAllSessions } from "./Sessions/getter";
 
 export default async function SecuritySettingsCard({ user }: { user: User }) {
-  const uid = user.id;
+  const uid = user.id!;
   const csrfToken = generateCSRFToken(uid);
-  const session = await getSession();
+  const session = await Session.get();
   if (!session) {
     unauthorized();
   }
-  const sessions = await getAllSessions(uid);
+  const sessions = await Session.list({ asPlain: true });
   return (
     <SecuritySettingsCardClient
       user={user}

@@ -1,7 +1,7 @@
 "use server";
 
 import { authenticationRequest } from "@/lib/Authentication";
-import { createSession } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { redirect, RedirectType } from "next/navigation";
 import { headers } from "next/headers";
 import { VerifyCSRFToken } from "@/lib/CSRF";
@@ -53,7 +53,7 @@ export async function signInAction(formData: FormData) {
     });
 
     // セッションCookieをセット
-    await createSession(data.session_id, new Date(data.expires));
+    await Session.create(data.session_id, new Date(data.expires));
   } catch (error) {
     console.error("Sign-in error:", error);
     switch (error) {

@@ -22,7 +22,7 @@ export enum PermissionBitsFields {
   // また、自身がOwnerである App に対しては別途許可される.
   // ここでは他者が所有する App に対する操作権限を定義する.
   APP_READ = 1 << 8, // App読み取り
-  APP_CREATE = 1 << 9, // App作成
+  // APP_CREATE = 1 << 9, // App作成 廃止
   APP_UPDATE = 1 << 10, // App更新
   APP_DELETE = 1 << 11, // App削除
   APP_SECRET_ROTATE = 1 << 12, // Appシークレットの再発行

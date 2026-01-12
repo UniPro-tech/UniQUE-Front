@@ -1,46 +1,44 @@
 "use server";
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
-import { User } from "@/types/User";
 import { FormStatus } from "../Base";
-import { apiPatch } from "@/lib/apiClient";
+import Session from "@/types/Session";
+import User from "@/types/User";
 
 export const updateAccountSettings = async (
   _prevState: { user: User; status: FormStatus | null },
   formData: FormData
 ) => {
-  // フォームデータから必要な情報を取得して処理を行う
-  const csrfToken = formData.get("csrfToken") as string;
-  const isVerified = await VerifyCSRFToken(csrfToken);
-  if (!isVerified) throw new Error("CSRF token verification failed");
-  const displayName = formData.get("display_name") as string;
-  const externalEmail = formData.get("external_email") as string;
-  const id = formData.get("id") as string;
+  try {
+    // フォームデータから必要な情報を取得して処理を行う
+    const csrfToken = formData.get("csrfToken") as string;
+    const isVerified = await VerifyCSRFToken(csrfToken);
+    if (!isVerified) throw new Error("CSRF token verification failed");
+    const displayName = formData.get("display_name") as string;
+    const externalEmail = formData.get("external_email") as string;
 
-  // ここでデータベースの更新などの処理を行う
-  const res = await apiPatch(`/users/${id}`, {
-    name: displayName,
-    external_email: externalEmail,
-  });
+    const session = await Session.get();
+    const user = session!.user;
+    user.name = displayName;
+    user.externalEmail = externalEmail;
+    await user.save();
 
-  const user = toCamelcase(await res.json()) as User;
-
-  if (!res.ok)
+    // 必要に応じて結果を返す
     return {
-      user,
+      user: user.convertPlain(),
       status: {
-        status: "error",
-        message: "エラーが発生しました",
+        status: "success",
+        message: "アカウントが更新されました。",
       } as FormStatus,
     };
-
-  // 必要に応じて結果を返す
-  return {
-    user,
-    status: {
-      status: "success",
-      message: "アカウントが更新されました。",
-    } as FormStatus,
-  };
+  } catch (error) {
+    console.error("Account update error:", error);
+    return {
+      user: _prevState.user,
+      status: {
+        status: "error",
+        message: "アカウントの更新に失敗しました。",
+      } as FormStatus,
+    };
+  }
 };

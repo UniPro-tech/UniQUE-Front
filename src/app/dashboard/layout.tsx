@@ -1,5 +1,5 @@
 import Drawer from "@/components/drawer";
-import { getSession } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 export default async function RootLayout({
@@ -7,7 +7,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
+  const session = await Session.get({ asPlain: true });
   return (
     <html lang="ja">
       <body className={`antialiased`}>

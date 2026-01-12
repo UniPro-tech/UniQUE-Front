@@ -1,37 +1,52 @@
 "use server";
 
 import { VerifyCSRFToken } from "@/lib/CSRF";
-import { getSession, Session } from "@/lib/resources/Session";
 import { unauthorized } from "next/navigation";
 import { FormStatus } from "../../Base";
-import { getAllSessions } from "./getter";
-import { apiDelete } from "@/lib/apiClient";
+import Session from "@/types/Session";
+import { FormRequestErrors } from "@/types/Errors/FormRequestErrors";
+import { FrontendErrors } from "@/types/Errors/FrontendErrors";
 
 export const logoutSession = async (
-  prevState: { sessions: Session[]; status: null | FormStatus },
+  prevState: { sessions: Session[]; status: FormStatus | null },
   formData: FormData
-) => {
-  const uid = (await getSession())?.user.id;
-  if (!uid) {
-    unauthorized();
-  }
-  const csrfToken = formData.get("csrfToken") as string;
-  const isVerified = await VerifyCSRFToken(csrfToken);
-  if (!isVerified) throw new Error("CSRF token verification failed");
-  const id = formData.get("id") as string;
-  if (!id) {
-    throw new Error("セッションIDがありません。");
-  }
+): Promise<{ sessions: Session[]; status: FormStatus }> => {
+  try {
+    const uid = (await Session.get())?.user.id;
+    if (!uid) {
+      unauthorized();
+    }
+    const csrfToken = formData.get("csrfToken") as string;
+    const isVerified = VerifyCSRFToken(csrfToken);
+    if (!isVerified) throw FormRequestErrors.CSRFTokenMismatch;
+    const id = formData.get("id") as string;
+    if (!id) {
+      throw FrontendErrors.InvalidInput;
+    }
 
-  const res = await apiDelete(`/sessions/${id}`);
-  if (!res.ok) {
-    throw new Error("セッションの削除に失敗しました。");
-  }
+    if (prevState.sessions.find((s) => s.id === id) === undefined) {
+      throw FrontendErrors.InvalidInput;
+    }
+    const targetSession = new Session(
+      prevState.sessions.find((s) => s.id === id)!
+    );
+    targetSession.delete();
 
-  const sessions = await getAllSessions(uid);
-  const status: FormStatus = {
-    status: "success",
-    message: "セッションをログアウトしました。",
-  };
-  return { sessions, status };
+    const sessions = await Session.list({ asPlain: true });
+    const status: FormStatus = {
+      status: "success",
+      message: "セッションをログアウトしました。",
+    };
+    return { sessions, status };
+  } catch (error) {
+    const sessions = prevState.sessions;
+    const status: FormStatus = {
+      status: "error",
+      message:
+        error instanceof Error
+          ? error.message
+          : "セッションのログアウト中に予期せぬエラーが発生しました。",
+    };
+    return { sessions, status };
+  }
 };

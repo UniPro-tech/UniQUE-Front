@@ -1,10 +1,10 @@
 "use server";
-import { getSession } from "./Session";
+import Session from "@/types/Session";
 import { apiDelete } from "@/lib/apiClient";
 
 export const unlink = async (provider: string, id: string) => {
   try {
-    const session = await getSession();
+    const session = await Session.get();
     const user = session?.user;
     if (!user) {
       throw new Error("User not authenticated");

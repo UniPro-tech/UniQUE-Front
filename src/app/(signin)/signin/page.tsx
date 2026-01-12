@@ -33,6 +33,7 @@ export default async function Page({
   searchParams: Promise<{
     mail?: string;
     migrated?: string;
+    signouted?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -40,8 +41,16 @@ export default async function Page({
       | FrontendErrorCodes;
   }>;
 }) {
-  const { mail, migrated, error } = await searchParams;
+  const { mail, migrated, error, signouted } = await searchParams;
   const snacks: SnackbarData[] = [
+    ...(signouted
+      ? [
+          {
+            message: `サインアウトしました。`,
+            variant: "success" as VariantType,
+          },
+        ]
+      : []),
     ...(mail
       ? [
           {

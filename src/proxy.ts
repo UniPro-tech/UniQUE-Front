@@ -1,10 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getSession } from "./lib/resources/Session";
+import Session from "@/types/Session";
 import { cookies } from "next/headers";
 
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
-  const session = await getSession();
+  const session = await Session.get();
   if (!session) {
     const cookieStore = await cookies();
     const sid = cookieStore.get("unique-sid")?.value || null;

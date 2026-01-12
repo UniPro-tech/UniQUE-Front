@@ -1,7 +1,7 @@
 import AccountSettingsCard from "@/components/Pages/Settings/Cards/Account";
 import SecuritySettingsCard from "@/components/Pages/Settings/Cards/Security";
 import SocialAccountsSettingsCard from "@/components/Pages/Settings/Cards/SocialAccounts";
-import { getSession } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { Stack, Typography } from "@mui/material";
 import { VariantType } from "notistack";
 import TemporarySnackProvider, {
@@ -22,7 +22,7 @@ export default async function Page({
   }>;
 }) {
   const { oauth, status } = await searchParams;
-  const session = await getSession();
+  const session = await Session.get({ asPlain: true });
   const user = session!.user;
   const snacks: SnackbarData[] = [
     ...(oauth
