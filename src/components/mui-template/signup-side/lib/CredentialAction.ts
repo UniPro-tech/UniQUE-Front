@@ -5,11 +5,27 @@ import { createSession } from "@/lib/resources/Session";
 import { redirect, RedirectType } from "next/navigation";
 import { headers } from "next/headers";
 import { VerifyCSRFToken } from "@/lib/CSRF";
-import { CSRFError } from "@/lib/RequestErrors";
 import { generateMailVerificationTemplate } from "./template/mailVerification";
 import { sendEmail } from "@/lib/mailManager";
 import { generateVerificationCode } from "@/lib/EmailVerification";
 import { apiPost, apiPatch, apiDelete } from "@/lib/apiClient";
+import {
+  FormRequestErrorCodes,
+  FormRequestErrors,
+} from "@/types/Errors/FormRequestErrors";
+import {
+  AuthenticationErrorCodes,
+  AuthenticationErrors,
+} from "@/types/Errors/AuthenticationErrors";
+import {
+  FrontendErrorCodes,
+  FrontendErrors,
+} from "@/types/Errors/FrontendErrors";
+import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
+import {
+  AuthorizationErrorCodes,
+  AuthorizationErrors,
+} from "@/types/Errors/AuthorizationErrors";
 
 export async function signInAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -20,7 +36,7 @@ export async function signInAction(formData: FormData) {
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
     if (!tokenVerified) {
-      throw CSRFError;
+      throw FormRequestErrors.CSRFTokenMismatch;
     }
 
     const headersList = await headers();
@@ -40,7 +56,38 @@ export async function signInAction(formData: FormData) {
     await createSession(data.session_id, new Date(data.expires));
   } catch (error) {
     console.error("Sign-in error:", error);
-    throw error; // エラーを再スロー
+    switch (error) {
+      case FormRequestErrors.CSRFTokenMismatch:
+        redirect(
+          `/signin?error=${FormRequestErrorCodes.CSRFTokenMismatch}`,
+          RedirectType.push
+        );
+      case AuthenticationErrors.MissingCredentials:
+        redirect(
+          `/signin?error=${AuthenticationErrorCodes.MissingCredentials}`,
+          RedirectType.push
+        );
+      case AuthenticationErrors.InvalidCredentials:
+        redirect(
+          `/signin?error=${AuthenticationErrorCodes.InvalidCredentials}`,
+          RedirectType.push
+        );
+      case AuthenticationErrors.AccountLocked:
+        redirect(
+          `/signin?error=${AuthenticationErrorCodes.AccountLocked}`,
+          RedirectType.push
+        );
+      case FrontendErrors.InvalidInput:
+        redirect(
+          `/signin?error=${FrontendErrorCodes.InvalidInput}`,
+          RedirectType.push
+        );
+      default:
+        redirect(
+          `/signin?error=${FrontendErrorCodes.UnhandledException}`,
+          RedirectType.push
+        );
+    }
   }
 
   // 成功時のリダイレクト
@@ -58,7 +105,7 @@ export async function signUpAction(formData: FormData) {
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
     if (!tokenVerified) {
-      throw CSRFError;
+      throw FormRequestErrors.CSRFTokenMismatch;
     }
     const res = await apiPost(`/users`, {
       name,
@@ -67,9 +114,11 @@ export async function signUpAction(formData: FormData) {
       password,
     });
     if (!res.ok) {
-      throw new Error(
-        `Sign-up failed: ${res.status} ${res.statusText} - ${await res.text()}`
-      );
+      if (res.status === 401) {
+        throw AuthorizationErrors.Unauthorized;
+      } else {
+        throw ResourceApiErrors.ResourceCreationFailed;
+      }
     }
     const resData = await res.json();
     uid = resData.id;
@@ -86,7 +135,24 @@ export async function signUpAction(formData: FormData) {
       template.html
     );
   } catch (error) {
-    throw error;
+    // TODO: Logging
+    switch (error) {
+      case FormRequestErrors.CSRFTokenMismatch:
+        redirect(
+          `/signup?error=${FormRequestErrorCodes.CSRFTokenMismatch}`,
+          RedirectType.push
+        );
+      case AuthorizationErrors.Unauthorized:
+        redirect(
+          `/signup?error=${AuthorizationErrorCodes.Unauthorized}`,
+          RedirectType.push
+        );
+      default:
+        redirect(
+          `/signup?error=${FrontendErrorCodes.UnhandledException}`,
+          RedirectType.push
+        );
+    }
   }
 
   // 成功時のリダイレクト
@@ -102,31 +168,65 @@ export async function applyCompleteAction(formData: FormData) {
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
     if (!tokenVerified) {
-      throw CSRFError;
+      throw FormRequestErrors.CSRFTokenMismatch;
     }
     const res = await apiPatch(`/users/${userId}`, {
       birthdate: birthday,
       email_verified: true,
     });
     if (!res.ok) {
-      throw new Error(
-        `Sign-up failed: ${res.status} ${res.statusText} - ${res}`
-      );
+      if (res.status === 401) {
+        throw AuthorizationErrors.Unauthorized;
+      } else {
+        throw ResourceApiErrors.ResourceUpdateFailed;
+      }
     }
   } catch (error) {
-    throw error;
+    switch (error) {
+      case AuthorizationErrors.Unauthorized:
+        redirect(
+          `/signup?code=${encodeURIComponent(code || "")}&error=${
+            AuthorizationErrorCodes.Unauthorized
+          }`,
+          RedirectType.push
+        );
+      default:
+        redirect(
+          `/signup?code=${encodeURIComponent(code || "")}&error=${
+            FrontendErrorCodes.UnhandledException
+          }`,
+          RedirectType.push
+        );
+    }
   }
   try {
     const res = await apiDelete(
       `/email_verify/${encodeURIComponent(code || "")}`
     );
     if (!res.ok) {
-      throw new Error(
-        `Delete email verify code failed: ${res.status} ${res.statusText} - ${res}`
-      );
+      if (res.status === 401) {
+        throw AuthorizationErrors.Unauthorized;
+      } else {
+        throw ResourceApiErrors.ResourceDeletionFailed;
+      }
     }
   } catch (error) {
-    throw error;
+    switch (error) {
+      case AuthorizationErrors.Unauthorized:
+        redirect(
+          `/signup?code=${encodeURIComponent(code || "")}&error=${
+            AuthorizationErrorCodes.Unauthorized
+          }`,
+          RedirectType.push
+        );
+      default:
+        redirect(
+          `/signup?code=${encodeURIComponent(code || "")}&error=${
+            FrontendErrorCodes.UnhandledException
+          }`,
+          RedirectType.push
+        );
+    }
   }
 
   // 成功時のリダイレクト
@@ -144,7 +244,7 @@ export async function migrateAction(formData: FormData) {
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
     if (!tokenVerified) {
-      throw CSRFError;
+      throw FormRequestErrors.CSRFTokenMismatch;
     }
     const internalEmail = `${
       period && period != "00" && period != "0"
@@ -167,9 +267,8 @@ export async function migrateAction(formData: FormData) {
         } - ${await verifyRes.text()}`
       );
     } else if (verifyData.status != "200") {
-      throw new Error(
-        `メンバー情報に誤りがあります。再度ご確認の上、正しい情報を入力してください。`
-      );
+      // TODO: Logging
+      throw AuthenticationErrors.MigrationError;
     }
     const joinedAt = new Date(verifyData.joined_at);
     const res = await apiPost(`/users`, {
@@ -184,13 +283,29 @@ export async function migrateAction(formData: FormData) {
       joined_at: joinedAt.toISOString().replace(/\.\d{3}Z$/, ""),
     });
     if (!res.ok) {
-      throw new Error(
-        `Migrate failed: ${res.status} ${res.statusText} - ${await res.text()}`
-      );
+      // TODO: Logging
+      throw AuthenticationErrors.MigrationError;
     }
     await res.json();
   } catch (error) {
-    throw error;
+    // TODO: Logging
+    switch (error) {
+      case FormRequestErrors.CSRFTokenMismatch:
+        redirect(
+          `/migrate?error=${FormRequestErrorCodes.CSRFTokenMismatch}`,
+          RedirectType.push
+        );
+      case AuthenticationErrors.MigrationError:
+        redirect(
+          `/migrate?error=${AuthenticationErrorCodes.MigrationError}`,
+          RedirectType.push
+        );
+      default:
+        redirect(
+          `/migrate?error=${FrontendErrorCodes.UnhandledException}`,
+          RedirectType.push
+        );
+    }
   }
 
   // 成功時のリダイレクト

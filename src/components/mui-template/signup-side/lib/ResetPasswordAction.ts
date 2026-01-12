@@ -3,7 +3,7 @@
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { PasswordResetRequest } from "@/lib/resources/PasswordReset";
-import { CSRFError } from "@/lib/RequestErrors";
+import { FormRequestErrors } from "@/types/Errors/FormRequestErrors";
 
 export async function resetPasswordAction(
   _prevState: FormStatus | null,
@@ -15,7 +15,7 @@ export async function resetPasswordAction(
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
     if (!tokenVerified) {
-      throw CSRFError;
+      throw FormRequestErrors.CSRFTokenMismatch;
     }
     await PasswordResetRequest(username);
     return {

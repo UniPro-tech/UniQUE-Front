@@ -5,6 +5,14 @@ import TemporarySnackProvider, {
 } from "@/components/TemporarySnackProvider";
 import { VariantType } from "notistack";
 import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
+import {
+  AuthenticationErrorCodes,
+  getAuthenticationErrorSnackbarData,
+} from "@/types/Errors/AuthenticationErrors";
+import {
+  FormRequestErrorCodes,
+  getFormRequestErrorSnackbarData,
+} from "@/types/Errors/FormRequestErrors";
 
 export const metadata = {
   title: "アカウント移行",
@@ -17,9 +25,10 @@ export default async function Page({
 }: {
   searchParams: Promise<{
     mail?: string;
+    error?: AuthenticationErrorCodes | FormRequestErrorCodes;
   }>;
 }) {
-  const { mail } = await searchParams;
+  const { mail, error } = await searchParams;
   const snacks: SnackbarData[] = [
     ...(mail
       ? [
@@ -28,6 +37,11 @@ export default async function Page({
             variant: "success" as VariantType,
           },
         ]
+      : []),
+    ...(error?.startsWith("A")
+      ? [getAuthenticationErrorSnackbarData(error as AuthenticationErrorCodes)]
+      : error?.startsWith("F")
+      ? [getFormRequestErrorSnackbarData(error as FormRequestErrorCodes)]
       : []),
   ];
   return (

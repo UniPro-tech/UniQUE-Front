@@ -1,10 +1,7 @@
-import {
-  BadRequestError,
-  AuthenticationError,
-  AuthorizeError,
-  ServerError,
-} from "./RequestErrors";
+import { FrontendErrors } from "@/types/Errors/FrontendErrors";
 import { createApiClient } from "@/lib/apiClient";
+import { AuthenticationErrors } from "@/types/Errors/AuthenticationErrors";
+import { AuthServerErrors } from "@/types/Errors/AuthServerErrors";
 
 export type Credentials = {
   username: string;
@@ -31,15 +28,11 @@ export const authenticationRequest = async (
   if (!response.ok) {
     switch (response.status) {
       case 400:
-        throw BadRequestError;
+        throw FrontendErrors.InvalidInput;
       case 401:
-        throw AuthenticationError;
-      case 403:
-        throw AuthorizeError;
-      case 500:
-        throw ServerError;
+        throw AuthenticationErrors.InvalidCredentials;
       default:
-        throw ServerError;
+        throw AuthServerErrors.InternalServerError;
     }
   } else {
     const data: AuthResponse = await response.json();
