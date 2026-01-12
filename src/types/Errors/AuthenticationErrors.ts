@@ -74,7 +74,7 @@ export function getAuthenticationErrorSnackbarData(
       };
     case AuthenticationErrorCodes.MigrationError:
       return {
-        message: `[${AuthenticationErrorCodes.MigrationError}] アカウントの移行中にエラーが発生しました。再度お試しください。`,
+        message: `[${AuthenticationErrorCodes.MigrationError}] アカウントの移行中にエラーが発生しました。ユーザー情報をお確かめの上、再度お試しください。`,
         variant: "error",
       };
     default:
