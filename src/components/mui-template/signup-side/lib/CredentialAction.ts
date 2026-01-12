@@ -26,6 +26,7 @@ import {
   AuthorizationErrorCodes,
   AuthorizationErrors,
 } from "@/types/Errors/AuthorizationErrors";
+import { getRealIPAddress } from "@/lib/UserAgentInfomation";
 
 export async function signInAction(formData: FormData) {
   const username = formData.get("username") as string;
@@ -41,8 +42,7 @@ export async function signInAction(formData: FormData) {
 
     const headersList = await headers();
     const userAgent = headersList.get("user-agent") || "";
-    const ip =
-      headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "";
+    const ip = await getRealIPAddress();
 
     const data = await authenticationRequest({
       username,
