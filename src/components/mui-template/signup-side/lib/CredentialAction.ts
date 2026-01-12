@@ -107,12 +107,20 @@ export async function signUpAction(formData: FormData) {
     if (!tokenVerified) {
       throw FormRequestErrors.CSRFTokenMismatch;
     }
-    const res = await apiPost(`/users`, {
-      name,
-      custom_id,
-      external_email,
-      password,
-    });
+    const res = await apiPost(
+      `/users`,
+      {
+        name,
+        custom_id,
+        external_email,
+        password,
+      },
+      {
+        headers: {
+          "X-Api-Key": process.env.RESOURCE_API_KEY || "",
+        },
+      }
+    );
     if (!res.ok) {
       if (res.status === 401) {
         throw AuthorizationErrors.Unauthorized;
@@ -170,10 +178,18 @@ export async function applyCompleteAction(formData: FormData) {
     if (!tokenVerified) {
       throw FormRequestErrors.CSRFTokenMismatch;
     }
-    const res = await apiPatch(`/users/${userId}`, {
-      birthdate: birthday,
-      email_verified: true,
-    });
+    const res = await apiPatch(
+      `/users/${userId}`,
+      {
+        birthdate: birthday,
+        email_verified: true,
+      },
+      {
+        headers: {
+          "X-Api-Key": process.env.RESOURCE_API_KEY || "",
+        },
+      }
+    );
     if (!res.ok) {
       if (res.status === 401) {
         throw AuthorizationErrors.Unauthorized;
@@ -201,7 +217,12 @@ export async function applyCompleteAction(formData: FormData) {
   }
   try {
     const res = await apiDelete(
-      `/email_verify/${encodeURIComponent(code || "")}`
+      `/email_verify/${encodeURIComponent(code || "")}`,
+      {
+        headers: {
+          "X-Api-Key": process.env.RESOURCE_API_KEY || "",
+        },
+      }
     );
     if (!res.ok) {
       if (res.status === 401) {
