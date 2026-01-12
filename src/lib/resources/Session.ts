@@ -75,13 +75,14 @@ export const getSession = async (): Promise<Session | null> => {
 export const deleteSession = async (_formdata: FormData) => {
   const session_id = (await getSession())?.id;
   if (!session_id) {
+    (await cookies()).delete("unique-sid");
     return;
   }
-  (await cookies()).delete("unique-sid");
   const res2 = await apiDelete(`/sessions/${session_id}`, {
     cache: "no-store",
   });
   if (!res2.ok) {
+    console.log(res2.status);
     switch (res2.status) {
       case 404:
         break;
@@ -93,5 +94,6 @@ export const deleteSession = async (_formdata: FormData) => {
         throw new Error(`Failed to delete session: ${res2.status}`);
     }
   }
+  (await cookies()).delete("unique-sid");
   redirect("/signin");
 };
