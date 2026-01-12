@@ -24,20 +24,19 @@ import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
 
 export default function MembersDataGrid({
   rows,
-  canUpdate,
   beforeJoined = false,
 }: {
-  rows: User[];
-  canUpdate: boolean;
+  rows: User[] | User<"Simple">[];
   beforeJoined?: boolean;
 }) {
   const apiRef = useGridApiRef();
   const [hasUnsavedRows, setHasUnsavedRows] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
-  const [localRows, setLocalRows] = React.useState<User[]>(() =>
-    beforeJoined
-      ? rows.filter((row) => row.email.startsWith("temp_"))
-      : rows.filter((row) => !row.email.startsWith("temp_"))
+  const [localRows, setLocalRows] = React.useState<User[] | User<"Simple">[]>(
+    () =>
+      beforeJoined
+        ? rows.filter((row) => row.email.startsWith("temp_"))
+        : rows.filter((row) => !row.email.startsWith("temp_"))
   );
   React.useEffect(() => {
     setLocalRows(
@@ -46,6 +45,7 @@ export default function MembersDataGrid({
         : rows.filter((row) => !row.email.startsWith("temp_"))
     );
   }, [rows, beforeJoined]);
+  const canUpdate = rows.length > 0 && !("isSuspended" in rows[0]) === false;
   const [undeletedRows, setUndeletedRows] = React.useState<GridRowId>();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const handleDelete = async (
@@ -82,7 +82,9 @@ export default function MembersDataGrid({
     }
   };
   const [approveDialogOpen, setApproveDialogOpen] = React.useState(false);
-  const [approvedUser, setApprovedUser] = React.useState<User | null>(null);
+  const [approvedUser, setApprovedUser] = React.useState<
+    User | User<"Simple"> | null
+  >(null);
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -422,7 +424,7 @@ export default function MembersDataGrid({
       <ApproveRegistApplyDialog
         open={approveDialogOpen}
         handleClose={() => setApproveDialogOpen(false)}
-        user={approvedUser}
+        user={approvedUser as User | null}
       />
     </div>
   );

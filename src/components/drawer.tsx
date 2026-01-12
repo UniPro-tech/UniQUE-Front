@@ -134,15 +134,17 @@ export default function MiniDrawer({
       role.permission & PermissionBitsFields.PERMISSION_MANAGE
   );
   const NAVIGSTION_LINKS: NavLink[][] = [
-    [{ text: "ホーム", href: "/dashboard", icon: <HomeIcon /> }],
+    [
+      { text: "ホーム", href: "/dashboard", icon: <HomeIcon /> },
+      {
+        text: "メンバー管理",
+        href: "/dashboard/members",
+        icon: <PeopleIcon />,
+      },
+    ],
     ...(isAdmin
       ? [
           [
-            {
-              text: "メンバー管理",
-              href: "/dashboard/members",
-              icon: <PeopleIcon />,
-            },
             {
               text: "メンバー申請管理",
               href: "/dashboard/requests",

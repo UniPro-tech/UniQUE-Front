@@ -8,8 +8,7 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const users = await getUsersList(true);
-  // TODO: RBAC
+  const users = await getUsersList();
   return (
     <Stack spacing={4}>
       <Stack>
@@ -21,7 +20,7 @@ export default async function Page() {
           <Link href="/dashboard/requests">メンバー申請一覧</Link>
         </Typography>
       </Stack>
-      <MembersDataGrid rows={users} canUpdate={true} />
+      <MembersDataGrid rows={users} />
     </Stack>
   );
 }

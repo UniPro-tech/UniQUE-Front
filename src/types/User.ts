@@ -1,7 +1,22 @@
 import { Discord } from "./Discord";
 import { Role } from "./Role";
 
-export interface User {
+// Simple版: 基本情報のみ
+interface UserSimple {
+  id: string;
+  name: string;
+  customId: string;
+  email: string;
+  period: string | null;
+  joinedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  discords?: Discord[];
+  roles?: Role[];
+}
+
+// Full版: 全てのパラメータ
+interface UserFull {
   id: string;
   name: string;
   customId: string;
@@ -19,3 +34,6 @@ export interface User {
   discords?: Discord[];
   roles?: Role[];
 }
+
+// ジェネリック型で簡潔にアクセス
+export type User<T = "Full"> = T extends "Full" ? UserFull : UserSimple;
