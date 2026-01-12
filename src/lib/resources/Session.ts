@@ -8,6 +8,7 @@ import { toCamelcase } from "../SnakeCamlUtil";
 import { User } from "@/types/User";
 import { redirect } from "next/navigation";
 import { apiGet, apiDelete } from "@/lib/apiClient";
+import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
 
 // 秘密鍵をファイルから読み込む
 // 存在しない場合は新規作成
@@ -81,7 +82,16 @@ export const deleteSession = async (_formdata: FormData) => {
     cache: "no-store",
   });
   if (!res2.ok) {
-    throw new Error("Failed to delete session");
+    switch (res2.status) {
+      case 404:
+        break;
+      case 403:
+        throw AuthorizationErrors.AccessDenied;
+      case 401:
+        throw AuthorizationErrors.Unauthorized;
+      default:
+        throw new Error(`Failed to delete session: ${res2.status}`);
+    }
   }
   redirect("/signin");
 };
