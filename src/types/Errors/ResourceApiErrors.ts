@@ -29,6 +29,9 @@ export const ResourceApiErrors = {
   ResourceDeletionFailed: new Error(
     `[${ResourceApiErrorCodes.ResourceDeletionFailed}] Resource deletion failed.`
   ),
+  ApiServerInternalError: new Error(
+    `[${ResourceApiErrorCodes.ApiServerInternalError}] API server internal error.`
+  ),
 };
 
 export function getResourceApiErrorSnackbarData(

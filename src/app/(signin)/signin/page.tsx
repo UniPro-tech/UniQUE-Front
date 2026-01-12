@@ -17,6 +17,10 @@ import {
   getAuthServerErrorSnackbarData,
   AuthServerErrorCodes,
 } from "@/types/Errors/AuthServerErrors";
+import {
+  FrontendErrorCodes,
+  getFrontendErrorSnackbarData,
+} from "@/types/Errors/FrontendErrors";
 
 export const metadata = {
   title: "サインイン",
@@ -32,7 +36,8 @@ export default async function Page({
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
-      | AuthServerErrorCodes;
+      | AuthServerErrorCodes
+      | FrontendErrorCodes;
   }>;
 }) {
   const { mail, migrated, error } = await searchParams;
@@ -59,6 +64,8 @@ export default async function Page({
       ? [getFormRequestErrorSnackbarData(error as FormRequestErrorCodes)]
       : error?.startsWith("D")
       ? [getAuthServerErrorSnackbarData(error as AuthServerErrorCodes)]
+      : error?.startsWith("E")
+      ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
       : []),
   ];
   return (
