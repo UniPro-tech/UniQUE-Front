@@ -301,6 +301,7 @@ export async function migrateAction(formData: FormData) {
           RedirectType.push
         );
       default:
+        console.log("Migrate error:", error);
         redirect(
           `/migrate?error=${FrontendErrorCodes.UnhandledException}`,
           RedirectType.push
