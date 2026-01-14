@@ -25,7 +25,7 @@ export default function PasswordSection({
   csrfToken: string;
   handleClickOpen: () => void;
 }) {
-  const [lastResult, action, isPending] = useActionState(
+  const [lastResult, action] = useActionState(
     updateSettings,
     null as null | FormStatus
   );
@@ -44,7 +44,7 @@ export default function PasswordSection({
       </Stack>
       <input type="hidden" name="csrfToken" value={csrfToken} />
       <input type="hidden" name="sid" value={sid} />
-      <input type="hidden" name="id" value={user.id} />
+      <input type="hidden" name="id" value={user.id!} />
       <TextField
         label="現在のパスワード"
         name="current_password"

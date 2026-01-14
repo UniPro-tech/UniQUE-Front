@@ -15,7 +15,7 @@ import { parseUA } from "@/lib/UserAgent";
 import { useActionState, useEffect } from "react";
 import { FormStatus } from "../../Base";
 import { enqueueSnackbar } from "notistack";
-import Session from "@/types/Session";
+import { SessionPlain } from "@/types/Session";
 
 export default function SessionsSection({
   current_id,
@@ -23,7 +23,7 @@ export default function SessionsSection({
   csrfToken,
 }: {
   current_id: string;
-  sessions: Session[];
+  sessions: SessionPlain[];
   csrfToken: string;
 }) {
   const [latestResult, action] = useActionState(logoutSession, {

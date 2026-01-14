@@ -3,14 +3,14 @@
 import { VerifyCSRFToken } from "@/lib/CSRF";
 import { unauthorized } from "next/navigation";
 import { FormStatus } from "../../Base";
-import Session from "@/types/Session";
+import Session, { SessionPlain } from "@/types/Session";
 import { FormRequestErrors } from "@/types/Errors/FormRequestErrors";
 import { FrontendErrors } from "@/types/Errors/FrontendErrors";
 
 export const logoutSession = async (
-  prevState: { sessions: Session[]; status: FormStatus | null },
+  prevState: { sessions: SessionPlain[]; status: FormStatus | null },
   formData: FormData
-): Promise<{ sessions: Session[]; status: FormStatus }> => {
+): Promise<{ sessions: SessionPlain[]; status: FormStatus }> => {
   try {
     const uid = (await Session.get())?.user.id;
     if (!uid) {

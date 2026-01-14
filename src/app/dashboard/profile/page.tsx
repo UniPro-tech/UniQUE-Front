@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { Card, Stack, Typography } from "@mui/material";
 
 export const metadata = {
@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default async function ProfilePage() {
-  const user = (await getSession())!.user;
+  const user = (await Session.get())!.user;
   return (
     <Stack>
       <Typography variant="h4" gutterBottom>

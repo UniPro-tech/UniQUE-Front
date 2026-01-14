@@ -53,7 +53,7 @@ export class Session {
       createdAt: this.createdAt,
       expiresAt: this.expiresAt,
       user: this.user.convertPlain(),
-    };
+    } as SessionPlain;
   }
 
   // --- Static helpers (server-only) ---
@@ -125,7 +125,9 @@ export class Session {
     }
   }
 
-  static async list(options?: { asPlain?: boolean }) {
+  static async list(options?: {
+    asPlain?: boolean;
+  }): Promise<Session[] | SessionPlain[]> {
     assertServer();
     const current = await Session.get({ asPlain: false });
     if (!current?.user.id) {
@@ -154,3 +156,13 @@ export class Session {
 }
 
 export default Session;
+
+export type SessionPlain = {
+  id: string;
+  ipAddress: string;
+  isEnable: boolean;
+  userAgent: string;
+  createdAt: string;
+  expiresAt: string;
+  user: User;
+};
