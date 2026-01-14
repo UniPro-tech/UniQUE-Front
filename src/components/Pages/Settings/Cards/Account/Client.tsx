@@ -24,8 +24,9 @@ export default function AccountSettingsCardClient({
 }) {
   const [lastResult, action, isPending] = useActionState(
     updateAccountSettings,
-    { user, status: null } as {
-      user: User;
+    { user: user.convertPlain(), status: null } as {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      user: any;
       status: FormStatus | null;
     }
   );
@@ -40,7 +41,7 @@ export default function AccountSettingsCardClient({
   const [openUserIdChangeDialog, setOpenUserIdChangeDialog] = useState(false);
   return (
     <Base
-      sid={user.id}
+      sid={user.id!}
       action={action}
       isPending={isPending}
       csrfToken={csrfToken}

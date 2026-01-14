@@ -1,10 +1,10 @@
 "use server";
 import { generateCSRFToken } from "@/lib/CSRF";
 import SignInCardClient from "./SignInCardClient";
-import { getSession } from "@/lib/resources/Session";
 import { redirect, RedirectType } from "next/navigation";
 import { SignInCardMode } from "../types/SignInCardMode";
 import { User } from "@/types/User";
+import Session from "@/types/Session";
 
 export default async function SignInCard({
   mode = SignInCardMode.SignIn,
@@ -15,7 +15,7 @@ export default async function SignInCard({
   user?: User;
   code?: string;
 }) {
-  const session = await getSession();
+  const session = await Session.get();
   if (session) {
     redirect("/dashboard", RedirectType.replace);
   }

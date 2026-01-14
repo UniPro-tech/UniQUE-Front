@@ -19,7 +19,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
-import { Session } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import AccountButton from "./Sidebar/AccountButton";
 import { Stack } from "@mui/material";
 import { PermissionBitsFields } from "@/types/PermissionBits";

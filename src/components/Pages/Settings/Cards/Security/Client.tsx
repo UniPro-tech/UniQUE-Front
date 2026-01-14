@@ -6,7 +6,7 @@ import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import React from "react";
 import PasswordSection from "./Password";
 import SessionsSection from "./Sessions";
-import { Session } from "@/lib/resources/Session";
+import { SessionPlain } from "@/types/Session";
 
 export default function SecuritySettingsCardClient({
   user,
@@ -17,7 +17,7 @@ export default function SecuritySettingsCardClient({
   user: User;
   csrfToken: string;
   sid: string;
-  sessions: Session[];
+  sessions: SessionPlain[];
 }) {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => setOpen(true);

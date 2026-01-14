@@ -3,7 +3,7 @@ import TemporarySnackProvider, {
 } from "@/components/TemporarySnackProvider";
 import ConsentCard from "@/components/mui-template/signup-side/components/ConsentCard";
 import { createApiClient } from "@/lib/apiClient";
-import { getSession } from "@/lib/resources/Session";
+import Session from "@/types/Session";
 import { redirect, RedirectType } from "next/navigation";
 
 export default async function Page({
@@ -23,7 +23,7 @@ export default async function Page({
   const params = await searchParams;
   const { client_id, redirect_uri, scope, state } = params;
 
-  const session = await getSession();
+  const session = await Session.get();
   if (!session) {
     const query = new URLSearchParams(params as Record<string, string>);
     redirect(`/signin/auth?${query.toString()}`, RedirectType.replace);
