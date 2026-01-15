@@ -24,7 +24,7 @@ export default function AccountSettingsCardClient({
 }) {
   const [lastResult, action, isPending] = useActionState(
     updateAccountSettings,
-    { user: user.convertPlain(), status: null } as {
+    { user: user, status: null } as {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       user: any;
       status: FormStatus | null;

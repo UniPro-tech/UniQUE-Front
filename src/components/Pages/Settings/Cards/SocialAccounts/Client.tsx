@@ -44,7 +44,7 @@ export default function SocialAccountsCardClient({
             </Typography>
             <Divider sx={{ flexGrow: 1 }} />
           </Stack>
-          {user.discords?.length !== 0 ? (
+          {user.discords && user.discords.length !== 0 ? (
             <List>
               {user.discords!.map((discord) => (
                 <ListItem key={discord.discordId}>
