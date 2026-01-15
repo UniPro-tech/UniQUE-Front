@@ -170,6 +170,7 @@ export default function RolesDataGridClient({
       columns: {
         columnVisibilityModel: {
           id: false,
+          permissionBit: false,
         },
       },
     }),
