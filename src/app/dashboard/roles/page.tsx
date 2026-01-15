@@ -1,4 +1,4 @@
-import RolesDataGrid from "@/components/DataGrids/Role";
+import RolesDataGrid from "@/components/DataGrids/Roles";
 import { Stack, Typography } from "@mui/material";
 
 export const metadata = {
