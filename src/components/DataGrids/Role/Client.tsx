@@ -102,10 +102,15 @@ export default function RolesDataGridClient({
                 ];
               },
             },
-            { field: "id", headerName: "ID", width: 250 },
           ] as GridColDef[])
         : []),
-      { field: "name", headerName: "役職名", editable: canUpdate, width: 200 },
+      { field: "id", headerName: "ID", width: 250 },
+      {
+        field: "name",
+        headerName: "ロール名",
+        editable: canUpdate,
+        width: 200,
+      },
       {
         field: "custom_id",
         headerName: "カスタムID",
@@ -154,6 +159,22 @@ export default function RolesDataGridClient({
       },
     ];
   }, [canUpdate]);
+
+  const initialState = React.useMemo<
+    NonNullable<DataGridProps["initialState"]>
+  >(
+    () => ({
+      sorting: {
+        sortModel: [{ field: "name", sort: "desc" }],
+      },
+      columns: {
+        columnVisibilityModel: {
+          id: false,
+        },
+      },
+    }),
+    []
+  );
 
   const processRowUpdate = React.useCallback<
     NonNullable<DataGridProps["processRowUpdate"]>
@@ -231,6 +252,7 @@ export default function RolesDataGridClient({
         rowsBeforeChange: {},
       };
     } catch (_error) {
+      // TODO: ErrorHandling
       setIsSaving(false);
     }
   }, [apiRef]);
@@ -277,6 +299,7 @@ export default function RolesDataGridClient({
           apiRef={apiRef}
           disableRowSelectionOnClick
           processRowUpdate={processRowUpdate}
+          initialState={initialState}
           ignoreValueFormatterDuringExport
           showToolbar
           sx={{
