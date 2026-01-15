@@ -70,8 +70,10 @@ export class Role {
           throw ResourceApiErrors.ApiServerInternalError;
       }
     }
-    const json = toCamelcase<{ users: User[] }>(await response.json());
-    return json.users;
+    const data = (await response.json()).data;
+    const json = toCamelcase<User[]>(data);
+    const res = json.map((item) => new User(item));
+    return res;
   }
 
   /**
