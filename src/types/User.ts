@@ -236,7 +236,7 @@ export class User<T extends "Simple" | "Full" = "Full"> {
     }
   }
 
-  convertPlain(): object {
+  convertPlain(): PlainUser<T> {
     return {
       id: this.id,
       name: this.name,
@@ -254,7 +254,7 @@ export class User<T extends "Simple" | "Full" = "Full"> {
       updatedAt: this.updatedAt,
       discords: this.discords,
       roles: this.roles,
-    } as User<T>;
+    } as PlainUser<T>;
   }
 }
 
@@ -262,6 +262,32 @@ type UserPermissionsResponse = {
   bit: number;
   permissions: string[];
 };
+
+export interface PlainSimpleUser {
+  id: string | null;
+  name: string;
+  customId: string;
+  email: string;
+  period: string | null;
+  joinedAt: Date | null;
+}
+
+export interface PlainFullUser extends PlainSimpleUser {
+  externalEmail: string;
+  isEnable: boolean;
+  isSuspended: boolean;
+  isSystem: boolean;
+  suspendedReason: string | null;
+  suspendedUntil: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  discords?: Discord[];
+  roles?: Role[];
+}
+
+export type PlainUser<T extends "Simple" | "Full" = "Full"> = T extends "Full"
+  ? PlainFullUser
+  : PlainSimpleUser;
 
 // 型エイリアス: 使いやすさのため
 export type UserSimple = User<"Simple">;
