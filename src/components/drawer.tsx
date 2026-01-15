@@ -126,12 +126,12 @@ export default function MiniDrawer({
 }) {
   const isAdmin = session?.user.roles?.some(
     (role) =>
-      role.permission & PermissionBitsFields.USER_CREATE &&
-      role.permission & PermissionBitsFields.USER_DELETE &&
-      role.permission & PermissionBitsFields.ROLE_MANAGE &&
-      role.permission & PermissionBitsFields.USER_DISABLE &&
-      role.permission & PermissionBitsFields.USER_UPDATE &&
-      role.permission & PermissionBitsFields.PERMISSION_MANAGE
+      role.permissionBit & PermissionBitsFields.USER_CREATE &&
+      role.permissionBit & PermissionBitsFields.USER_DELETE &&
+      role.permissionBit & PermissionBitsFields.ROLE_MANAGE &&
+      role.permissionBit & PermissionBitsFields.USER_DISABLE &&
+      role.permissionBit & PermissionBitsFields.USER_UPDATE &&
+      role.permissionBit & PermissionBitsFields.PERMISSION_MANAGE
   );
   const NAVIGSTION_LINKS: NavLink[][] = [
     [
