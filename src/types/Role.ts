@@ -306,8 +306,8 @@ export class Role {
       permission: plain.permissionBit,
       is_system: plain.isSystem,
       is_enable: plain.isEnable,
-      created_at: plain.createdAt,
-      updated_at: plain.updatedAt,
+      created_at: plain.createdAt ? plain.createdAt.toISOString() : undefined,
+      updated_at: plain.updatedAt ? plain.updatedAt.toISOString() : undefined,
     };
     const response = await apiPost(
       "/roles",
@@ -426,8 +426,8 @@ export type PlainRole = {
   permissionBit: number;
   isSystem?: boolean;
   isEnable?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
