@@ -24,10 +24,7 @@ export class Role {
    * @returns ロールの権限情報
    * @author Yuito Akatsuki <yuito@yuito-it.jp>
    */
-  async getPermissions(): Promise<{
-    permissionsBit: number;
-    permissionsText: string[];
-  }> {
+  async getPermissions(): Promise<PermissionResponse> {
     const response = await apiGet(`/roles/${this.id}/permissions`);
     if (!response.ok) {
       switch (response.status) {
@@ -444,4 +441,14 @@ type RoleRestDTO = {
   is_enable?: boolean;
   created_at?: string;
   updated_at?: string;
+};
+
+/**
+ * ロールの権限情報レスポンスの型定義
+ *
+ * @author Yuito Akatsuki <yuito@yuito-it.jp>
+ */
+type PermissionResponse = {
+  permissionsBit: number;
+  permissionsText: string[];
 };
