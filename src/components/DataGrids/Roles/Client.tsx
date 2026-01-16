@@ -107,7 +107,7 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
         width: 200,
       },
       {
-        field: "custom_id",
+        field: "customId",
         headerName: "カスタムID",
         width: 150,
       },

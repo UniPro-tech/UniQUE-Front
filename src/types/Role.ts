@@ -6,7 +6,7 @@ import User from "./User";
 
 export class Role {
   id: string;
-  custom_id: string;
+  customId: string;
   name: string;
   permissionBit: number;
   isSystem?: boolean;
@@ -141,7 +141,7 @@ export class Role {
     updatedAt?: Date
   ) {
     this.id = id;
-    this.custom_id = custom_id;
+    this.customId = custom_id;
     this.name = name;
     this.permissionBit = permissionBit;
     this.isSystem = isSystem;
@@ -164,7 +164,7 @@ export class Role {
   toPlainObject(): PlainRole {
     return {
       id: this.id,
-      custom_id: this.custom_id,
+      custom_id: this.customId,
       name: this.name,
       permissionBit: this.permissionBit,
       isSystem: this.isSystem,
@@ -352,7 +352,7 @@ export class Role {
   async save(): Promise<Role> {
     const updateData: RoleRestDTO = {
       id: this.id,
-      custom_id: this.custom_id,
+      custom_id: this.customId,
       name: this.name,
       permission: this.permissionBit,
       is_system: this.isSystem,
