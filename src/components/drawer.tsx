@@ -22,7 +22,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import Session from "@/types/Session";
 import AccountButton from "./Sidebar/AccountButton";
 import { Stack } from "@mui/material";
-import { PermissionBitsFields } from "@/types/PermissionBits";
+import { PermissionBitsFields } from "@/types/Permission";
 import Image from "next/image";
 import Link from "next/link";
 // use native img to avoid next/image dev-time optimization errors for this small logo
