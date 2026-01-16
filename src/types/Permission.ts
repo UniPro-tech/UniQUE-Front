@@ -39,3 +39,24 @@ export enum PermissionBitsFields {
   SESSION_MANAGE = 1 << 26, // セッション管理（強制ログアウトなど）
   MFA_MANAGE = 1 << 27, // 多要素認証の管理(リセットなど)
 }
+
+export enum PermissionTexts {
+  "USER_READ" = "ユーザー読み取り",
+  "USER_CREATE" = "ユーザー作成",
+  "USER_UPDATE" = "ユーザー更新",
+  "USER_DELETE" = "ユーザー削除",
+  "USER_DISABLE" = "ユーザー無効化",
+  "APP_READ" = "アプリ読み取り",
+  // "APP_CREATE" = "アプリ作成", --- IGNORE ---
+  "APP_UPDATE" = "アプリ更新",
+  "APP_DELETE" = "アプリ削除",
+  "APP_SECRET_ROTATE" = "アプリシークレットの再発行",
+  "TOKEN_REVOKE" = "トークン取り消し",
+  "AUDIT_READ" = "監査ログ読み取り",
+  "CONFIG_UPDATE" = "全体設定変更",
+  "KEY_MANAGE" = "JWK鍵管理",
+  "ROLE_MANAGE" = "ロール管理",
+  "PERMISSION_MANAGE" = "権限管理",
+  "SESSION_MANAGE" = "セッション管理",
+  "MFA_MANAGE" = "多要素認証管理",
+}
