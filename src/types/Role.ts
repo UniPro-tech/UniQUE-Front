@@ -448,7 +448,7 @@ type RoleRestDTO = {
  *
  * @author Yuito Akatsuki <yuito@yuito-it.jp>
  */
-type PermissionResponse = {
+export type PermissionResponse = {
   permissionsBit: number;
   permissionsText: string[];
 };
