@@ -23,7 +23,7 @@ export default async function Page({
   const params = await searchParams;
   const { client_id, redirect_uri, scope, state } = params;
 
-  const session = await Session.get();
+  const session = await (await Session.get())?.convertPlain();
   if (!session) {
     const query = new URLSearchParams(params as Record<string, string>);
     redirect(`/signin/auth?${query.toString()}`, RedirectType.replace);
