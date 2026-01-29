@@ -36,13 +36,13 @@ export default function MembersDataGrid({
     () =>
       beforeJoined
         ? rows.filter((row) => row.email.startsWith("temp_"))
-        : rows.filter((row) => !row.email.startsWith("temp_"))
+        : rows.filter((row) => !row.email.startsWith("temp_")),
   );
   React.useEffect(() => {
     setLocalRows(
       beforeJoined
         ? rows.filter((row) => row.email.startsWith("temp_"))
-        : rows.filter((row) => !row.email.startsWith("temp_"))
+        : rows.filter((row) => !row.email.startsWith("temp_")),
     );
   }, [rows, beforeJoined]);
   const canUpdate = rows.length > 0 && !("isSuspended" in rows[0]) === false;
@@ -50,7 +50,7 @@ export default function MembersDataGrid({
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const handleDelete = async (
     _prevState: FormStatus | null,
-    formData: FormData | null
+    formData: FormData | null,
   ) => {
     try {
       if (!undeletedRows) {
@@ -63,7 +63,7 @@ export default function MembersDataGrid({
       await deleteUser(String(undeletedRows));
       // remove row from grid data
       setLocalRows((prev) =>
-        prev.filter((r) => String(r.id) !== String(undeletedRows))
+        prev.filter((r) => String(r.id) !== String(undeletedRows)),
       );
       apiRef.current?.updateRows([{ id: undeletedRows, _action: "delete" }]);
       setUndeletedRows(undefined);
@@ -116,7 +116,7 @@ export default function MembersDataGrid({
                       onClick={() => {
                         setApprovedUser(
                           localRows.find((u) => String(u.id) === String(id)) ||
-                            null
+                            null,
                         );
                         setApproveDialogOpen(true);
                       }}
@@ -148,7 +148,7 @@ export default function MembersDataGrid({
                         delete unsavedChangesRef.current.unsavedRows[id];
                         setHasUnsavedRows(
                           Object.keys(unsavedChangesRef.current.unsavedRows)
-                            .length > 0
+                            .length > 0,
                         );
                       }}
                     />,
@@ -311,13 +311,13 @@ export default function MembersDataGrid({
             await deleteUser(String(row.id));
             apiRef.current?.updateRows([{ id: row.id, _action: "delete" }]);
             setLocalRows((prev) =>
-              prev.filter((r) => String(r.id) !== String(row.id))
+              prev.filter((r) => String(r.id) !== String(row.id)),
             );
           } else {
             const saved = await saveUser(row as unknown as User);
             apiRef.current?.updateRows([saved]);
             setLocalRows((prev) =>
-              prev.map((r) => (String(r.id) === String(saved.id) ? saved : r))
+              prev.map((r) => (String(r.id) === String(saved.id) ? saved : r)),
             );
           }
         } catch (err) {
@@ -333,7 +333,7 @@ export default function MembersDataGrid({
         unsavedRows: {},
         rowsBeforeChange: {},
       };
-    } catch (error) {
+    } catch {
       setIsSaving(false);
     }
   }, [apiRef]);
@@ -413,6 +413,7 @@ export default function MembersDataGrid({
           localeText={jaJP.components.MuiDataGrid.defaultProps.localeText}
           loading={isSaving}
           getRowClassName={getRowClassName}
+          autoHeight
         />
       </div>
       <DeleteDialog
