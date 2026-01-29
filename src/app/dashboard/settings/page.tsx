@@ -19,21 +19,29 @@ export default async function Page({
   searchParams: Promise<{
     oauth?: string;
     status?: VariantType;
+    reason?: "conflict";
   }>;
 }) {
-  const { oauth, status } = await searchParams;
+  const { oauth, status, reason } = await searchParams;
   const session = await Session.get({ asPlain: true });
   const user = session!.user;
   const snacks: SnackbarData[] = [
     ...(oauth
-      ? [
-          {
-            message: `OAuth連携: ${oauth} の連携が ${
-              status === "success" ? "成功" : "失敗"
-            }しました。`,
-            variant: status || "info",
-          },
-        ]
+      ? reason === "conflict"
+        ? [
+            {
+              message: `OAuth連携: このアカウントは既に連携されています。`,
+              variant: status || "info",
+            },
+          ]
+        : [
+            {
+              message: `OAuth連携: ${oauth} の連携が ${
+                status === "success" ? "成功" : "失敗"
+              }しました。`,
+              variant: status || "info",
+            },
+          ]
       : []),
   ];
   return (

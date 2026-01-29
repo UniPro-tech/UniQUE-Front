@@ -84,6 +84,16 @@ export const GET = async (req: Request) => {
     custom_id: userData.username,
   });
 
+  if (!res.ok) {
+    if (res.status === 409) {
+      return Response.redirect(
+        `${baseUrl}oauth=discord&status=error&reason=conflict`,
+        302,
+      );
+    }
+    return Response.redirect(`${baseUrl}oauth=discord&status=error`, 302);
+  }
+
   const res2 = await fetch(
     "https://discord.com/api/guilds/" +
       process.env.DISCORD_GUILD_ID +
@@ -98,7 +108,7 @@ export const GET = async (req: Request) => {
       body: JSON.stringify({
         access_token: accessToken,
       }),
-    }
+    },
   );
 
   if (res.status !== 201 || (res2.status !== 201 && res2.status !== 204)) {
