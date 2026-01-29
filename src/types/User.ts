@@ -1,4 +1,4 @@
-import { apiPatch, apiPost, apiPut } from "@/lib/apiClient";
+import { apiGet, apiPatch, apiPost, apiPut } from "@/lib/apiClient";
 import { Discord } from "./Discord";
 import { Role } from "./Role";
 import { AuthorizationErrors } from "./Errors/AuthorizationErrors";
@@ -55,7 +55,7 @@ export class User<T extends "Simple" | "Full" = "Full"> {
           updatedAt?: Date;
           discords?: Discord[];
           roles?: Role[];
-        }
+        },
   ) {
     if (data.id) this.id = data.id;
     if (data.name) this.name = data.name;
@@ -88,7 +88,7 @@ export class User<T extends "Simple" | "Full" = "Full"> {
       if (this.hasOwnProperty(key)) {
         const snakeKey = key.replace(
           /[A-Z]/g,
-          (letter) => `_${letter.toLowerCase()}`
+          (letter) => `_${letter.toLowerCase()}`,
         );
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         snakeCaseData[snakeKey] = (this as any)[key];
@@ -140,7 +140,7 @@ export class User<T extends "Simple" | "Full" = "Full"> {
         if (this.hasOwnProperty(key)) {
           const snakeKey = key.replace(
             /[A-Z]/g,
-            (letter) => `_${letter.toLowerCase()}`
+            (letter) => `_${letter.toLowerCase()}`,
           );
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           snakeCaseData[snakeKey] = (this as any)[key];
@@ -155,7 +155,7 @@ export class User<T extends "Simple" | "Full" = "Full"> {
         if (this.hasOwnProperty(key)) {
           const snakeKey = key.replace(
             /[A-Z]/g,
-            (letter) => `_${letter.toLowerCase()}`
+            (letter) => `_${letter.toLowerCase()}`,
           );
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           snakeCaseData[snakeKey] = (this as any)[key];
@@ -190,9 +190,9 @@ export class User<T extends "Simple" | "Full" = "Full"> {
   }
 
   static async getById<T extends "Simple" | "Full" = "Full">(
-    userId: string
+    userId: string,
   ): Promise<User<T>> {
-    const response = await apiPost(`/users/${userId}`);
+    const response = await apiGet(`/users/${userId}`);
     if (!response.ok) {
       switch (response.status) {
         case 401:
@@ -213,7 +213,7 @@ export class User<T extends "Simple" | "Full" = "Full"> {
 
   async passwordChange(
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<void> {
     if (!this.id) {
       throw new Error("User ID is not set");

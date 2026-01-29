@@ -32,7 +32,7 @@ export class Session {
     this.userAgent = data.userAgent;
     this.createdAt = data.createdAt;
     this.expiresAt = data.expiresAt;
-    this.user = data.user;
+    this.user = new User(data.user);
   }
 
   async delete() {
@@ -84,17 +84,17 @@ export class Session {
     if (!res.ok) return null;
     const json = await res.json();
     const data = toCamelcase<ConstructorParameters<typeof Session>[0]>(json);
-    const user = new User(data.user);
+    const user = (await User.getById(data.user.id!)).convertPlain();
     const asPlain = options?.asPlain || false;
-    return asPlain ? (data as Session) : new Session({ ...data, user });
+    data.user = user as User<"Full">;
+    return asPlain ? (data as Session) : new Session({ ...data });
   }
 
   static async logout(options?: { isAPI?: boolean }) {
     assertServer();
     const { apiDelete } = await import("@/lib/apiClient");
-    const { AuthorizationErrors } = await import(
-      "@/types/Errors/AuthorizationErrors"
-    );
+    const { AuthorizationErrors } =
+      await import("@/types/Errors/AuthorizationErrors");
     const { cookies } = await import("next/headers");
     const { redirect } = await import("next/navigation");
 
