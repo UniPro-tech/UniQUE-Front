@@ -373,7 +373,7 @@ export default function MembersDataGrid({
           </Button>
         </div>
       )}
-      <div style={{ height: 400 }}>
+      <div>
         <DataGrid
           rows={localRows}
           columns={columns}
