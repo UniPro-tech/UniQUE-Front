@@ -32,7 +32,6 @@ export default async function Page({
   const snacks: SnackbarData[] = [];
 
   if (!client_id) {
-    snacks.push({ message: "不正なリクエストです。", variant: "error" });
     return (
       <>
         <TemporarySnackProvider snacks={snacks} />
