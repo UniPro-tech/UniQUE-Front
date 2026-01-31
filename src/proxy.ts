@@ -9,7 +9,11 @@ export async function proxy(request: NextRequest) {
     const cookieStore = await cookies();
     const sid = cookieStore.get("unique-sid")?.value || null;
     if (sid) cookieStore.delete("unique-sid");
-    return NextResponse.redirect(new URL("/signin", request.url));
+    const { pathname, search } = request.nextUrl;
+    const redirectPath = `${pathname}${search}`;
+    const redirectUrl = new URL("/signin", request.url);
+    redirectUrl.searchParams.set("redirect", redirectPath);
+    return NextResponse.redirect(redirectUrl);
   }
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-url", request.url);
