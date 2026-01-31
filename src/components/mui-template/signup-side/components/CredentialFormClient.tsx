@@ -49,6 +49,7 @@ export default function CredentialFormClient(props: {
   csrfToken: string;
   user?: User;
   code?: string;
+  redirect?: string;
 }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -141,6 +142,9 @@ export default function CredentialFormClient(props: {
   return (
     <>
       <input type="hidden" name="csrfToken" value={props.csrfToken} />
+      {props.redirect && (
+        <input type="hidden" name="redirect" value={props.redirect} />
+      )}
       {(() => {
         switch (props.mode) {
           case SignInCardMode.SignUp:
@@ -238,13 +242,13 @@ export default function CredentialFormClient(props: {
                               .then(() => {
                                 enqueueSnackbar(
                                   "Discordアカウントの連携を解除しました。",
-                                  { variant: "success" }
+                                  { variant: "success" },
                                 );
                               })
                               .catch((error) => {
                                 enqueueSnackbar(
                                   `Discordアカウントの連携解除に失敗しました: ${error.message}`,
-                                  { variant: "error" }
+                                  { variant: "error" },
                                 );
                               })
                           }

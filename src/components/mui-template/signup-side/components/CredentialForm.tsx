@@ -14,6 +14,7 @@ export default function CredentialForm(props: {
   csrfToken: string;
   user?: User;
   code?: string;
+  redirect?: string;
 }) {
   return (
     <Box
@@ -37,6 +38,7 @@ export default function CredentialForm(props: {
         csrfToken={props.csrfToken}
         user={props.user}
         code={props.code}
+        redirect={props.redirect}
       />
     </Box>
   );

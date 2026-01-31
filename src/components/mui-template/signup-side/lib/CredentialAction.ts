@@ -33,6 +33,7 @@ export async function signInAction(formData: FormData) {
   const password = formData.get("password") as string;
   const remember = formData.get("remember") === "on";
   const csrfToken = formData.get("csrfToken") as string;
+  const redirectParam = formData.get("redirect") as string | null;
 
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
@@ -56,41 +57,47 @@ export async function signInAction(formData: FormData) {
     await Session.create(data.session_id, new Date(data.expires));
   } catch (error) {
     console.error("Sign-in error:", error);
+    const redirectQuery = redirectParam
+      ? `&redirect=${encodeURIComponent(redirectParam)}`
+      : "";
     switch (error) {
       case FormRequestErrors.CSRFTokenMismatch:
         redirect(
-          `/signin?error=${FormRequestErrorCodes.CSRFTokenMismatch}`,
-          RedirectType.push
+          `/signin?error=${FormRequestErrorCodes.CSRFTokenMismatch}${redirectQuery}`,
+          RedirectType.push,
         );
       case AuthenticationErrors.MissingCredentials:
         redirect(
-          `/signin?error=${AuthenticationErrorCodes.MissingCredentials}`,
-          RedirectType.push
+          `/signin?error=${AuthenticationErrorCodes.MissingCredentials}${redirectQuery}`,
+          RedirectType.push,
         );
       case AuthenticationErrors.InvalidCredentials:
         redirect(
-          `/signin?error=${AuthenticationErrorCodes.InvalidCredentials}`,
-          RedirectType.push
+          `/signin?error=${AuthenticationErrorCodes.InvalidCredentials}${redirectQuery}`,
+          RedirectType.push,
         );
       case AuthenticationErrors.AccountLocked:
         redirect(
-          `/signin?error=${AuthenticationErrorCodes.AccountLocked}`,
-          RedirectType.push
+          `/signin?error=${AuthenticationErrorCodes.AccountLocked}${redirectQuery}`,
+          RedirectType.push,
         );
       case FrontendErrors.InvalidInput:
         redirect(
-          `/signin?error=${FrontendErrorCodes.InvalidInput}`,
-          RedirectType.push
+          `/signin?error=${FrontendErrorCodes.InvalidInput}${redirectQuery}`,
+          RedirectType.push,
         );
       default:
         redirect(
-          `/signin?error=${FrontendErrorCodes.UnhandledException}`,
-          RedirectType.push
+          `/signin?error=${FrontendErrorCodes.UnhandledException}${redirectQuery}`,
+          RedirectType.push,
         );
     }
   }
 
   // 成功時のリダイレクト
+  if (redirectParam) {
+    redirect(redirectParam, RedirectType.push);
+  }
   redirect("/dashboard", RedirectType.push);
 }
 
@@ -100,6 +107,7 @@ export async function signUpAction(formData: FormData) {
   const external_email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const csrfToken = formData.get("csrfToken") as string;
+  const redirectParam = formData.get("redirect") as string | null;
   let uid;
 
   try {
@@ -119,7 +127,7 @@ export async function signUpAction(formData: FormData) {
         headers: {
           "X-Api-Key": process.env.RESOURCE_API_KEY || "",
         },
-      }
+      },
     );
     if (!res.ok) {
       if (res.status === 401) {
@@ -140,31 +148,37 @@ export async function signUpAction(formData: FormData) {
       external_email,
       "【UniQUE】仮登録完了 メールアドレス認証",
       template.text,
-      template.html
+      template.html,
     );
   } catch (error) {
     // TODO: Logging
+    const redirectQuery = redirectParam
+      ? `&redirect=${encodeURIComponent(redirectParam)}`
+      : "";
     switch (error) {
       case FormRequestErrors.CSRFTokenMismatch:
         redirect(
-          `/signup?error=${FormRequestErrorCodes.CSRFTokenMismatch}`,
-          RedirectType.push
+          `/signup?error=${FormRequestErrorCodes.CSRFTokenMismatch}${redirectQuery}`,
+          RedirectType.push,
         );
       case AuthorizationErrors.Unauthorized:
         redirect(
-          `/signup?error=${AuthorizationErrorCodes.Unauthorized}`,
-          RedirectType.push
+          `/signup?error=${AuthorizationErrorCodes.Unauthorized}${redirectQuery}`,
+          RedirectType.push,
         );
       default:
         redirect(
-          `/signup?error=${FrontendErrorCodes.UnhandledException}`,
-          RedirectType.push
+          `/signup?error=${FrontendErrorCodes.UnhandledException}${redirectQuery}`,
+          RedirectType.push,
         );
     }
   }
 
   // 成功時のリダイレクト
-  redirect("/signin?mail=sended", RedirectType.push);
+  const redirectQuery = redirectParam
+    ? `&redirect=${encodeURIComponent(redirectParam)}`
+    : "";
+  redirect(`/signin?mail=sended${redirectQuery}`, RedirectType.push);
 }
 
 export async function applyCompleteAction(formData: FormData) {
@@ -188,7 +202,7 @@ export async function applyCompleteAction(formData: FormData) {
         headers: {
           "X-Api-Key": process.env.RESOURCE_API_KEY || "",
         },
-      }
+      },
     );
     if (!res.ok) {
       if (res.status === 401) {
@@ -204,14 +218,14 @@ export async function applyCompleteAction(formData: FormData) {
           `/signup?code=${encodeURIComponent(code || "")}&error=${
             AuthorizationErrorCodes.Unauthorized
           }`,
-          RedirectType.push
+          RedirectType.push,
         );
       default:
         redirect(
           `/signup?code=${encodeURIComponent(code || "")}&error=${
             FrontendErrorCodes.UnhandledException
           }`,
-          RedirectType.push
+          RedirectType.push,
         );
     }
   }
@@ -222,7 +236,7 @@ export async function applyCompleteAction(formData: FormData) {
         headers: {
           "X-Api-Key": process.env.RESOURCE_API_KEY || "",
         },
-      }
+      },
     );
     if (!res.ok) {
       if (res.status === 401) {
@@ -238,14 +252,14 @@ export async function applyCompleteAction(formData: FormData) {
           `/signup?code=${encodeURIComponent(code || "")}&error=${
             AuthorizationErrorCodes.Unauthorized
           }`,
-          RedirectType.push
+          RedirectType.push,
         );
       default:
         redirect(
           `/signup?code=${encodeURIComponent(code || "")}&error=${
             FrontendErrorCodes.UnhandledException
           }`,
-          RedirectType.push
+          RedirectType.push,
         );
     }
   }
@@ -261,6 +275,7 @@ export async function migrateAction(formData: FormData) {
   const password = formData.get("password") as string;
   const period = formData.get("period") as string;
   const csrfToken = formData.get("csrfToken") as string;
+  const redirectParam = formData.get("redirect") as string | null;
 
   try {
     const tokenVerified = VerifyCSRFToken(csrfToken);
@@ -274,18 +289,18 @@ export async function migrateAction(formData: FormData) {
     }${custom_id}@uniproject.jp`;
     const verifyRes = await fetch(
       `${process.env.GAS_MIGRATE_API_URL}?external_email=${encodeURIComponent(
-        external_email
+        external_email,
       )}&internal_email=${encodeURIComponent(internalEmail)}`,
       {
         method: "GET",
-      }
+      },
     );
     const verifyData = await verifyRes.json();
     if (!verifyRes.ok) {
       throw new Error(
         `Migrate failed: ${verifyRes.status} ${
           verifyRes.statusText
-        } - ${await verifyRes.text()}`
+        } - ${await verifyRes.text()}`,
       );
     } else if (verifyData.status != "200") {
       // TODO: Logging
@@ -309,7 +324,7 @@ export async function migrateAction(formData: FormData) {
         headers: {
           "X-Api-Key": process.env.RESOURCE_API_KEY || "",
         },
-      }
+      },
     );
     if (!res.ok) {
       // TODO: Logging
@@ -318,26 +333,32 @@ export async function migrateAction(formData: FormData) {
     await res.json();
   } catch (error) {
     // TODO: Logging
+    const redirectQuery = redirectParam
+      ? `&redirect=${encodeURIComponent(redirectParam)}`
+      : "";
     switch (error) {
       case FormRequestErrors.CSRFTokenMismatch:
         redirect(
-          `/migrate?error=${FormRequestErrorCodes.CSRFTokenMismatch}`,
-          RedirectType.push
+          `/migrate?error=${FormRequestErrorCodes.CSRFTokenMismatch}${redirectQuery}`,
+          RedirectType.push,
         );
       case AuthenticationErrors.MigrationError:
         redirect(
-          `/migrate?error=${AuthenticationErrorCodes.MigrationError}`,
-          RedirectType.push
+          `/migrate?error=${AuthenticationErrorCodes.MigrationError}${redirectQuery}`,
+          RedirectType.push,
         );
       default:
         console.log("Migrate error:", error);
         redirect(
-          `/migrate?error=${FrontendErrorCodes.UnhandledException}`,
-          RedirectType.push
+          `/migrate?error=${FrontendErrorCodes.UnhandledException}${redirectQuery}`,
+          RedirectType.push,
         );
     }
   }
 
   // 成功時のリダイレクト
-  redirect("/signin?migrated=true", RedirectType.push);
+  const redirectQuery = redirectParam
+    ? `&redirect=${encodeURIComponent(redirectParam)}`
+    : "";
+  redirect(`/signin?migrated=true${redirectQuery}`, RedirectType.push);
 }

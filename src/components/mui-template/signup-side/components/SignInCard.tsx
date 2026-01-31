@@ -10,10 +10,12 @@ export default async function SignInCard({
   mode = SignInCardMode.SignIn,
   user,
   code,
+  redirect: redirectParam,
 }: {
   mode?: SignInCardMode;
   user?: User;
   code?: string;
+  redirect?: string;
 }) {
   const session = await Session.get();
   if (session) {
@@ -26,6 +28,7 @@ export default async function SignInCard({
       csrfToken={csrfToken}
       user={user}
       code={code}
+      redirect={redirectParam}
     />
   );
 }

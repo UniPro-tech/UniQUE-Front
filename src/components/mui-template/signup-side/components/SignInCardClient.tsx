@@ -19,7 +19,15 @@ export default function SignInCardClient(props: {
   csrfToken: string;
   user?: User;
   code?: string;
+  redirect?: string;
 }) {
+  const buildHrefWithRedirect = (href: string): string => {
+    if (!props.redirect) return href;
+    const url = new URL(href, "http://localhost");
+    url.searchParams.set("redirect", props.redirect);
+    return url.pathname + url.search;
+  };
+
   const IF_YOUR_TEXTS = (() => {
     switch (props.mode) {
       case SignInCardMode.SignUp:
@@ -27,12 +35,12 @@ export default function SignInCardClient(props: {
           {
             text: "アカウントをお持ちですか？",
             linkText: "サインイン",
-            linkHref: "/signin",
+            linkHref: buildHrefWithRedirect("/signin"),
           },
           {
             text: "既存メンバーですか？",
             linkText: "アカウント移行",
-            linkHref: "/migrate",
+            linkHref: buildHrefWithRedirect("/migrate"),
           },
         ];
       case SignInCardMode.SignUpEmailValidated:
@@ -42,12 +50,12 @@ export default function SignInCardClient(props: {
           {
             text: "アカウントをお持ちですか？",
             linkText: "サインアップ",
-            linkHref: "/signup",
+            linkHref: buildHrefWithRedirect("/signup"),
           },
           {
             text: "メンバー登録申請がまだですか？",
             linkText: "サインアップ",
-            linkHref: "/signup",
+            linkHref: buildHrefWithRedirect("/signup"),
           },
         ];
       case SignInCardMode.SignIn:
@@ -55,12 +63,12 @@ export default function SignInCardClient(props: {
           {
             text: "メンバー登録申請がまだですか？",
             linkText: "サインアップ",
-            linkHref: "/signup",
+            linkHref: buildHrefWithRedirect("/signup"),
           },
           {
             text: "アカウント移行がまだですか？",
             linkText: "アカウント移行",
-            linkHref: "/migrate",
+            linkHref: buildHrefWithRedirect("/migrate"),
           },
         ];
     }
@@ -137,6 +145,7 @@ export default function SignInCardClient(props: {
         csrfToken={props.csrfToken}
         user={props.user}
         code={props.code}
+        redirect={props.redirect}
       />
       {/*}
       <Divider>もしくは</Divider>

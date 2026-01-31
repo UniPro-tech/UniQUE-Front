@@ -34,6 +34,7 @@ export default async function Page({
     mail?: string;
     migrated?: string;
     signouted?: string;
+    redirect?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -41,7 +42,7 @@ export default async function Page({
       | FrontendErrorCodes;
   }>;
 }) {
-  const { mail, migrated, error, signouted } = await searchParams;
+  const { mail, migrated, error, signouted, redirect } = await searchParams;
   const snacks: SnackbarData[] = [
     ...(signouted
       ? [
@@ -70,18 +71,18 @@ export default async function Page({
     ...(error?.startsWith("A")
       ? [getAuthenticationErrorSnackbarData(error as AuthenticationErrorCodes)]
       : error?.startsWith("F")
-      ? [getFormRequestErrorSnackbarData(error as FormRequestErrorCodes)]
-      : error?.startsWith("D")
-      ? [getAuthServerErrorSnackbarData(error as AuthServerErrorCodes)]
-      : error?.startsWith("E")
-      ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
-      : []),
+        ? [getFormRequestErrorSnackbarData(error as FormRequestErrorCodes)]
+        : error?.startsWith("D")
+          ? [getAuthServerErrorSnackbarData(error as AuthServerErrorCodes)]
+          : error?.startsWith("E")
+            ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
+            : []),
   ];
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
       <Content mode={SignInCardMode.SignIn} />
-      <SignInCard mode={SignInCardMode.SignIn} />
+      <SignInCard mode={SignInCardMode.SignIn} redirect={redirect} />
     </>
   );
 }
