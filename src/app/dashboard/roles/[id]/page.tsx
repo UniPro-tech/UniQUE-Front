@@ -1,4 +1,6 @@
 import RoleUsersDataGrid from "@/components/DataGrids/RoleUsers";
+import PermissionsPanel from "@/components/Pages/Roles/PermissionsPanel";
+import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
 import { Role } from "@/types/Role";
 import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
 import { notFound } from "next/navigation";
@@ -10,7 +12,14 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const role = await Role.getRoleById(id);
+  let role;
+  try {
+    role = await Role.getRoleById(id);
+  } catch (error) {
+    if (error == ResourceApiErrors.ResourceNotFound) {
+      notFound();
+    }
+  }
   if (!role) {
     notFound();
   }
@@ -35,6 +44,12 @@ export default async function Page({
         <Suspense fallback={<div>Loading...</div>}>
           <RoleUsersDataGrid role={role} />
         </Suspense>
+      </Stack>
+      <Stack>
+        <Typography variant="h5" gutterBottom>
+          設定された権限一覧
+        </Typography>
+        <PermissionsPanel role={role} />
       </Stack>
     </Stack>
   );

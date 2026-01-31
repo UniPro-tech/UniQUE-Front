@@ -134,8 +134,8 @@ export class Role {
     permissionBit: number,
     isSystem?: boolean,
     isEnable?: boolean,
-    createdAt?: Date,
-    updatedAt?: Date
+    createdAt?: Date | string,
+    updatedAt?: Date | string,
   ) {
     this.id = id;
     this.customId = custom_id;
@@ -143,8 +143,16 @@ export class Role {
     this.permissionBit = permissionBit;
     this.isSystem = isSystem;
     this.isEnable = isEnable;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
+    this.createdAt = createdAt
+      ? createdAt instanceof Date
+        ? createdAt
+        : new Date(createdAt)
+      : undefined;
+    this.updatedAt = updatedAt
+      ? updatedAt instanceof Date
+        ? updatedAt
+        : new Date(updatedAt)
+      : undefined;
   }
 
   // =====================================
@@ -207,8 +215,8 @@ export class Role {
           item.is_system,
           item.is_enable,
           item.created_at ? new Date(item.created_at) : undefined,
-          item.updated_at ? new Date(item.updated_at) : undefined
-        )
+          item.updated_at ? new Date(item.updated_at) : undefined,
+        ),
     );
     return res;
   }
@@ -245,7 +253,7 @@ export class Role {
       data.is_system,
       data.is_enable,
       data.created_at ? new Date(data.created_at) : undefined,
-      data.updated_at ? new Date(data.updated_at) : undefined
+      data.updated_at ? new Date(data.updated_at) : undefined,
     );
     return res;
   }
@@ -282,7 +290,7 @@ export class Role {
       data.is_system,
       data.is_enable,
       data.created_at ? new Date(data.created_at) : undefined,
-      data.updated_at ? new Date(data.updated_at) : undefined
+      data.updated_at ? new Date(data.updated_at) : undefined,
     );
     return res;
   }
@@ -308,7 +316,7 @@ export class Role {
     };
     const response = await apiPost(
       "/roles",
-      toSnakecase<RoleRestDTO>(creationData)
+      toSnakecase<RoleRestDTO>(creationData),
     );
     if (!response.ok) {
       switch (response.status) {
@@ -332,7 +340,7 @@ export class Role {
       data.isSystem,
       data.isEnable,
       data.createdAt ? new Date(data.createdAt) : undefined,
-      data.updatedAt ? new Date(data.updatedAt) : undefined
+      data.updatedAt ? new Date(data.updatedAt) : undefined,
     );
   }
 
@@ -359,7 +367,7 @@ export class Role {
     };
     const response = await apiPut(
       `/roles/${this.id}`,
-      toSnakecase<RoleRestDTO>(updateData)
+      toSnakecase<RoleRestDTO>(updateData),
     );
     if (!response.ok) {
       switch (response.status) {
@@ -383,7 +391,7 @@ export class Role {
       data.isSystem,
       data.isEnable,
       data.createdAt ? new Date(data.createdAt) : undefined,
-      data.updatedAt ? new Date(data.updatedAt) : undefined
+      data.updatedAt ? new Date(data.updatedAt) : undefined,
     );
   }
 
@@ -432,7 +440,7 @@ export type PlainRole = {
  *
  * @author Yuito Akatsuki <yuito@yuito-it.jp>
  */
-type RoleRestDTO = {
+export type RoleRestDTO = {
   id: string;
   custom_id: string;
   name: string;

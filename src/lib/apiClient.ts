@@ -2,6 +2,7 @@
 import { getAllCookies } from "./getAllCookie";
 
 const BASE = process.env.RESOURCE_API_URL || "";
+const CLIENT_BASE = process.env.NEXT_PUBLIC_RESOURCE_API_URL || "";
 
 const normalizeHeaders = (headers: HeadersInit | undefined) => {
   if (!headers)
@@ -17,17 +18,23 @@ const normalizeHeaders = (headers: HeadersInit | undefined) => {
   };
 };
 
+const clientComponentCheck =
+  typeof window === "undefined" ? "server" : "client";
+
 export const apiFetch = async (path: string, init: RequestInit = {}) => {
   const cookie = await getAllCookies();
   const headers = normalizeHeaders(init.headers);
-  const res = await fetch(`${BASE}${path}`, {
-    ...init,
-    headers: {
-      ...headers,
-      cookie,
+  const res = await fetch(
+    `${clientComponentCheck === "server" ? BASE : CLIENT_BASE}${path}`,
+    {
+      ...init,
+      headers: {
+        ...headers,
+        cookie,
+      },
+      credentials: "include",
     },
-    credentials: "include",
-  });
+  );
   return res;
 };
 
