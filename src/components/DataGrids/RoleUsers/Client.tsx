@@ -15,7 +15,7 @@ import { darken } from "@mui/material";
 import { jaJP } from "@mui/x-data-grid/locales";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import DeleteDialog from "@/components/Dialogs/Delete";
-import { PlainUser } from "@/types/User";
+import { User } from "@/types/User";
 import { PlainRole, Role } from "@/types/Role";
 
 export default function RoleUsersDataGridClient({
@@ -23,20 +23,22 @@ export default function RoleUsersDataGridClient({
   rows,
 }: {
   role: PlainRole;
-  rows: PlainUser[];
+  rows: User[] | User<"Simple">[];
 }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<PlainUser[]>(() => rows);
+  const [localRows, setLocalRows] = React.useState<User[] | User<"Simple">[]>(
+    () => rows,
+  );
   React.useEffect(() => {
     setLocalRows(rows);
   }, [rows]);
   const [undeletedRows, setUndeletedRows] = React.useState<GridRowId | null>(
-    null
+    null,
   );
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const handleDelete = async (
     _prevState: FormStatus | null,
-    _formData: FormData | null
+    _formData: FormData | null,
   ) => {
     try {
       if (!undeletedRows) {
@@ -55,12 +57,12 @@ export default function RoleUsersDataGridClient({
         role.isSystem,
         role.isEnable,
         role.createdAt,
-        role.updatedAt
+        role.updatedAt,
       );
       await roleInstance.unassignUser(undeletedRows as string);
       // remove row from grid data
       setLocalRows((prev) =>
-        prev.filter((r) => String(r.id) !== String(undeletedRows))
+        prev.filter((r) => String(r.id) !== String(undeletedRows)),
       );
       apiRef.current?.updateRows([{ id: undeletedRows, _action: "delete" }]);
       setUndeletedRows(null);
@@ -168,7 +170,7 @@ export default function RoleUsersDataGridClient({
         },
       },
     }),
-    []
+    [],
   );
 
   const getRowClassName = React.useCallback<
