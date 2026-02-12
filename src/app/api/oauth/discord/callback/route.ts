@@ -336,6 +336,15 @@ export const GET = async (request: NextRequest) => {
     } else {
       redirectPath = `/dashboard/settings?oauth=Discord&status=error`;
     }
-    return Response.redirect(new URL(redirectPath, request.nextUrl.origin));
+    const x_url_header = request.headers.get("x-url") || "unknown";
+    const origin = () => {
+      try {
+        const url = new URL(x_url_header);
+        return url.origin;
+      } catch {
+        return request.nextUrl.origin;
+      }
+    };
+    return Response.redirect(new URL(redirectPath, origin()));
   }
 };
