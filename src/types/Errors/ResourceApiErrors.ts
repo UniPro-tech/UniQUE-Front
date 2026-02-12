@@ -17,33 +17,33 @@ export enum ResourceApiErrorCodes {
 
 export const ResourceApiErrors = {
   ResourceNotFound: new Error(
-    `[${ResourceApiErrorCodes.ResourceNotFound}] Resource not found.`
+    `[${ResourceApiErrorCodes.ResourceNotFound}] Resource not found.`,
   ),
   ResourceAlreadyExists: new Error(
-    `[${ResourceApiErrorCodes.ResourceAlreadyExists}] Resource already exists.`
+    `[${ResourceApiErrorCodes.ResourceAlreadyExists}] Resource already exists.`,
   ),
   ResourceCreationFailed: new Error(
-    `[${ResourceApiErrorCodes.ResourceCreationFailed}] Resource creation failed.`
+    `[${ResourceApiErrorCodes.ResourceCreationFailed}] Resource creation failed.`,
   ),
   ResourceUpdateFailed: new Error(
-    `[${ResourceApiErrorCodes.ResourceUpdateFailed}] Resource update failed.`
+    `[${ResourceApiErrorCodes.ResourceUpdateFailed}] Resource update failed.`,
   ),
   ResourceDeletionFailed: new Error(
-    `[${ResourceApiErrorCodes.ResourceDeletionFailed}] Resource deletion failed.`
+    `[${ResourceApiErrorCodes.ResourceDeletionFailed}] Resource deletion failed.`,
   ),
   UsernameAlreadyExists: new Error(
-    `[${ResourceApiErrorCodes.UsernameAlreadyExists}] Username already exists.`
+    `[${ResourceApiErrorCodes.UsernameAlreadyExists}] Username already exists.`,
   ),
   EmailAlreadyExists: new Error(
-    `[${ResourceApiErrorCodes.EmailAlreadyExists}] Email already exists.`
+    `[${ResourceApiErrorCodes.EmailAlreadyExists}] Email already exists.`,
   ),
   ApiServerInternalError: new Error(
-    `[${ResourceApiErrorCodes.ApiServerInternalError}] API server internal error.`
+    `[${ResourceApiErrorCodes.ApiServerInternalError}] API server internal error.`,
   ),
 };
 
 export function getResourceApiErrorSnackbarData(
-  error: ResourceApiErrorCodes
+  error: ResourceApiErrorCodes,
 ): SnackbarData {
   switch (error) {
     case ResourceApiErrorCodes.ResourceNotFound:
@@ -88,7 +88,7 @@ export function getResourceApiErrorSnackbarData(
       };
     default:
       return getFrontendErrorSnackbarData(
-        FrontendErrorCodes.UnhandledException
+        FrontendErrorCodes.UnhandledException,
       );
   }
 }

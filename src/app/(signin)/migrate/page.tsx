@@ -77,9 +77,7 @@ export default async function Page({
         getResourceApiErrorSnackbarData(error as ResourceApiErrorCodes),
       );
     } else if (error.startsWith("E")) {
-      snacks.push(
-        getFrontendErrorSnackbarData(error as FrontendErrorCodes),
-      );
+      snacks.push(getFrontendErrorSnackbarData(error as FrontendErrorCodes));
     }
   }
   return (
