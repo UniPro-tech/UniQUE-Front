@@ -2,6 +2,7 @@ import Drawer from "@/components/drawer";
 import Session from "@/types/Session";
 import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import { RoleDTO } from "@/types/Role";
 
 export default async function RootLayout({
   children,
@@ -10,7 +11,7 @@ export default async function RootLayout({
 }>) {
   const session = await Session.get();
   const sessionPlain = session ? await session.convertPlain() : null;
-  let userRoles = [];
+  let userRoles: RoleDTO[] | undefined = [];
   if (session) {
     try {
       userRoles = await session.user.getRoles();
