@@ -1,4 +1,5 @@
 "use server";
+import { sanitizeForLog } from "@/lib/logSanitize";
 
 /**
  * Discord API を使用してユーザーに DM を送信します。
@@ -34,10 +35,8 @@ export async function sendDiscordDM(
     );
 
     if (!dmChannelResponse.ok) {
-      console.error(
-        "DM チャンネルの作成に失敗:",
-        await dmChannelResponse.text(),
-      );
+      const dmErr = await dmChannelResponse.text().catch(() => null);
+      console.error("DM チャンネルの作成に失敗:", sanitizeForLog(dmErr));
       return false;
     }
 
@@ -60,16 +59,17 @@ export async function sendDiscordDM(
     );
 
     if (!messageResponse.ok) {
-      console.error("メッセージの送信に失敗:", await messageResponse.text());
+      const msgErr = await messageResponse.text().catch(() => null);
+      console.error("メッセージの送信に失敗:", sanitizeForLog(msgErr));
       return false;
     }
 
     console.log(
-      `Discord DM を送信しました: userId=${discordUserId}, channelId=${channelId}`,
+      `Discord DM を送信しました: userId=${sanitizeForLog(discordUserId, 64)}, channelId=${sanitizeForLog(channelId, 64)}`,
     );
     return true;
   } catch (error) {
-    console.error("Discord DM の送信中にエラーが発生:", error);
+    console.error("Discord DM の送信中にエラーが発生:", sanitizeForLog(error));
     return false;
   }
 }
@@ -121,35 +121,46 @@ export async function assignDiscordRole(
 
   try {
     // ユーザーにロールを付与
-    const response = await fetch(
-      `https://discord.com/api/v10/guilds/${guildId}/members/${discordUserId}/roles/${memberRoleId}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bot ${botToken}`,
-          "Content-Type": "application/json",
-        },
+    const endpoint = `https://discord.com/api/v10/guilds/${encodeURIComponent(
+      guildId,
+    )}/members/${encodeURIComponent(discordUserId)}/roles/${encodeURIComponent(
+      memberRoleId,
+    )}`;
+    const response = await fetch(endpoint, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bot ${botToken}`,
+        "Content-Type": "application/json",
       },
-    );
+    });
 
     if (!response.ok) {
       // 204 No Content が正常なレスポンスなので、チェックを調整
       if (response.status === 204) {
         console.log(
-          `Discord ロールを付与しました: userId=${discordUserId}, roleId=${memberRoleId}`,
+          `Discord ロールを付与しました: userId=${sanitizeForLog(discordUserId, 64)}, roleId=${sanitizeForLog(memberRoleId, 64)}`,
         );
         return true;
       }
-      console.error("ロールの付与に失敗:", await response.text());
+      const respErr = await response.text().catch(() => null);
+      console.error(
+        "ロールの付与に失敗:",
+        sanitizeForLog(respErr),
+        "endpoint=",
+        sanitizeForLog(endpoint, 200),
+      );
       return false;
     }
 
     console.log(
-      `Discord ロールを付与しました: userId=${discordUserId}, roleId=${memberRoleId}`,
+      `Discord ロールを付与しました: userId=${sanitizeForLog(discordUserId, 64)}, roleId=${sanitizeForLog(memberRoleId, 64)}`,
     );
     return true;
   } catch (error) {
-    console.error("Discord ロールの付与中にエラーが発生:", error);
+    console.error(
+      "Discord ロールの付与中にエラーが発生:",
+      sanitizeForLog(error),
+    );
     return false;
   }
 }
@@ -179,18 +190,32 @@ export async function isUserInGuild(discordUserId: string): Promise<boolean> {
   }
 
   try {
-    const response = await fetch(
-      `https://discord.com/api/v10/guilds/${guildId}/members/${discordUserId}`,
-      {
-        headers: {
-          Authorization: `Bot ${botToken}`,
-        },
+    const endpoint = `https://discord.com/api/v10/guilds/${encodeURIComponent(
+      guildId,
+    )}/members/${encodeURIComponent(discordUserId)}`;
+    const response = await fetch(endpoint, {
+      headers: {
+        Authorization: `Bot ${botToken}`,
       },
-    );
+    });
 
-    return response.ok;
+    if (!response.ok) {
+      const respErr = await response.text().catch(() => null);
+      console.error(
+        "ユーザーのサーバー参加確認に失敗:",
+        sanitizeForLog(respErr),
+        "endpoint=",
+        sanitizeForLog(endpoint, 200),
+      );
+      return false;
+    }
+
+    return true;
   } catch (error) {
-    console.error("ユーザーのサーバー参加状況の確認中にエラー:", error);
+    console.error(
+      "ユーザーのサーバー参加状況の確認中にエラー:",
+      sanitizeForLog(error),
+    );
     return false;
   }
 }
