@@ -15,7 +15,7 @@ export async function updateRole(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const role = await Role.getRoleById(roleId);
-    
+
     role.customId = data.customId;
     role.name = data.name;
     role.description = data.description;

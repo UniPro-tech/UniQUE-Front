@@ -33,7 +33,7 @@ export default function TemporarySnackProvider({
     if (snacks.length > 0) {
       replacePath(path, replaceDuration);
     }
-  }, [snacks, replaceDuration]);
+  }, [snacks, replaceDuration, path]);
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}></SnackbarProvider>
   );

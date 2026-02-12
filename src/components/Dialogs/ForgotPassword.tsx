@@ -22,7 +22,7 @@ export default function ForgotPassword({
   handleClose,
   csrfToken,
 }: ForgotPasswordProps) {
-  const [state, action, isPending] = React.useActionState(
+  const [state, action] = React.useActionState(
     resetPasswordAction,
     null as null | FormStatus,
   );

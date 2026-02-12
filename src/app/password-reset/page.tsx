@@ -61,7 +61,7 @@ export default function PasswordResetPage() {
         setError("パスワードリセットをリクエストできませんでした。");
         setState("error");
       }
-    } catch (err) {
+    } catch {
       setError("エラーが発生しました。");
       setState("error");
     } finally {
@@ -98,7 +98,7 @@ export default function PasswordResetPage() {
         setError("パスワードをリセットできませんでした。");
         setState("error");
       }
-    } catch (err) {
+    } catch {
       setError("エラーが発生しました。");
       setState("error");
     } finally {

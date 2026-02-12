@@ -41,7 +41,6 @@ export default function EmailVerifyClient({
   const [result, setResult] = useState<VerifyEmailResponse | null>(
     initialResult,
   );
-  const [isDiscordLinked, setIsDiscordLinked] = useState(false);
   const [discordLinkingInProgress, setDiscordLinkingInProgress] =
     useState(false);
 
@@ -55,7 +54,6 @@ export default function EmailVerifyClient({
 
       // Discord連携から戻ってきた場合
       if (discordLinked) {
-        setIsDiscordLinked(true);
         if ("valid" in initialResult && initialResult.valid) {
           setResult(initialResult);
           setState("success");
@@ -164,7 +162,6 @@ export default function EmailVerifyClient({
             const data = await discordCheckRes.json();
             if (data.linked) {
               setDiscordLinkingInProgress(false);
-              setIsDiscordLinked(true);
               setState("success");
               clearInterval(interval);
             }

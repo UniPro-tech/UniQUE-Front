@@ -36,7 +36,7 @@ export default async function RedirectUris({
         )
         .filter(Boolean);
     }
-  } catch (err) {
+  } catch {
     // ignore fetch errors; client will handle
   }
 

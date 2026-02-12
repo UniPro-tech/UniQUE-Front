@@ -98,7 +98,9 @@ export default function RoleCreateForm({ onCancel }: RoleCreateFormProps) {
   };
 
   const getPermissionName = (permission: PermissionBitsFields): string => {
-    const key = PermissionBitsFields[permission] as keyof typeof PermissionTexts;
+    const key = PermissionBitsFields[
+      permission
+    ] as keyof typeof PermissionTexts;
     return PermissionTexts[key] || "不明な権限";
   };
 

@@ -55,7 +55,7 @@ export default function RedirectUrisClient({
       setUris((s) => [...s, newUri]);
       setNewUri("");
       enqueueSnackbar("追加しました", { variant: "success" });
-    } catch (e) {
+    } catch {
       enqueueSnackbar("追加に失敗しました", { variant: "error" });
     } finally {
       setSaving(false);
@@ -72,7 +72,7 @@ export default function RedirectUrisClient({
       if (!res.ok) throw new Error("failed");
       setUris((s) => s.filter((u) => u !== uri));
       enqueueSnackbar("削除しました", { variant: "success" });
-    } catch (e) {
+    } catch {
       enqueueSnackbar("削除に失敗しました", { variant: "error" });
     }
   };

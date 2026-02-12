@@ -22,7 +22,7 @@ export const GET = async (request: NextRequest) => {
 
   // state パラメータを生成（CSRF対策）
   // fromパラメータをstateに含める
-  let stateObj: { nonce: string; from: string; code?: string } = {
+  const stateObj: { nonce: string; from: string; code?: string } = {
     nonce: crypto.randomUUID(),
     from: from || "settings",
   };

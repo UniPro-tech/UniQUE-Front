@@ -74,6 +74,11 @@ export async function sendDiscordDM(
   }
 }
 
+// DiscordのIDが正しい形式かチェックする関数
+function isValidDiscordId(id: string): boolean {
+  return /^\d{17,20}$/.test(id);
+}
+
 /**
  * Discord API を使用してユーザーにロールを付与します。
  * @param discordUserId - Discord のユーザー ID
@@ -92,14 +97,25 @@ export async function assignDiscordRole(
     console.error("DISCORD_BOT_TOKEN が設定されていません");
     return false;
   }
-
   if (!guildId) {
     console.error("DISCORD_GUILD_ID が設定されていません");
     return false;
   }
-
   if (!memberRoleId) {
     console.error("DISCORD_MEMBER_ROLE_ID が設定されていません");
+    return false;
+  }
+  // Discord IDのバリデーション
+  if (!isValidDiscordId(discordUserId)) {
+    console.error("discordUserIdが不正な形式です");
+    return false;
+  }
+  if (!isValidDiscordId(guildId)) {
+    console.error("guildIdが不正な形式です");
+    return false;
+  }
+  if (!isValidDiscordId(memberRoleId)) {
+    console.error("memberRoleIdが不正な形式です");
     return false;
   }
 
@@ -149,6 +165,16 @@ export async function isUserInGuild(discordUserId: string): Promise<boolean> {
 
   if (!botToken || !guildId) {
     console.error("Discord の設定が不足しています");
+    return false;
+  }
+
+  // Discord IDのバリデーション
+  if (!isValidDiscordId(discordUserId)) {
+    console.error("discordUserIdが不正な形式です");
+    return false;
+  }
+  if (!isValidDiscordId(guildId)) {
+    console.error("guildIdが不正な形式です");
     return false;
   }
 

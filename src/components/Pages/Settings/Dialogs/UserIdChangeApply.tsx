@@ -50,7 +50,7 @@ export default function UserIdChangeApply({
     isPending,
   }: UserIdChangeApplyProps & {
     state: FormStatus | null;
-    action: any;
+    action: (formData: FormData) => void | Promise<void>;
     isPending: boolean;
   }) {
     const { enqueueSnackbar } = useSnackbar();

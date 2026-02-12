@@ -44,9 +44,9 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
           ];
         },
       },
-      { 
-        field: "id", 
-        headerName: "ID", 
+      {
+        field: "id",
+        headerName: "ID",
         width: 200,
         flex: 0.5,
       },

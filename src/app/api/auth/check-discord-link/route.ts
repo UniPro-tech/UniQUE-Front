@@ -6,7 +6,7 @@ import * as SocialAccounts from "@/lib/resources/SocialAccounts";
  * Discord連携状態をチェックするエンドポイント
  * GET /api/auth/check-discord-link
  */
-export const GET = async (request: NextRequest) => {
+export const GET = async (_request: NextRequest) => {
   try {
     // セッションからユーザーIDを取得
     const session = await Session.get();

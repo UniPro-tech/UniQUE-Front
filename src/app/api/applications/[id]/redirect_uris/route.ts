@@ -45,7 +45,7 @@ async function proxyFetch(
       status: res.status,
       headers: { "content-type": contentType },
     });
-  } catch (_) {
+  } catch {
     return NextResponse.json({ error: "proxy fetch failed" }, { status: 502 });
   }
 }

@@ -16,7 +16,10 @@ import {
   Divider,
 } from "@mui/material";
 import { Save as SaveIcon } from "@mui/icons-material";
-import { updateRole, UpdateRoleFormData } from "@/app/dashboard/roles/[id]/action";
+import {
+  updateRole,
+  UpdateRoleFormData,
+} from "@/app/dashboard/roles/[id]/action";
 import { PermissionBitsFields, PermissionTexts } from "@/types/Permission";
 import type { PlainRole } from "@/types/Role";
 
@@ -96,7 +99,9 @@ export default function RoleEditForm({ role }: RoleEditFormProps) {
   };
 
   const getPermissionName = (permission: PermissionBitsFields): string => {
-    const key = PermissionBitsFields[permission] as keyof typeof PermissionTexts;
+    const key = PermissionBitsFields[
+      permission
+    ] as keyof typeof PermissionTexts;
     return PermissionTexts[key] || "不明な権限";
   };
 
