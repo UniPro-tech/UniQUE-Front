@@ -11,15 +11,15 @@ export enum AuthorizationErrorCodes {
 
 export const AuthorizationErrors = {
   AccessDenied: new Error(
-    `[${AuthorizationErrorCodes.AccessDenied}] Access denied.`
+    `[${AuthorizationErrorCodes.AccessDenied}] Access denied.`,
   ),
   Unauthorized: new Error(
-    `[${AuthorizationErrorCodes.Unauthorized}] Unauthorized access.`
+    `[${AuthorizationErrorCodes.Unauthorized}] Unauthorized access.`,
   ),
 };
 
 export function getAuthorizationErrorSnackbarData(
-  error: AuthorizationErrorCodes
+  error: AuthorizationErrorCodes,
 ): SnackbarData {
   switch (error) {
     case AuthorizationErrorCodes.AccessDenied:
@@ -34,7 +34,7 @@ export function getAuthorizationErrorSnackbarData(
       };
     default:
       return getFrontendErrorSnackbarData(
-        FrontendErrorCodes.UnhandledException
+        FrontendErrorCodes.UnhandledException,
       );
   }
 }

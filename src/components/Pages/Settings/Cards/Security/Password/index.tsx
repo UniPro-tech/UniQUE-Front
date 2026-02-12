@@ -11,23 +11,21 @@ import {
 import { enqueueSnackbar } from "notistack";
 import { useActionState, useEffect } from "react";
 import { updateSettings } from "./action";
-import { User } from "@/types/User";
+import type { UserDTO } from "@/types/User";
 import { FormStatus } from "../../Base";
 
 export default function PasswordSection({
   user,
-  sid,
   csrfToken,
   handleClickOpen,
 }: {
-  user: User;
-  sid: string;
+  user: UserDTO;
   csrfToken: string;
   handleClickOpen: () => void;
 }) {
   const [lastResult, action] = useActionState(
     updateSettings,
-    null as null | FormStatus
+    null as null | FormStatus,
   );
   useEffect(() => {
     if (lastResult) {
@@ -43,7 +41,6 @@ export default function PasswordSection({
         <Divider sx={{ flexGrow: 1 }} />
       </Stack>
       <input type="hidden" name="csrfToken" value={csrfToken} />
-      <input type="hidden" name="sid" value={sid} />
       <input type="hidden" name="id" value={user.id!} />
       <TextField
         label="現在のパスワード"

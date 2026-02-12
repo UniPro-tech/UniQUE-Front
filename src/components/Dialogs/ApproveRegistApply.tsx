@@ -7,7 +7,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
-import { User } from "@/types/User";
+import type { UserDTO } from "@/types/User";
 import { FormHelperText, TextField } from "@mui/material";
 import { approveRegistApplyAction } from "./actions/approveRegistApplyAction";
 import PeriodSelectorOptions from "@/lib/PeriodSelectorOptions";
@@ -15,7 +15,7 @@ import PeriodSelectorOptions from "@/lib/PeriodSelectorOptions";
 interface ApproveRegistApplyProps {
   open: boolean;
   handleClose: () => void;
-  user: User | null;
+  user: UserDTO | null;
 }
 
 export default function ApproveRegistApplyDialog({
@@ -25,7 +25,7 @@ export default function ApproveRegistApplyDialog({
 }: ApproveRegistApplyProps) {
   const [state, action, isPending] = React.useActionState(
     approveRegistApplyAction,
-    null as null | FormStatus
+    null as null | FormStatus,
   );
   React.useEffect(() => {
     if (state) {

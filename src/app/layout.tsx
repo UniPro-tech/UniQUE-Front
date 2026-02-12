@@ -1,4 +1,7 @@
 import { Metadata, Viewport } from "next";
+import BirthdateGuard from "@/components/BirthdateGuard";
+import Session from "@/types/Session";
+import { generateCSRFToken } from "@/lib/CSRF";
 
 export const metadata: Metadata = {
   title: {
@@ -18,14 +21,26 @@ export const viewport: Viewport = {
   themeColor: "#1f8ae1",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await Session.get();
+  const birthdate = session?.user?.profile?.birthdate || "";
+  const mustSetBirthdate = Boolean(session && !birthdate);
+  const csrfToken = session ? generateCSRFToken(session.userId) : "";
+
   return (
     <html lang="ja">
-      <body className={`antialiased`}>{children}</body>
+      <body className={`antialiased`}>
+        {children}
+        <BirthdateGuard
+          mustSetBirthdate={mustSetBirthdate}
+          csrfToken={csrfToken}
+          initialBirthdate={birthdate}
+        />
+      </body>
     </html>
   );
 }

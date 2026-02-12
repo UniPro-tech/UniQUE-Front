@@ -1,55 +1,68 @@
-import { apiGet, apiPost } from "@/lib/apiClient";
+import { apiPost } from "@/lib/apiClient";
 
-interface VerifyEmailResponse {
-  created_at: Date;
-  expires_at: Date;
-  user_id: string;
-  verification_code: string;
+/** POST /internal/users/email_verify レスポンス */
+export interface VerifyEmailResponse {
+  valid: boolean;
+  type: "signup" | "change" | "migration";
+}
+
+/** POST /internal/users/email_verify エラーレスポンス */
+export interface VerifyEmailError {
+  valid: false;
+  type: null;
+  error: string;
 }
 
 /**
- * ## verifyEmailCode
  * メール認証コードを検証する
- * @param code string 認証コード
- * @returns VerifyEmailResponse
+ * POST /internal/users/email_verify { code }
  */
-export const verifyEmailCode = async (code: string) => {
-  const apiRes = await apiGet(`/email_verify/${encodeURIComponent(code)}`);
+export const verifyEmailCode = async (
+  code: string,
+): Promise<VerifyEmailResponse | VerifyEmailError | null> => {
+  const apiRes = await apiPost(`/internal/users/email_verify`, { code });
   if (!apiRes.ok) {
-    if (apiRes.status === 404) {
+    if (apiRes.status === 400 || apiRes.status === 404) {
+      try {
+        const errorData = await apiRes.json();
+        if (errorData.error) {
+          return {
+            valid: false,
+            type: null,
+            error: errorData.error,
+          } as VerifyEmailError;
+        }
+      } catch {
+        // JSONパースに失敗した場合はnullを返す
+        return null;
+      }
       return null;
     }
     throw new Error(
-      `Email verification failed: ${apiRes.status} ${
-        apiRes.statusText
-      }, ${await apiRes.text()}`
+      `Email verification failed: ${apiRes.status} ${apiRes.statusText}`,
     );
   }
-  const resData = await apiRes.json();
-  return resData as VerifyEmailResponse;
+  const data = await apiRes.json();
+  console.log(data);
+  return data as VerifyEmailResponse;
 };
 
 /**
- * ## generateVerificationCode
- * メール認証用コードを生成する
- * @param userId string
- * @returns string 認証用コード
+ * メール認証メールを再送する
+ * POST /users/{userId}/resend_email_verification
  */
-export const generateVerificationCode = async (userId: string) => {
-  const apiRes = await apiPost(`/users/${userId}/email_verify`, {
-    expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-  });
+export const resendEmailVerification = async (
+  userId: string,
+): Promise<boolean> => {
+  const apiRes = await apiPost(`/users/${userId}/resend_email_verification`);
   if (!apiRes.ok) {
+    if (apiRes.status === 400) {
+      const data = await apiRes.json();
+      throw new Error(data.error || "Bad request");
+    }
     throw new Error(
-      `Post email verify action failed: ${apiRes.status} ${
-        apiRes.statusText
-      }, ${await apiRes.text()}`
+      `Resend verification failed: ${apiRes.status} ${apiRes.statusText}`,
     );
   }
-  const resData = await apiRes.json();
-  const verificationCode = resData.verification_code as string;
-  if (!verificationCode) {
-    throw new Error("Verification code not found in response");
-  }
-  return verificationCode;
+  return true;
 };

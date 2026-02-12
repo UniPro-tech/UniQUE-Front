@@ -1,9 +1,15 @@
-import { apiPost } from "@/lib/apiClient";
+import { requestPasswordReset } from "@/lib/PasswordReset";
 
-export const PasswordResetRequest = async (username: string) => {
-  const response = await apiPost(`/users/password/reset`, { username });
-  if (!response.ok) {
-    throw new Error("Password reset request failed");
+/**
+ * Request password reset for a user
+ * Sends a password reset email to the user's external email address
+ */
+export const PasswordResetRequest = async (email: string) => {
+  const result = await requestPasswordReset(email);
+
+  if (!result.ok) {
+    throw new Error(result.error || "Failed to request password reset");
   }
-  return response.json();
+
+  return result;
 };

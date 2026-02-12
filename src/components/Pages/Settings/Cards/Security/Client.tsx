@@ -1,23 +1,23 @@
 "use client";
 import { Card, Stack, Typography } from "@mui/material";
-import { User } from "@/types/User";
+import type { UserDTO } from "@/types/User";
 import { SnackbarProvider } from "notistack";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import React from "react";
 import PasswordSection from "./Password";
 import SessionsSection from "./Sessions";
-import { SessionPlain } from "@/types/Session";
+import type { AuthSessionDTO } from "@/types/Session";
 
 export default function SecuritySettingsCardClient({
   user,
   csrfToken,
-  sid,
+  currentSessionId,
   sessions,
 }: {
-  user: User;
+  user: UserDTO;
   csrfToken: string;
-  sid: string;
-  sessions: SessionPlain[];
+  currentSessionId: string;
+  sessions: AuthSessionDTO[];
 }) {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => setOpen(true);
@@ -38,12 +38,11 @@ export default function SecuritySettingsCardClient({
         </Stack>
         <PasswordSection
           user={user}
-          sid={sid}
           csrfToken={csrfToken}
           handleClickOpen={handleClickOpen}
         />
         <SessionsSection
-          current_id={sid}
+          currentSessionId={currentSessionId}
           sessions={sessions}
           csrfToken={csrfToken}
         />

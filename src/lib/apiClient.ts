@@ -1,34 +1,82 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAllCookies } from "./getAllCookie";
+import { logErrorLocally } from "./errorHandler";
 
 const BASE = process.env.RESOURCE_API_URL || "";
+const CLIENT_BASE = process.env.NEXT_PUBLIC_RESOURCE_API_URL || "";
+const COOKIE_NAME = "session_jwt";
 
-const normalizeHeaders = (headers: HeadersInit | undefined) => {
-  if (!headers)
-    return { "Content-Type": "application/json" } as Record<string, string>;
-  if (headers instanceof Headers) {
-    const out: Record<string, string> = {};
-    headers.forEach((v, k) => (out[k] = v));
-    return out;
-  }
-  return {
-    "Content-Type": "application/json",
-    ...(headers as Record<string, string>),
+/** API レスポンスの拡張型 */
+export interface ExtendedResponse extends Response {
+  /** エラー情報が含まれている場合 */
+  errorDetails?: {
+    errorCode: string;
+    errorMessage: string;
+    timestamp: number;
+    path: string;
   };
-};
+}
+
+const clientComponentCheck =
+  typeof window === "undefined" ? "server" : "client";
+
+/** Cookie から JWT トークンを取得する */
+async function getJwtToken(): Promise<string | null> {
+  if (typeof window === "undefined") {
+    // Server side
+    try {
+      const { cookies } = await import("next/headers");
+      return (await cookies()).get(COOKIE_NAME)?.value || null;
+    } catch {
+      return null;
+    }
+  } else {
+    // Client side – Cookie は httpOnly なので JavaScript からは取得できない
+    // credentials: "include" で自動送信される
+    return null;
+  }
+}
+
+/** 共通ヘッダーを構築 (JWT Authorization 含む) */
+async function buildHeaders(
+  headers: HeadersInit | undefined,
+): Promise<Record<string, string>> {
+  const base: Record<string, string> = { "Content-Type": "application/json" };
+  if (headers) {
+    if (headers instanceof Headers) {
+      headers.forEach((v, k) => (base[k] = v));
+    } else {
+      Object.assign(base, headers as Record<string, string>);
+    }
+  }
+  const jwt = await getJwtToken();
+  if (jwt) {
+    base["Authorization"] = `Bearer ${jwt}`;
+  }
+  return base;
+}
 
 export const apiFetch = async (path: string, init: RequestInit = {}) => {
   const cookie = await getAllCookies();
-  const headers = normalizeHeaders(init.headers);
-  const res = await fetch(`${BASE}${path}`, {
-    ...init,
-    headers: {
-      ...headers,
-      cookie,
+  const headers = await buildHeaders(init.headers);
+  const res = await fetch(
+    `${clientComponentCheck === "server" ? BASE : CLIENT_BASE}${path}`,
+    {
+      ...init,
+      headers: {
+        ...headers,
+        cookie,
+      },
+      credentials: "include",
     },
-    credentials: "include",
-  });
-  return res;
+  );
+
+  // エラーレスポンスの場合、詳細情報をログに記録
+  if (!res.ok && (res.status === 403 || res.status === 401)) {
+    logErrorLocally(`HTTP_${res.status}`, `${res.statusText} - ${path}`);
+  }
+
+  return res as ExtendedResponse;
 };
 
 export const apiGet = (path: string, init?: RequestInit) =>
@@ -62,7 +110,7 @@ export const createApiClient = (base?: string) => {
   const resolvedBase = base ?? BASE;
   const apiFetchWithBase = async (path: string, init: RequestInit = {}) => {
     const cookie = await getAllCookies();
-    const headers = normalizeHeaders(init.headers);
+    const headers = await buildHeaders(init.headers);
     const res = await fetch(`${resolvedBase}${path}`, {
       ...init,
       headers: {
@@ -71,7 +119,13 @@ export const createApiClient = (base?: string) => {
       },
       credentials: "include",
     });
-    return res;
+
+    // エラーレスポンスの場合、詳細情報をログに記録
+    if (!res.ok && (res.status === 403 || res.status === 401)) {
+      logErrorLocally(`HTTP_${res.status}`, `${res.statusText} - ${path}`);
+    }
+
+    return res as ExtendedResponse;
   };
 
   return {

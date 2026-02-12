@@ -1,4 +1,5 @@
 import AccountSettingsCard from "@/components/Pages/Settings/Cards/Account";
+import ConsentSettingsCard from "@/components/Pages/Settings/Cards/Consent";
 import SecuritySettingsCard from "@/components/Pages/Settings/Cards/Security";
 import SocialAccountsSettingsCard from "@/components/Pages/Settings/Cards/SocialAccounts";
 import Session from "@/types/Session";
@@ -23,8 +24,8 @@ export default async function Page({
   }>;
 }) {
   const { oauth, status, reason } = await searchParams;
-  const session = await Session.get({ asPlain: true });
-  const user = session!.user;
+  const session = await Session.get();
+  const user = session ? session.user.convertPlain() : null;
   const snacks: SnackbarData[] = [
     ...(oauth
       ? reason === "conflict"
@@ -55,9 +56,14 @@ export default async function Page({
           ここではアカウントの各種設定を行うことができます。
         </Typography>
       </Stack>
-      <AccountSettingsCard user={user} />
-      <SecuritySettingsCard user={user} />
-      <SocialAccountsSettingsCard user={user} />
+      {user && (
+        <>
+          <AccountSettingsCard user={user} />
+          <SecuritySettingsCard user={user} />
+          <SocialAccountsSettingsCard user={user} />
+          <ConsentSettingsCard />
+        </>
+      )}
     </Stack>
   );
 }

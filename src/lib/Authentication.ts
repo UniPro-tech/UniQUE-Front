@@ -3,28 +3,27 @@ import { createApiClient } from "@/lib/apiClient";
 import { AuthenticationErrors } from "@/types/Errors/AuthenticationErrors";
 import { AuthServerErrors } from "@/types/Errors/AuthServerErrors";
 
-export type Credentials = {
-  username: string;
-  password: string;
-  ip: string;
-  user_agent: string;
-  remember_me?: boolean;
-  expires_at?: Date;
-  max_age?: number;
+/** POST /internal/authentication リクエスト */
+export type AuthenticationRequest = {
+  type: "password" | "mfa" | "totp";
+  username?: string;
+  password?: string;
+  ip_address?: string;
+  user_agent?: string;
+  remember?: boolean;
 };
 
+/** POST /internal/authentication レスポンス */
 export interface AuthResponse {
-  session_id: string;
-  expires: string;
-  max_age: number;
+  session_jwt: string;
 }
 
 const authApi = createApiClient(process.env.AUTH_API_URL);
 
 export const authenticationRequest = async (
-  credentials: Credentials
+  credentials: AuthenticationRequest,
 ): Promise<AuthResponse> => {
-  const response = await authApi.post(`/authentication`, credentials);
+  const response = await authApi.post(`/internal/authentication`, credentials);
   if (!response.ok) {
     switch (response.status) {
       case 400:
@@ -34,8 +33,7 @@ export const authenticationRequest = async (
       default:
         throw AuthServerErrors.InternalServerError;
     }
-  } else {
-    const data: AuthResponse = await response.json();
-    return data;
   }
+  const data: AuthResponse = await response.json();
+  return data;
 };

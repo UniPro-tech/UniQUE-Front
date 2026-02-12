@@ -13,7 +13,7 @@ interface DeleteDialogProps {
   open: boolean;
   dataAction: (
     _prevState: FormStatus | null,
-    formData: FormData | null
+    formData: FormData | null,
   ) => FormStatus | null | Promise<FormStatus | null>;
   handleClose: () => void;
   title?: string;
@@ -25,9 +25,9 @@ export default function DeleteDialog({
   handleClose,
   title,
 }: DeleteDialogProps) {
-  const [state, action, isPending] = React.useActionState(
+  const [state, action] = React.useActionState(
     dataAction,
-    null as null | FormStatus
+    null as null | FormStatus,
   );
   React.useEffect(() => {
     if (state) {

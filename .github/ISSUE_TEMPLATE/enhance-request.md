@@ -1,10 +1,9 @@
 ---
 name: Enhance request
 about: 既存機能の改善リクエスト
-title: ''
+title: ""
 labels: kind/enhancement
-assignees: ''
-
+assignees: ""
 ---
 
 ## 改善の内容

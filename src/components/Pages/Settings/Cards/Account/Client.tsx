@@ -1,17 +1,20 @@
 "use client";
 import {
   Button,
+  Chip,
   FormHelperText,
   Link,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { User } from "@/types/User";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import type { UserDTO } from "@/types/User";
 import Base from "../Base";
 import { FormStatus } from "../Base";
 import { useActionState, useEffect, useState } from "react";
-import { updateAccountSettings } from "./action";
+import { updateAccountSettings, resendEmailVerificationAction } from "./action";
 import { enqueueSnackbar } from "notistack";
 import UserIdChangeApply from "../../Dialogs/UserIdChangeApply";
 
@@ -19,16 +22,15 @@ export default function AccountSettingsCardClient({
   user,
   csrfToken,
 }: {
-  user: User;
+  user: UserDTO;
   csrfToken: string;
 }) {
   const [lastResult, action, isPending] = useActionState(
     updateAccountSettings,
     { user: user, status: null } as {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      user: any;
+      user: UserDTO;
       status: FormStatus | null;
-    }
+    },
   );
   useEffect(() => {
     if (lastResult.status) {
@@ -39,6 +41,27 @@ export default function AccountSettingsCardClient({
   }, [lastResult.status]);
 
   const [openUserIdChangeDialog, setOpenUserIdChangeDialog] = useState(false);
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
+
+  const handleResendVerification = async () => {
+    setIsSendingVerification(true);
+    try {
+      const result = await resendEmailVerificationAction(user.id);
+      if (result.success) {
+        enqueueSnackbar("認証メールを送信しました。メールをご確認ください。", {
+          variant: "success",
+        });
+      } else {
+        enqueueSnackbar(result.error || "認証メールの送信に失敗しました。", {
+          variant: "error",
+        });
+      }
+    } catch {
+      enqueueSnackbar("認証メールの送信に失敗しました。", { variant: "error" });
+    } finally {
+      setIsSendingVerification(false);
+    }
+  };
   return (
     <Base
       sid={user.id!}
@@ -64,7 +87,7 @@ export default function AccountSettingsCardClient({
       <TextField
         required
         label="表示名"
-        defaultValue={lastResult.user.name}
+        defaultValue={lastResult.user.profile?.displayName || ""}
         name="display_name"
       />
       <Stack>
@@ -92,15 +115,61 @@ export default function AccountSettingsCardClient({
           メールアドレスは原則として所属期とユーザーIDに基づいて自動生成されます。
         </FormHelperText>
       </Stack>
-      <TextField
-        required
-        label="外部メールアドレス"
-        defaultValue={lastResult.user.externalEmail}
-        name="external_email"
-      />
+      <Stack spacing={1}>
+        <TextField
+          required
+          label="外部メールアドレス"
+          defaultValue={
+            lastResult.user.pendingEmail || lastResult.user.externalEmail || ""
+          }
+          name="external_email"
+        />
+        {(lastResult.user.externalEmail || lastResult.user.pendingEmail) && (
+          <>
+            {lastResult.user.emailVerified && !lastResult.user.pendingEmail ? (
+              <Chip
+                icon={<VerifiedIcon />}
+                label="認証済み"
+                color="success"
+                size="small"
+                sx={{ alignSelf: "flex-start" }}
+              />
+            ) : (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Chip
+                  icon={<ErrorOutlineIcon />}
+                  label="未認証"
+                  color="warning"
+                  size="small"
+                />
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={handleResendVerification}
+                  disabled={isSendingVerification}
+                >
+                  {isSendingVerification ? "送信中..." : "認証メールを送信"}
+                </Button>
+              </Stack>
+            )}
+          </>
+        )}
+      </Stack>
+      <Stack>
+        <TextField
+          required
+          label="生年月日"
+          type="date"
+          name="birthdate"
+          defaultValue={lastResult.user.profile?.birthdate || ""}
+          InputLabelProps={{ shrink: true }}
+          disabled={!!lastResult.user.profile?.birthdate}
+        />
+        <FormHelperText>一度設定したら変更できません。</FormHelperText>
+      </Stack>
       <TextField
         label="所属期"
-        defaultValue={lastResult.user.period!.toUpperCase()}
+        defaultValue={(lastResult.user.affiliationPeriod || "").toUpperCase()}
         disabled
       />
       <Button variant="contained" fullWidth type="submit">

@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
@@ -8,11 +10,17 @@ import Tooltip from "@mui/material/Tooltip";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import Session from "@/types/Session";
-import { redirect } from "next/navigation";
 import { Box } from "@mui/material";
+import type { SessionPlain } from "@/types/Session";
+import { logoutAction } from "./action";
+import { useRouter } from "next/navigation";
 
-export default function AccountMenu({ session }: { session: Session | null }) {
+export default function AccountMenu({
+  session,
+}: {
+  session: SessionPlain | null;
+}) {
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -21,6 +29,10 @@ export default function AccountMenu({ session }: { session: Session | null }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const displayName =
+    session?.user?.profile?.displayName || session?.user?.customId || "";
+
   return (
     <React.Fragment>
       <Tooltip title="Account settings">
@@ -33,7 +45,7 @@ export default function AccountMenu({ session }: { session: Session | null }) {
           aria-expanded={open ? "true" : undefined}
         >
           <Avatar sx={{ width: 32, height: 32 }}>
-            {session?.user?.name.charAt(0)}
+            {displayName.charAt(0) || "?"}
           </Avatar>
         </IconButton>
       </Tooltip>
@@ -77,7 +89,7 @@ export default function AccountMenu({ session }: { session: Session | null }) {
         <MenuItem
           onClick={() => {
             handleClose();
-            redirect("/dashboard/profile");
+            router.push("/dashboard/profile");
           }}
         >
           <ListItemIcon>
@@ -88,7 +100,7 @@ export default function AccountMenu({ session }: { session: Session | null }) {
         <MenuItem
           onClick={() => {
             handleClose();
-            redirect("/dashboard/settings");
+            router.push("/dashboard/settings");
           }}
         >
           <ListItemIcon>
@@ -96,14 +108,7 @@ export default function AccountMenu({ session }: { session: Session | null }) {
           </ListItemIcon>
           個人設定
         </MenuItem>
-        <Box
-          component="form"
-          action={async () => {
-            await fetch("/api/auth/signout", { method: "POST" });
-            redirect("/signin?signouted=true");
-          }}
-          method="POST"
-        >
+        <Box component="form" action={logoutAction} method="POST">
           <MenuItem component="button" type="submit" onClick={handleClose}>
             <ListItemIcon>
               <LogoutIcon fontSize="small" />

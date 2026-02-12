@@ -7,9 +7,9 @@ import { FormRequestErrors } from "@/types/Errors/FormRequestErrors";
 
 export async function resetPasswordAction(
   _prevState: FormStatus | null,
-  formData: FormData
+  formData: FormData,
 ) {
-  const username = formData.get("username") as string;
+  const email = formData.get("email") as string;
   const csrfToken = formData.get("csrfToken") as string;
 
   try {
@@ -17,7 +17,7 @@ export async function resetPasswordAction(
     if (!tokenVerified) {
       throw FormRequestErrors.CSRFTokenMismatch;
     }
-    await PasswordResetRequest(username);
+    await PasswordResetRequest(email);
     return {
       status: "success",
       message: "パスワードリセットのリンクを送信しました。",

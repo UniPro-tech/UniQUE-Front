@@ -6,7 +6,7 @@ import { toEmail } from "./config";
 
 test("sendEmail sends an text email without throwing", async () => {
   await expect(
-    sendEmail(toEmail, "Test Subject", "This is a test email message.")
+    sendEmail(toEmail, "Test Subject", "This is a test email message."),
   ).resolves.toBeUndefined();
 });
 
@@ -63,7 +63,7 @@ test("sendEmail sends an HTML email without throwing", async () => {
           <span>&copy; 2024 UniQUE. All rights reserved.</span>
         </footer>
       </body>
-      </html>`
-    )
+      </html>`,
+    ),
   ).resolves.toBeUndefined();
 });

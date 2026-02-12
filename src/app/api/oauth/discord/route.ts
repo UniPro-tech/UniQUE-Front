@@ -1,26 +1,65 @@
-import { generateCSRFToken } from "@/lib/CSRF";
-import { cookies } from "next/headers";
-import { encodeBase64 } from "tweetnacl-util";
+import { NextRequest } from "next/server";
 
-export const GET = async (req: Request) => {
-  const client_id = process.env.DISCORD_CLIENT_ID;
-  const redirect_uri = process.env.DISCORD_REDIRECT_URI;
-  const scope = "openid+identify+guilds.join";
-  const state = generateCSRFToken("discord_oauth", false);
-  const signupParam = new URL(req.url).searchParams.get("signup");
-  if (signupParam) {
-    const cookieStore = await cookies();
-    cookieStore.set({
-      name: "signup_code",
-      value: signupParam,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    });
+/**
+ * Discord OAuth認証の開始エンドポイント
+ * ユーザーをDiscordの認証ページにリダイレクトする
+ */
+export const GET = async (request: NextRequest) => {
+  const clientId = process.env.DISCORD_CLIENT_ID;
+  const redirectUri = process.env.DISCORD_REDIRECT_URI;
+  const searchParams = request.nextUrl.searchParams;
+  const from = searchParams.get("from"); // signup | settings | email_verify
+  const code = searchParams.get("code");
+  const stateParam = searchParams.get("state");
+
+  if (!clientId || !redirectUri) {
+    console.error("Discord OAuth環境変数が設定されていません");
+    return new Response(
+      JSON.stringify({ error: "Discord OAuth is not configured" }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
   }
-  const discord_oauth_url = `https://discord.com/oauth2/authorize?client_id=${client_id}&response_type=code&redirect_uri=${encodeURIComponent(
-    redirect_uri || ""
-  )}&scope=${scope}&state=${encodeBase64(new TextEncoder().encode(state))}`;
 
-  return Response.redirect(discord_oauth_url, 302);
+  // state パラメータを生成（CSRF対策）
+  // fromパラメータをstateに含める
+  const stateObj: { nonce: string; from: string; code?: string } = {
+    nonce: crypto.randomUUID(),
+    from: from || "settings",
+  };
+
+  if (code) {
+    stateObj.code = code;
+  }
+
+  // email_verifyからの場合、stateパラメータに追加情報が含まれている
+  if (stateParam) {
+    try {
+      const incomingState = JSON.parse(
+        Buffer.from(stateParam, "base64").toString("utf-8"),
+      );
+      if (incomingState.from) {
+        stateObj.from = incomingState.from;
+      }
+      if (incomingState.code) {
+        stateObj.code = incomingState.code;
+      }
+    } catch (e) {
+      console.error("Failed to parse incoming state:", e);
+    }
+  }
+
+  const state = Buffer.from(JSON.stringify(stateObj)).toString("base64");
+
+  // Discord OAuth URL を構築
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: "code",
+    scope: "openid identify guilds.join",
+    state,
+  });
+
+  const authUrl = `https://discord.com/api/oauth2/authorize?${params.toString()}`;
+
+  return Response.redirect(authUrl);
 };

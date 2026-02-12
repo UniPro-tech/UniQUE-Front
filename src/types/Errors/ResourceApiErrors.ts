@@ -10,32 +10,40 @@ export enum ResourceApiErrorCodes {
   ResourceCreationFailed = "R0003",
   ResourceUpdateFailed = "R0004",
   ResourceDeletionFailed = "R0005",
+  UsernameAlreadyExists = "R0006",
+  EmailAlreadyExists = "R0007",
   ApiServerInternalError = "R1001",
 }
 
 export const ResourceApiErrors = {
   ResourceNotFound: new Error(
-    `[${ResourceApiErrorCodes.ResourceNotFound}] Resource not found.`
+    `[${ResourceApiErrorCodes.ResourceNotFound}] Resource not found.`,
   ),
   ResourceAlreadyExists: new Error(
-    `[${ResourceApiErrorCodes.ResourceAlreadyExists}] Resource already exists.`
+    `[${ResourceApiErrorCodes.ResourceAlreadyExists}] Resource already exists.`,
   ),
   ResourceCreationFailed: new Error(
-    `[${ResourceApiErrorCodes.ResourceCreationFailed}] Resource creation failed.`
+    `[${ResourceApiErrorCodes.ResourceCreationFailed}] Resource creation failed.`,
   ),
   ResourceUpdateFailed: new Error(
-    `[${ResourceApiErrorCodes.ResourceUpdateFailed}] Resource update failed.`
+    `[${ResourceApiErrorCodes.ResourceUpdateFailed}] Resource update failed.`,
   ),
   ResourceDeletionFailed: new Error(
-    `[${ResourceApiErrorCodes.ResourceDeletionFailed}] Resource deletion failed.`
+    `[${ResourceApiErrorCodes.ResourceDeletionFailed}] Resource deletion failed.`,
+  ),
+  UsernameAlreadyExists: new Error(
+    `[${ResourceApiErrorCodes.UsernameAlreadyExists}] Username already exists.`,
+  ),
+  EmailAlreadyExists: new Error(
+    `[${ResourceApiErrorCodes.EmailAlreadyExists}] Email already exists.`,
   ),
   ApiServerInternalError: new Error(
-    `[${ResourceApiErrorCodes.ApiServerInternalError}] API server internal error.`
+    `[${ResourceApiErrorCodes.ApiServerInternalError}] API server internal error.`,
   ),
 };
 
 export function getResourceApiErrorSnackbarData(
-  error: ResourceApiErrorCodes
+  error: ResourceApiErrorCodes,
 ): SnackbarData {
   switch (error) {
     case ResourceApiErrorCodes.ResourceNotFound:
@@ -63,6 +71,16 @@ export function getResourceApiErrorSnackbarData(
         message: `[${ResourceApiErrorCodes.ResourceDeletionFailed}] リソースの削除に失敗しました。再度お試しください。`,
         variant: "error",
       };
+    case ResourceApiErrorCodes.UsernameAlreadyExists:
+      return {
+        message: `[${ResourceApiErrorCodes.UsernameAlreadyExists}] このユーザー名は既に使用されています。別のユーザー名を入力してください。`,
+        variant: "error",
+      };
+    case ResourceApiErrorCodes.EmailAlreadyExists:
+      return {
+        message: `[${ResourceApiErrorCodes.EmailAlreadyExists}] このメールアドレスは既に使用されています。別のメールアドレスを入力してください。`,
+        variant: "error",
+      };
     case ResourceApiErrorCodes.ApiServerInternalError:
       return {
         message: `[${ResourceApiErrorCodes.ApiServerInternalError}] APIサーバーでエラーが発生しました。時間をおいて再度お試しください。`,
@@ -70,7 +88,7 @@ export function getResourceApiErrorSnackbarData(
       };
     default:
       return getFrontendErrorSnackbarData(
-        FrontendErrorCodes.UnhandledException
+        FrontendErrorCodes.UnhandledException,
       );
   }
 }

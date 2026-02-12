@@ -7,16 +7,17 @@ import MuiCard from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
 import { Theme } from "@mui/material/styles";
-import { User } from "@/types/User";
+import type { UserDTO } from "@/types/User";
 import type AppType from "@/types/App";
 
 export default function ConsentCard(props: {
   app: AppType;
-  user?: User;
+  user?: UserDTO;
   scope: string;
   redirect_uri: string;
   state?: string;
   action?: string;
+  auth_request_id?: string;
 }) {
   const { app, user, scope, redirect_uri, state, action } = props;
   const scopes = scope ? scope.split(" ") : [];
@@ -81,6 +82,13 @@ export default function ConsentCard(props: {
           <input type="hidden" name="client_id" value={app.id} />
           <input type="hidden" name="redirect_uri" value={redirect_uri} />
           <input type="hidden" name="scope" value={scope} />
+          {props.auth_request_id && (
+            <input
+              type="hidden"
+              name="auth_request_id"
+              value={props.auth_request_id}
+            />
+          )}
           {state && <input type="hidden" name="state" value={state} />}
           <Button type="submit" variant="contained" color="primary">
             許可する

@@ -11,24 +11,24 @@ export enum FrontendErrorCodes {
 
 export const FrontendErrors = {
   UnhandledException: new Error(
-    `[${FrontendErrorCodes.UnhandledException}] An unhandled exception occurred.`
+    `[${FrontendErrorCodes.UnhandledException}] An unhandled exception occurred.`,
   ),
   NetworkError: new Error(
-    `[${FrontendErrorCodes.NetworkError}] A network error occurred.`
+    `[${FrontendErrorCodes.NetworkError}] A network error occurred.`,
   ),
   InvalidInput: new Error(
-    `[${FrontendErrorCodes.InvalidInput}] Invalid input provided.`
+    `[${FrontendErrorCodes.InvalidInput}] Invalid input provided.`,
   ),
   TimeoutError: new Error(
-    `[${FrontendErrorCodes.TimeoutError}] The operation timed out.`
+    `[${FrontendErrorCodes.TimeoutError}] The operation timed out.`,
   ),
   SettingsLoadError: new Error(
-    `[${FrontendErrorCodes.SettingsLoadError}] Failed to load settings.`
+    `[${FrontendErrorCodes.SettingsLoadError}] Failed to load settings.`,
   ),
 };
 
 export function getFrontendErrorSnackbarData(
-  error: FrontendErrorCodes
+  error: FrontendErrorCodes,
 ): SnackbarData {
   switch (error) {
     case FrontendErrorCodes.UnhandledException:
@@ -58,7 +58,7 @@ export function getFrontendErrorSnackbarData(
       };
     default:
       return getFrontendErrorSnackbarData(
-        FrontendErrorCodes.UnhandledException
+        FrontendErrorCodes.UnhandledException,
       );
   }
 }

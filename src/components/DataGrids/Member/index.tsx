@@ -10,81 +10,60 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import React from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
 import CheckIcon from "@mui/icons-material/Check";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
+import type { UserDTO } from "@/types/User";
 import { User } from "@/types/User";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import DeleteDialog from "@/components/Dialogs/Delete";
-import { saveUser, deleteUser } from "@/lib/resources/Users";
+import { saveUser } from "@/lib/resources/Users";
 import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
+import {
+  USER_STATUS_OPTIONS,
+  AFFILIATION_PERIOD_OPTIONS,
+} from "@/lib/constants/UserConstants";
+import { useRouter } from "next/navigation";
 
 export default function MembersDataGrid({
   rows,
   beforeJoined = false,
 }: {
-  rows: User[] | User<"Simple">[];
+  rows: UserDTO[];
   beforeJoined?: boolean;
 }) {
   const apiRef = useGridApiRef();
+  const router = useRouter();
   const [hasUnsavedRows, setHasUnsavedRows] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
-  const [localRows, setLocalRows] = React.useState<User[] | User<"Simple">[]>(
+
+  // 所属期のオプション配列をメモ化
+  const affiliationPeriodValueOptionsArray = React.useMemo(
     () =>
-      beforeJoined
-        ? rows.filter((row) => row.email.startsWith("temp_"))
-        : rows.filter((row) => !row.email.startsWith("temp_")),
+      AFFILIATION_PERIOD_OPTIONS.map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+      })),
+    [],
   );
+
+  // ステータスのオプション配列をメモ化
+  const statusValueOptionsArray = React.useMemo(
+    () =>
+      USER_STATUS_OPTIONS.map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+      })),
+    [],
+  );
+  const [localRows, setLocalRows] = React.useState<UserDTO[]>(rows);
   React.useEffect(() => {
-    setLocalRows(
-      beforeJoined
-        ? rows.filter((row) => row.email.startsWith("temp_"))
-        : rows.filter((row) => !row.email.startsWith("temp_")),
-    );
-  }, [rows, beforeJoined]);
-  const canUpdate = rows.length > 0 && !("isSuspended" in rows[0]) === false;
-  const [undeletedRows, setUndeletedRows] = React.useState<GridRowId>();
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const handleDelete = async (
-    _prevState: FormStatus | null,
-    formData: FormData | null,
-  ) => {
-    try {
-      if (!undeletedRows) {
-        const res: FormStatus = {
-          status: "error",
-          message: "削除対象が選択されていません",
-        };
-        return res;
-      }
-      await deleteUser(String(undeletedRows));
-      // remove row from grid data
-      setLocalRows((prev) =>
-        prev.filter((r) => String(r.id) !== String(undeletedRows)),
-      );
-      apiRef.current?.updateRows([{ id: undeletedRows, _action: "delete" }]);
-      setUndeletedRows(undefined);
-      setDeleteDialogOpen(false);
-      const res: FormStatus = {
-        status: "success",
-        message: "メンバーを削除しました",
-      };
-      return res;
-    } catch (error) {
-      const res: FormStatus = {
-        status: "error",
-        message: `削除に失敗しました: ${String(error)}`,
-      };
-      return res;
-    }
-  };
+    setLocalRows(rows);
+  }, [rows]);
+
   const [approveDialogOpen, setApproveDialogOpen] = React.useState(false);
-  const [approvedUser, setApprovedUser] = React.useState<
-    User | User<"Simple"> | null
-  >(null);
+  const [approvedUser, setApprovedUser] = React.useState<UserDTO | null>(null);
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -92,194 +71,167 @@ export default function MembersDataGrid({
     unsavedRows: {},
     rowsBeforeChange: {},
   });
+
+  /** 行データが完全な情報を持つかチェック (email, statusなどが含まれている) */
+  const hasFullData = React.useCallback((row: UserDTO): boolean => {
+    return row.email !== undefined && row.status !== undefined;
+  }, []);
+
   const columns = React.useMemo<GridColDef[]>(() => {
     return [
-      ...(canUpdate
+      ...(beforeJoined
         ? ([
             {
               field: "actions",
               headerName: "操作",
               type: "actions",
-              getActions: ({
-                id,
-                row,
-              }: {
-                id: GridRowId;
-                row: GridValidRowModel;
-              }) => {
-                if (beforeJoined) {
-                  return [
-                    <GridActionsCellItem
-                      key={"approve"}
-                      icon={<CheckIcon />}
-                      label="Approve"
-                      onClick={() => {
-                        setApprovedUser(
-                          localRows.find((u) => String(u.id) === String(id)) ||
-                            null,
-                        );
-                        setApproveDialogOpen(true);
-                      }}
-                    />,
-                    <GridActionsCellItem
-                      key={"delete-row"}
-                      icon={<DeleteIcon />}
-                      label="Delete"
-                      onClick={() => {
-                        setUndeletedRows(id);
-                        setDeleteDialogOpen(true);
-                      }}
-                    />,
-                  ];
-                } else {
-                  return [
-                    <GridActionsCellItem
-                      key={"discard-changes"}
-                      icon={<RestoreIcon />}
-                      label="Discard changes"
-                      disabled={
-                        unsavedChangesRef.current.unsavedRows[id] === undefined
-                      }
-                      onClick={() => {
-                        apiRef.current?.updateRows([
-                          unsavedChangesRef.current.rowsBeforeChange[id],
-                        ]);
-                        delete unsavedChangesRef.current.rowsBeforeChange[id];
-                        delete unsavedChangesRef.current.unsavedRows[id];
-                        setHasUnsavedRows(
-                          Object.keys(unsavedChangesRef.current.unsavedRows)
-                            .length > 0,
-                        );
-                      }}
-                    />,
-                    <GridActionsCellItem
-                      key={"delete-row"}
-                      icon={<DeleteIcon />}
-                      label="Delete"
-                      onClick={() => {
-                        unsavedChangesRef.current.unsavedRows[id] = {
-                          ...row,
-                          _action: "delete",
-                        };
-                        if (!unsavedChangesRef.current.rowsBeforeChange[id]) {
-                          unsavedChangesRef.current.rowsBeforeChange[id] = row;
-                        }
-                        setHasUnsavedRows(true);
-                        apiRef.current?.updateRows([row]); // to trigger row render
-                      }}
-                    />,
-                  ];
-                }
+              getActions: ({ id }: { id: GridRowId }) => {
+                return [
+                  <GridActionsCellItem
+                    key={"approve"}
+                    icon={<CheckIcon />}
+                    label="Approve"
+                    onClick={() => {
+                      setApprovedUser(
+                        localRows.find((u) => String(u.id) === String(id)) ||
+                          null,
+                      );
+                      setApproveDialogOpen(true);
+                    }}
+                  />,
+                ];
               },
             },
-            { field: "id", headerName: "ID", width: 250 },
           ] as GridColDef[])
-        : []),
-      { field: "name", headerName: "名前", editable: canUpdate, width: 150 },
+        : ([
+            {
+              field: "actions",
+              headerName: "操作",
+              type: "actions",
+              getActions: ({ id }: { id: GridRowId }) => {
+                return [
+                  <GridActionsCellItem
+                    key={"view-detail"}
+                    icon={<VisibilityIcon />}
+                    label="View detail"
+                    onClick={() => {
+                      router.push(`/dashboard/members/${id}`);
+                    }}
+                  />,
+                  <GridActionsCellItem
+                    key={"discard-changes"}
+                    icon={<RestoreIcon />}
+                    label="Discard changes"
+                    disabled={
+                      unsavedChangesRef.current.unsavedRows[id] === undefined
+                    }
+                    onClick={() => {
+                      apiRef.current?.updateRows([
+                        unsavedChangesRef.current.rowsBeforeChange[id],
+                      ]);
+                      delete unsavedChangesRef.current.rowsBeforeChange[id];
+                      delete unsavedChangesRef.current.unsavedRows[id];
+                      setHasUnsavedRows(
+                        Object.keys(unsavedChangesRef.current.unsavedRows)
+                          .length > 0,
+                      );
+                    }}
+                  />,
+                ];
+              },
+            },
+          ] as GridColDef[])),
+      { field: "id", headerName: "ID", width: 250 },
+      {
+        field: "displayName",
+        headerName: "表示名",
+        width: 150,
+        valueGetter: (_value: unknown, row: UserDTO) =>
+          row.profile?.displayName || row.customId || "",
+      },
       {
         field: "customId",
         headerName: "カスタムID",
-        editable: canUpdate,
+        editable: !beforeJoined,
         width: 150,
       },
-      {
-        field: "email",
-        headerName: "メールアドレス",
-        editable: canUpdate,
-        width: 250,
-      },
-      ...(canUpdate
+      // メール・ステータス等の機密情報は完全なデータがある場合のみ表示&編集可能
+      ...(localRows.some((r) => hasFullData(r))
         ? [
+            {
+              field: "email",
+              headerName: "メールアドレス",
+              editable: !beforeJoined,
+              width: 250,
+            } as GridColDef,
             {
               field: "externalEmail",
               headerName: "外部メールアドレス",
               width: 250,
-              editable: canUpdate,
-            },
-          ]
-        : []),
-      {
-        field: "period",
-        headerName: "所属期",
-        editable: canUpdate,
-        width: 150,
-      },
-      ...(canUpdate
-        ? ([
+              editable: !beforeJoined,
+            } as GridColDef,
             {
-              field: "isEnable",
-              headerName: "有効状態",
-              width: 100,
-              type: "boolean",
-              editable: canUpdate,
-            },
+              field: "affiliationPeriod",
+              headerName: "所属期",
+              editable: !beforeJoined,
+              width: 150,
+              type: "singleSelect",
+              valueOptions: affiliationPeriodValueOptionsArray,
+            } as GridColDef,
             {
-              field: "isSuspended",
-              headerName: "停止状態",
-              width: 100,
-              type: "boolean",
-
-              editable: canUpdate,
-            },
+              field: "status",
+              headerName: "ステータス",
+              editable: !beforeJoined,
+              width: 120,
+              type: "singleSelect",
+              valueOptions: statusValueOptionsArray,
+            } as GridColDef,
             {
-              field: "suspendedReason",
-              headerName: "停止理由",
-              width: 200,
-              editable: canUpdate,
-            },
-            {
-              field: "suspendedUntil",
-              headerName: "停止解除日",
+              field: "updatedAt",
+              headerName: "更新日時",
               width: 150,
               type: "dateTime",
-
-              editable: canUpdate,
-              valueGetter: (value: Date) => {
+              valueGetter: (value: string) => {
                 return value ? new Date(value) : null;
               },
-            },
-          ] as GridColDef[])
+            } as GridColDef,
+          ]
         : []),
       {
         field: "joinedAt",
         headerName: "参加日時",
         width: 150,
         type: "dateTime",
-        editable: canUpdate,
-        valueGetter: (value: Date) => {
+        valueGetter: (_value: unknown, row: UserDTO) => {
+          const d = row.profile?.joinedAt;
+          return d ? new Date(d) : null;
+        },
+      },
+      {
+        field: "createdAt",
+        headerName: "作成日時",
+        width: 150,
+        type: "dateTime",
+        valueGetter: (value: string | undefined) => {
           return value ? new Date(value) : null;
         },
       },
-      ...(canUpdate
-        ? ([
-            {
-              field: "createdAt",
-              headerName: "作成日時",
-              width: 150,
-              type: "dateTime",
-              valueGetter: (value: Date) => {
-                return value ? new Date(value) : null;
-              },
-            },
-            {
-              field: "updatedAt",
-              headerName: "更新日時",
-              width: 150,
-              type: "dateTime",
-              valueGetter: (value: Date) => {
-                return value ? new Date(value) : null;
-              },
-            },
-          ] as GridColDef[])
-        : []),
     ];
-  }, [unsavedChangesRef, apiRef, canUpdate, beforeJoined, localRows]);
+  }, [
+    unsavedChangesRef,
+    apiRef,
+    beforeJoined,
+    localRows,
+    affiliationPeriodValueOptionsArray,
+    statusValueOptionsArray,
+    router,
+    hasFullData,
+  ]);
 
   const processRowUpdate = React.useCallback<
     NonNullable<DataGridProps["processRowUpdate"]>
   >((newRow, oldRow) => {
     const rowId = newRow.id;
-
     unsavedChangesRef.current.unsavedRows[rowId] = newRow;
     if (!unsavedChangesRef.current.rowsBeforeChange[rowId]) {
       unsavedChangesRef.current.rowsBeforeChange[rowId] = oldRow;
@@ -302,32 +254,38 @@ export default function MembersDataGrid({
   const saveChanges = React.useCallback(async () => {
     try {
       setIsSaving(true);
-      // persist changes to API
       const unsaved = Object.values(unsavedChangesRef.current.unsavedRows);
-
       for (const row of unsaved) {
         try {
-          if (row._action === "delete") {
-            await deleteUser(String(row.id));
-            apiRef.current?.updateRows([{ id: row.id, _action: "delete" }]);
-            setLocalRows((prev) =>
-              prev.filter((r) => String(r.id) !== String(row.id)),
-            );
-          } else {
-            const saved = await saveUser(row as unknown as User);
-            apiRef.current?.updateRows([saved]);
-            setLocalRows((prev) =>
-              prev.map((r) => (String(r.id) === String(saved.id) ? saved : r)),
+          // 機密情報（email など）が含まれているか確認
+          if (!row.email) {
+            console.warn(
+              `User ${row.id} has no email data. Make sure you have access to edit this user.`,
             );
           }
+
+          const userInstance = new User({
+            id: row.id as string,
+            customId: row.customId,
+            email: row.email,
+            externalEmail: row.externalEmail,
+            affiliationPeriod: row.affiliationPeriod,
+            status: row.status,
+            profile: row.profile,
+          });
+          const saved = await saveUser(userInstance);
+          const savedPlain = saved.convertPlain();
+          apiRef.current?.updateRows([savedPlain]);
+          setLocalRows((prev) =>
+            prev.map((r) =>
+              String(r.id) === String(savedPlain.id) ? savedPlain : r,
+            ),
+          );
         } catch (err) {
-          // ignore single row error but mark overall as failed later if needed
-          console.error("Save/Delete row failed:", err);
+          console.error("Save row failed:", err);
         }
       }
-
       setIsSaving(false);
-
       setHasUnsavedRows(false);
       unsavedChangesRef.current = {
         unsavedRows: {},
@@ -353,7 +311,7 @@ export default function MembersDataGrid({
 
   return (
     <div style={{ width: "100%" }}>
-      {canUpdate && !beforeJoined && (
+      {!beforeJoined && (
         <div style={{ marginBottom: 8 }}>
           <Button
             disabled={!hasUnsavedRows}
@@ -384,10 +342,7 @@ export default function MembersDataGrid({
           initialState={{
             columns: {
               columnVisibilityModel: {
-                email: !beforeJoined,
-                isSuspended: !beforeJoined,
-                suspendedReason: !beforeJoined,
-                suspendedUntil: !beforeJoined,
+                id: false,
               },
             },
           }}
@@ -416,16 +371,10 @@ export default function MembersDataGrid({
           autoHeight
         />
       </div>
-      <DeleteDialog
-        open={deleteDialogOpen}
-        dataAction={handleDelete}
-        handleClose={() => setDeleteDialogOpen(false)}
-        title="メンバー"
-      />
       <ApproveRegistApplyDialog
         open={approveDialogOpen}
         handleClose={() => setApproveDialogOpen(false)}
-        user={approvedUser as User | null}
+        user={approvedUser}
       />
     </div>
   );

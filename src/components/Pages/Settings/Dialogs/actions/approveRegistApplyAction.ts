@@ -5,7 +5,7 @@ import { FrontendErrors } from "@/types/Errors/FrontendErrors";
 
 export const userIdChangeApplyAction = async (
   _prevState: FormStatus | null,
-  formData: FormData | null
+  formData: FormData | null,
 ): Promise<FormStatus | null> => {
   try {
     if (!formData) {

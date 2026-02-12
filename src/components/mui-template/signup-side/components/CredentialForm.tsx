@@ -15,6 +15,12 @@ export default function CredentialForm(props: {
   user?: User;
   code?: string;
   redirect?: string;
+  initialFormValues?: {
+    name?: string;
+    email?: string;
+    period?: string;
+    username?: string;
+  };
 }) {
   return (
     <Box
@@ -39,6 +45,7 @@ export default function CredentialForm(props: {
         user={props.user}
         code={props.code}
         redirect={props.redirect}
+        initialFormValues={props.initialFormValues}
       />
     </Box>
   );

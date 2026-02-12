@@ -9,6 +9,9 @@ export const metadata = {
 
 export default async function Page() {
   const users = await getUsersList();
+  // establishedステータスのユーザーを除外
+  const filteredUsers = users.filter((u) => u.status !== "established");
+  const rows = filteredUsers.map((u) => u.convertPlain());
   return (
     <Stack spacing={4}>
       <Stack>
@@ -20,7 +23,7 @@ export default async function Page() {
           <Link href="/dashboard/requests">メンバー申請一覧</Link>
         </Typography>
       </Stack>
-      <MembersDataGrid rows={users} />
+      <MembersDataGrid rows={rows} />
     </Stack>
   );
 }
