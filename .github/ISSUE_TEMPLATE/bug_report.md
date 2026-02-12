@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: 不具合の報告
-title: ''
+title: ""
 labels: kind/bug
-assignees: ''
-
+assignees: ""
 ---
 
 ## 概要

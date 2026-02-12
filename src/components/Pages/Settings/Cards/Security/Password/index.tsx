@@ -25,7 +25,7 @@ export default function PasswordSection({
 }) {
   const [lastResult, action] = useActionState(
     updateSettings,
-    null as null | FormStatus
+    null as null | FormStatus,
   );
   useEffect(() => {
     if (lastResult) {

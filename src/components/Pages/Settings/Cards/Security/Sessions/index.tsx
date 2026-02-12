@@ -141,11 +141,7 @@ export default function SessionsSection({
                   </Box>
                   {!isDeleted && (
                     <Box component="form" action={action} method="post">
-                      <input
-                        type="hidden"
-                        name="csrfToken"
-                        value={csrfToken}
-                      />
+                      <input type="hidden" name="csrfToken" value={csrfToken} />
                       <input
                         type="hidden"
                         name="sessionId"

@@ -6,7 +6,7 @@ export const toCamelcase = <T>(obj: any): T => {
     const newObj: any = {};
     for (const key of Object.keys(obj)) {
       const camelKey = key.replace(/_([a-z])/g, (_, letter) =>
-        letter.toUpperCase()
+        letter.toUpperCase(),
       );
       newObj[camelKey] = toCamelcase(obj[key]);
     }

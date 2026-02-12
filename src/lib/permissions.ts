@@ -12,7 +12,7 @@ export async function getCurrentUserRoles(): Promise<RoleDTO[]> {
   if (!session) {
     return [];
   }
-  
+
   try {
     return await session.user.getRoles();
   } catch (err) {
@@ -31,7 +31,7 @@ export async function getCurrentUserRoles(): Promise<RoleDTO[]> {
  */
 export async function hasPermission(
   requiredFlag: PermissionBitsFields,
-  userRoles?: RoleDTO[]
+  userRoles?: RoleDTO[],
 ): Promise<boolean> {
   const roles = userRoles ?? (await getCurrentUserRoles());
   return roles.some((role) => (role.permissionBitmask ?? 0) & requiredFlag);
@@ -44,7 +44,7 @@ export async function hasPermission(
  */
 export async function requirePermission(
   requiredFlag: PermissionBitsFields,
-  userRoles?: RoleDTO[]
+  userRoles?: RoleDTO[],
 ): Promise<void> {
   const hasPerm = await hasPermission(requiredFlag, userRoles);
   if (!hasPerm) {

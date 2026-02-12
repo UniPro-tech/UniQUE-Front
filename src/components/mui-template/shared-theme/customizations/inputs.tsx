@@ -9,7 +9,6 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 import { gray, brand } from "../themePrimitives";
 
- 
 export const inputsCustomizations: Components<Theme> = {
   MuiButtonBase: {
     defaultProps: {
@@ -97,11 +96,11 @@ export const inputsCustomizations: Components<Theme> = {
               backgroundColor: brand[300],
               backgroundImage: `linear-gradient(to bottom, ${alpha(
                 brand[400],
-                0.8
+                0.8,
               )}, ${brand[500]})`,
               boxShadow: `inset 0 2px 0 ${alpha(
                 brand[200],
-                0.2
+                0.2,
               )}, inset 0 -2px 0 ${alpha(brand[700], 0.4)}`,
               border: `1px solid ${brand[500]}`,
               "&:hover": {

@@ -6,7 +6,7 @@ export async function sendEmail(
   to: string,
   subject: string,
   message: string,
-  html?: string
+  html?: string,
 ) {
   // Nodemailerのトランスポートを設定
   const transporter = nodemailer.createTransport({

@@ -1,10 +1,9 @@
 ---
 name: Feature request
 about: 新しい機能のリクエスト
-title: ''
+title: ""
 labels: kind/feature
-assignees: ''
-
+assignees: ""
 ---
 
 ## 機能の内容

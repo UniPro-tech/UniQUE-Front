@@ -25,7 +25,7 @@ export default function ApproveRegistApplyDialog({
 }: ApproveRegistApplyProps) {
   const [state, action, isPending] = React.useActionState(
     approveRegistApplyAction,
-    null as null | FormStatus
+    null as null | FormStatus,
   );
   React.useEffect(() => {
     if (state) {

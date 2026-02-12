@@ -8,7 +8,7 @@ import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
 
 export const updateSettings = async (
   _prevState: null | FormStatus,
-  formData: FormData
+  formData: FormData,
 ) => {
   try {
     // フォームデータから必要な情報を取得して処理を行う

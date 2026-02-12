@@ -13,7 +13,7 @@ export enum FormRequestErrorCodes {
 }
 
 export function getFormRequestErrorSnackbarData(
-  error: FormRequestErrorCodes
+  error: FormRequestErrorCodes,
 ): SnackbarData {
   switch (error) {
     case FormRequestErrorCodes.InvalidFormData:
@@ -43,25 +43,25 @@ export function getFormRequestErrorSnackbarData(
       };
     default:
       return getFrontendErrorSnackbarData(
-        FrontendErrorCodes.UnhandledException
+        FrontendErrorCodes.UnhandledException,
       );
   }
 }
 
 export const FormRequestErrors = {
   InvalidFormData: new Error(
-    `[${FormRequestErrorCodes.InvalidFormData}] Invalid form data.`
+    `[${FormRequestErrorCodes.InvalidFormData}] Invalid form data.`,
   ),
   MissingRequiredFields: new Error(
-    `[${FormRequestErrorCodes.MissingRequiredFields}] Missing required fields.`
+    `[${FormRequestErrorCodes.MissingRequiredFields}] Missing required fields.`,
   ),
   ExceededFieldLength: new Error(
-    `[${FormRequestErrorCodes.ExceededFieldLength}] Exceeded field length.`
+    `[${FormRequestErrorCodes.ExceededFieldLength}] Exceeded field length.`,
   ),
   InvalidFieldFormat: new Error(
-    `[${FormRequestErrorCodes.InvalidFieldFormat}] Invalid field format.`
+    `[${FormRequestErrorCodes.InvalidFieldFormat}] Invalid field format.`,
   ),
   CSRFTokenMismatch: new Error(
-    `[${FormRequestErrorCodes.CSRFTokenMismatch}] CSRF token mismatch.`
+    `[${FormRequestErrorCodes.CSRFTokenMismatch}] CSRF token mismatch.`,
   ),
 };

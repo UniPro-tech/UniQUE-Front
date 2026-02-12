@@ -16,30 +16,30 @@ export enum AuthenticationErrorCodes {
 
 export const AuthenticationErrors = {
   MissingCredentials: new Error(
-    `[${AuthenticationErrorCodes.MissingCredentials}] Missing credentials.`
+    `[${AuthenticationErrorCodes.MissingCredentials}] Missing credentials.`,
   ),
   InvalidCredentials: new Error(
-    `[${AuthenticationErrorCodes.InvalidCredentials}] Invalid credentials.`
+    `[${AuthenticationErrorCodes.InvalidCredentials}] Invalid credentials.`,
   ),
   AccountLocked: new Error(
-    `[${AuthenticationErrorCodes.AccountLocked}] Account is locked.`
+    `[${AuthenticationErrorCodes.AccountLocked}] Account is locked.`,
   ),
   TokenExpired: new Error(
-    `[${AuthenticationErrorCodes.TokenExpired}] Token has expired.`
+    `[${AuthenticationErrorCodes.TokenExpired}] Token has expired.`,
   ),
   InsufficientPermissions: new Error(
-    `[${AuthenticationErrorCodes.InsufficientPermissions}] Insufficient permissions.`
+    `[${AuthenticationErrorCodes.InsufficientPermissions}] Insufficient permissions.`,
   ),
   InvalidEmailVerificationCode: new Error(
-    `[${AuthenticationErrorCodes.InvalidEmailVerificationCode}] Invalid email verification code.`
+    `[${AuthenticationErrorCodes.InvalidEmailVerificationCode}] Invalid email verification code.`,
   ),
   MigrationError: new Error(
-    `[${AuthenticationErrorCodes.MigrationError}] Account migration error.`
+    `[${AuthenticationErrorCodes.MigrationError}] Account migration error.`,
   ),
 };
 
 export function getAuthenticationErrorSnackbarData(
-  error: AuthenticationErrorCodes
+  error: AuthenticationErrorCodes,
 ): SnackbarData {
   switch (error) {
     case AuthenticationErrorCodes.MissingCredentials:
@@ -79,7 +79,7 @@ export function getAuthenticationErrorSnackbarData(
       };
     default:
       return getFrontendErrorSnackbarData(
-        FrontendErrorCodes.UnhandledException
+        FrontendErrorCodes.UnhandledException,
       );
   }
 }

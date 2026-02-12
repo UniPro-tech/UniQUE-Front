@@ -33,10 +33,10 @@ if (fs.existsSync(secretKeyFile) && fs.existsSync(publicKeyFile)) {
 
 export const generateCSRFToken = (
   data: string,
-  exp: boolean | undefined = true
+  exp: boolean | undefined = true,
 ): string => {
   const message = util.decodeUTF8(
-    `${data}${exp ? `&exp=${Date.now() + 10 * 60 * 1000}` : ""}`
+    `${data}${exp ? `&exp=${Date.now() + 10 * 60 * 1000}` : ""}`,
   ); // 10分有効
   const signedMessage = nacl.sign(message, secretKey);
   return util.encodeBase64(signedMessage);
@@ -44,7 +44,7 @@ export const generateCSRFToken = (
 
 export const VerifyCSRFToken = (
   token: string,
-  exp: boolean | undefined = true
+  exp: boolean | undefined = true,
 ): string | null => {
   try {
     const verified = nacl.sign.open(util.decodeBase64(token), publicKey);

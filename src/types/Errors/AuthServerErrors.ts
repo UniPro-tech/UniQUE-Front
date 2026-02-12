@@ -10,12 +10,12 @@ export enum AuthServerErrorCodes {
 
 export const AuthServerErrors = {
   InternalServerError: new Error(
-    `[${AuthServerErrorCodes.InternalServerError}] Internal server error on authentication server.`
+    `[${AuthServerErrorCodes.InternalServerError}] Internal server error on authentication server.`,
   ),
 };
 
 export function getAuthServerErrorSnackbarData(
-  error: AuthServerErrorCodes
+  error: AuthServerErrorCodes,
 ): SnackbarData {
   switch (error) {
     case AuthServerErrorCodes.InternalServerError:
@@ -25,7 +25,7 @@ export function getAuthServerErrorSnackbarData(
       };
     default:
       return getFrontendErrorSnackbarData(
-        FrontendErrorCodes.UnhandledException
+        FrontendErrorCodes.UnhandledException,
       );
   }
 }
