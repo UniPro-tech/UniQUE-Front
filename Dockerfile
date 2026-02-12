@@ -3,11 +3,13 @@ FROM oven/bun:1-slim
 # Set working directory
 WORKDIR /app
 
+# Install dependencies
+COPY bun.lock /app/bun.lock
+COPY package.json /app/package.json
+RUN bun install --frozen-lockfile
+
 # Copy project files
 COPY . /app
-
-# Install dependencies
-RUN bun install
 
 # Build the project
 RUN bun run build
@@ -16,7 +18,5 @@ RUN bun run build
 EXPOSE 3000
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV UV_THREADPOOL_SIZE=1
 
-RUN chmod +x /app/entrypoint.sh
-CMD ["/app/entrypoint.sh"]
+CMD ["sh", "-c", "bun run build && bun run start"]

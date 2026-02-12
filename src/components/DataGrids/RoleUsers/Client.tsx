@@ -11,73 +11,77 @@ import {
 } from "@mui/x-data-grid";
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { darken } from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { darken, Paper, Box, Button, Stack } from "@mui/material";
 import { jaJP } from "@mui/x-data-grid/locales";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import DeleteDialog from "@/components/Dialogs/Delete";
-import { User } from "@/types/User";
-import { PlainRole, Role } from "@/types/Role";
+import AssignUserToRoleDialog from "@/components/Dialogs/AssignUserToRole";
+import type { UserDTO } from "@/types/User";
+import { type PlainRole } from "@/types/Role";
+import { unassignUserFromRole } from "@/app/dashboard/roles/[id]/assign-action";
 
 export default function RoleUsersDataGridClient({
   role,
   rows,
 }: {
   role: PlainRole;
-  rows: User[] | User<"Simple">[];
+  rows: UserDTO[];
 }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<User[] | User<"Simple">[]>(
-    () => rows,
-  );
+  const [localRows, setLocalRows] = React.useState<UserDTO[]>(() => rows);
+  const [assignDialogOpen, setAssignDialogOpen] = React.useState(false);
+  
   React.useEffect(() => {
     setLocalRows(rows);
   }, [rows]);
+  
   const [undeletedRows, setUndeletedRows] = React.useState<GridRowId | null>(
     null,
   );
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  
+  const handleAssignSuccess = () => {
+    // ページをリロードして最新のデータを取得
+    window.location.reload();
+  };
+  
   const handleDelete = async (
     _prevState: FormStatus | null,
     _formData: FormData | null,
   ) => {
     try {
       if (!undeletedRows) {
-        const res: FormStatus = {
+        return {
           status: "error",
           message: "削除対象が選択されていません",
-        };
-        return res;
+        } as FormStatus;
       }
-      // use Role class to delete
-      const roleInstance = new Role(
-        role.id,
-        role.custom_id,
-        role.name,
-        role.permissionBit,
-        role.isSystem,
-        role.isEnable,
-        role.createdAt,
-        role.updatedAt,
-      );
-      await roleInstance.unassignUser(undeletedRows as string);
-      // remove row from grid data
+      
+      const result = await unassignUserFromRole(role.id, undeletedRows as string);
+      
+      if (!result.success) {
+        return {
+          status: "error",
+          message: result.error || "削除に失敗しました",
+        } as FormStatus;
+      }
+      
       setLocalRows((prev) =>
         prev.filter((r) => String(r.id) !== String(undeletedRows)),
       );
       apiRef.current?.updateRows([{ id: undeletedRows, _action: "delete" }]);
       setUndeletedRows(null);
       setDeleteDialogOpen(false);
-      const res: FormStatus = {
+      return {
         status: "success",
         message: "ロールの割り当てを削除しました",
-      };
-      return res;
+      } as FormStatus;
     } catch (error) {
-      const res: FormStatus = {
+      return {
         status: "error",
         message: `削除に失敗しました: ${String(error)}`,
-      };
-      return res;
+      } as FormStatus;
     }
   };
 
@@ -88,18 +92,22 @@ export default function RoleUsersDataGridClient({
     unsavedRows: {},
     rowsBeforeChange: {},
   });
+
   const columns = React.useMemo<GridColDef[]>(() => {
     return [
       {
         field: "actions",
         headerName: "操作",
         type: "actions",
+        width: 100,
+        sortable: false,
+        filterable: false,
         getActions: ({ id }: { id: GridRowId }) => {
           return [
             <GridActionsCellItem
               key={"delete-row"}
               icon={<DeleteIcon />}
-              label="Delete"
+              label="削除"
               onClick={() => {
                 setUndeletedRows(id);
                 setDeleteDialogOpen(true);
@@ -108,47 +116,36 @@ export default function RoleUsersDataGridClient({
           ];
         },
       },
-      { field: "id", headerName: "ID", width: 250 },
-      {
-        field: "name",
-        headerName: "ユーザー名",
+      { 
+        field: "id", 
+        headerName: "ID", 
         width: 200,
+        flex: 0.5,
+      },
+      {
+        field: "displayName",
+        headerName: "表示名",
+        width: 180,
+        flex: 1,
+        valueGetter: (_value: unknown, row: UserDTO) =>
+          row.profile?.displayName || row.customId || "",
       },
       {
         field: "customId",
         headerName: "カスタムID",
-        width: 150,
+        width: 140,
+        flex: 0.8,
       },
       {
-        field: "isSystem",
-        headerName: "システム",
+        field: "email",
+        headerName: "メールアドレス",
+        width: 220,
+        flex: 1,
+      },
+      {
+        field: "status",
+        headerName: "ステータス",
         width: 120,
-        type: "boolean",
-      },
-      {
-        field: "isEnable",
-        headerName: "有効",
-        width: 120,
-        type: "boolean",
-      },
-
-      {
-        field: "createdAt",
-        headerName: "作成日時",
-        width: 180,
-        type: "dateTime",
-        valueGetter: (value: Date) => {
-          return value ? new Date(value) : null;
-        },
-      },
-      {
-        field: "updatedAt",
-        headerName: "更新日時",
-        width: 180,
-        type: "dateTime",
-        valueGetter: (value: Date) => {
-          return value ? new Date(value) : null;
-        },
       },
     ];
   }, []);
@@ -158,15 +155,17 @@ export default function RoleUsersDataGridClient({
   >(
     () => ({
       sorting: {
-        sortModel: [{ field: "name", sort: "desc" }],
+        sortModel: [{ field: "displayName", sort: "asc" }],
       },
       columns: {
         columnVisibilityModel: {
           id: false,
-          isSystem: false,
-          isEnable: false,
-          createdAt: false,
-          updatedAt: false,
+        },
+      },
+      pagination: {
+        paginationModel: {
+          pageSize: 10,
+          page: 0,
         },
       },
     }),
@@ -178,53 +177,69 @@ export default function RoleUsersDataGridClient({
   >(({ id }) => {
     const unsavedRow = unsavedChangesRef.current.unsavedRows[id];
     if (unsavedRow) {
-      if (unsavedRow._action === "delete") {
-        return "row--removed";
-      }
+      if (unsavedRow._action === "delete") return "row--removed";
       return "row--edited";
     }
     return "";
   }, []);
 
   return (
-    <div style={{ width: "100%" }}>
-      <div style={{ height: 400 }}>
-        <DataGrid
-          rows={localRows}
-          columns={columns}
-          apiRef={apiRef}
-          disableRowSelectionOnClick
-          initialState={initialState}
-          ignoreValueFormatterDuringExport
-          showToolbar
-          sx={{
-            [`& .${gridClasses.row}.row--removed`]: {
-              backgroundColor: (theme) => {
-                if (theme.palette.mode === "light") {
-                  return "rgba(255, 170, 170, 0.3)";
-                }
-                return darken("rgba(255, 170, 170, 1)", 0.7);
+    <Stack spacing={2}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
+          startIcon={<PersonAddIcon />}
+          onClick={() => setAssignDialogOpen(true)}
+        >
+          ユーザーを追加
+        </Button>
+      </Box>
+      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <Box sx={{ height: 500, width: "100%" }}>
+          <DataGrid
+            rows={localRows}
+            columns={columns}
+            apiRef={apiRef}
+            disableRowSelectionOnClick
+            initialState={initialState}
+            ignoreValueFormatterDuringExport
+            localeText={jaJP.components.MuiDataGrid.defaultProps.localeText}
+            getRowClassName={getRowClassName}
+            pageSizeOptions={[5, 10, 25, 50]}
+            density="comfortable"
+            sx={{
+              [`& .${gridClasses.row}.row--removed`]: {
+                backgroundColor: (theme) => {
+                  if (theme.palette.mode === "light")
+                    return "rgba(255, 170, 170, 0.3)";
+                  return darken("rgba(255, 170, 170, 1)", 0.7);
+                },
               },
-            },
-            [`& .${gridClasses.row}.row--edited`]: {
-              backgroundColor: (theme) => {
-                if (theme.palette.mode === "light") {
-                  return "rgba(255, 254, 176, 0.3)";
-                }
-                return darken("rgba(255, 254, 176, 1)", 0.6);
+              [`& .${gridClasses.row}.row--edited`]: {
+                backgroundColor: (theme) => {
+                  if (theme.palette.mode === "light")
+                    return "rgba(255, 254, 176, 0.3)";
+                  return darken("rgba(255, 254, 176, 1)", 0.6);
+                },
               },
-            },
-          }}
-          localeText={jaJP.components.MuiDataGrid.defaultProps.localeText}
-          getRowClassName={getRowClassName}
-        />
-      </div>
+            }}
+          />
+        </Box>
+      </Paper>
       <DeleteDialog
         open={deleteDialogOpen}
         dataAction={handleDelete}
         handleClose={() => setDeleteDialogOpen(false)}
-        title="ロール"
+        title="ロールの割り当て"
       />
-    </div>
+      <AssignUserToRoleDialog
+        open={assignDialogOpen}
+        roleId={role.id}
+        roleName={role.name}
+        currentUserIds={localRows.map((u) => u.id)}
+        handleClose={() => setAssignDialogOpen(false)}
+        onSuccess={handleAssignSuccess}
+      />
+    </Stack>
   );
 }

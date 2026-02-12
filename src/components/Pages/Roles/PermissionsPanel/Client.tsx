@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { PermissionResponse, PlainRole, Role } from "@/types/Role";
+import { PlainRole, Role } from "@/types/Role";
 import {
   Grid,
   FormControlLabel,
@@ -14,19 +14,15 @@ import { PermissionBitsFields, PermissionTexts } from "@/types/Permission";
 
 export default function PermissionsPanelClient({
   role,
-  permissions,
+  permissionBitmask,
 }: {
   role: PlainRole;
-  permissions: PermissionResponse;
+  permissionBitmask: number;
 }) {
-  const [bits, setBits] = useState<number>(
-    typeof permissions?.permissionsBit === "number"
-      ? permissions.permissionsBit
-      : role.permissionBit ?? 0
-  );
+  const [bits, setBits] = useState<number>(permissionBitmask ?? 0);
 
   const names = Object.keys(PermissionBitsFields).filter((k) =>
-    isNaN(Number(k))
+    isNaN(Number(k)),
   );
 
   const handleToggle =
@@ -36,17 +32,10 @@ export default function PermissionsPanelClient({
     };
 
   const onSave = React.useCallback(async () => {
-    const roleInstance = new Role(
-      role.id,
-      role.custom_id,
-      role.name,
-      role.permissionBit,
-      role.isSystem,
-      role.isEnable,
-      role.createdAt,
-      role.updatedAt
-    );
-    roleInstance.permissionBit = bits;
+    const roleInstance = new Role({
+      ...role,
+      permissionBitmask: bits,
+    });
     await roleInstance.save();
   }, [bits, role]);
 

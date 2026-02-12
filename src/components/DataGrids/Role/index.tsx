@@ -6,15 +6,13 @@ export default async function RolesDataGrid({
   rows?: PlainRole[] | Role[];
 }) {
   if (!rows) {
-    // fetch roles from API
-    rows = await Role.getAllRoles();
-    rows = rows.map((role) => role.toPlainObject());
-  }
-  if (Array.isArray(rows) && rows.some((role) => role instanceof Role)) {
+    const fetched = await Role.getAllRoles();
+    rows = fetched.map((role) => role.toPlainObject());
+  } else {
     rows = rows.map((role) =>
-      role instanceof Role ? role.toPlainObject() : role
+      role instanceof Role ? role.toPlainObject() : role,
     );
   }
-  const RolesDataGridClient = (await import("./Client")).default;
+  const RolesDataGridClient = (await import("../Roles/Client")).default;
   return <RolesDataGridClient rows={rows as PlainRole[]} />;
 }

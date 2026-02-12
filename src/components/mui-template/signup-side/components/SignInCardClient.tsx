@@ -20,6 +20,12 @@ export default function SignInCardClient(props: {
   user?: User;
   code?: string;
   redirect?: string;
+  initialFormValues?: {
+    name?: string;
+    email?: string;
+    period?: string;
+    username?: string;
+  };
 }) {
   const buildHrefWithRedirect = (href: string): string => {
     if (!props.redirect) return href;
@@ -146,6 +152,7 @@ export default function SignInCardClient(props: {
         user={props.user}
         code={props.code}
         redirect={props.redirect}
+        initialFormValues={props.initialFormValues}
       />
       {/*}
       <Divider>もしくは</Divider>

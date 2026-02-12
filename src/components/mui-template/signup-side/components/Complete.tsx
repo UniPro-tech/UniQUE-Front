@@ -1,11 +1,48 @@
 "use client";
 import { Theme } from "@mui/material/styles";
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  Button,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 import MuiCard from "@mui/material/Card";
 import { SitemarkIcon } from "./CustomIcons";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { useEffect, useState } from "react";
 
 export default function Complete() {
+  const [isDiscordLinked, setIsDiscordLinked] = useState<boolean | null>(null);
+  const [hasSession, setHasSession] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Discord連携状態をチェック
+    const checkDiscordLink = async () => {
+      try {
+        const response = await fetch("/api/auth/check-discord-link");
+        if (response.ok) {
+          const data = await response.json();
+          setIsDiscordLinked(data.linked);
+          setHasSession(data.hasSession ?? null);
+        }
+      } catch (error) {
+        console.error("Discord連携状態の確認に失敗しました:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkDiscordLink();
+  }, []);
+
+  const handleDiscordLink = () => {
+    // Discord OAuth開始（signupフローフラグ付き）
+    window.location.href = "/api/oauth/discord?from=signup";
+  };
+
   return (
     <MuiCard
       variant="outlined"
@@ -30,25 +67,80 @@ export default function Complete() {
       <Box sx={{ display: { xs: "flex", md: "none" } }}>
         <SitemarkIcon />
       </Box>
-      <Stack alignItems="center" spacing={2} sx={{ mt: 2 }}>
+      <Stack alignItems="center" spacing={3} sx={{ mt: 2 }}>
         <CheckCircleOutlineIcon sx={{ fontSize: 40, color: "green" }} />
         <Typography variant="h5" component="div" gutterBottom>
-          サインアップが完了しました
+          メールアドレス認証が完了しました
         </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          align="center"
-          sx={{ whiteSpace: "pre-line" }}
-        >
-          アカウントが正常に作成されました。
-          <wbr />
-          管理者による承認後、サインインできるようになります。
-          <wbr />
-          承認が完了しましたら、登録されたメールアドレスに通知が送信されます。
-          <wbr />
-          しばらくお待ちください。
-        </Typography>
+
+        {isLoading ? (
+          <CircularProgress size={24} />
+        ) : hasSession === false ? (
+          <>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ whiteSpace: "pre-line" }}
+            >
+              アカウントが正常に作成されました。
+              <wbr />
+              管理者による承認後、サインインできるようになります。
+              <wbr />
+              承認が完了しましたら、登録されたメールアドレスに通知が送信されます。
+              <wbr />
+              しばらくお待ちください。
+            </Typography>
+          </>
+        ) : !isDiscordLinked ? (
+          <>
+            <Alert severity="info" sx={{ width: "100%" }}>
+              サインアップを完了するには、Discordアカウントの連携が必須です。
+            </Alert>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ whiteSpace: "pre-line" }}
+            >
+              Discord連携により、UniProjectのコミュニティサーバーに自動的に参加できます。
+              <wbr />
+              下のボタンをクリックして、Discordアカウントを連携してください。
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleDiscordLink}
+              fullWidth
+              sx={{
+                backgroundColor: "#5865F2",
+                "&:hover": {
+                  backgroundColor: "#4752C4",
+                },
+              }}
+            >
+              Discordアカウントを連携する
+            </Button>
+          </>
+        ) : (
+          <>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ whiteSpace: "pre-line" }}
+            >
+              アカウントが正常に作成されました。
+              <wbr />
+              管理者による承認後、サインインできるようになります。
+              <wbr />
+              承認が完了しましたら、登録されたメールアドレスに通知が送信されます。
+              <wbr />
+              しばらくお待ちください。
+            </Typography>
+          </>
+        )}
       </Stack>
     </MuiCard>
   );

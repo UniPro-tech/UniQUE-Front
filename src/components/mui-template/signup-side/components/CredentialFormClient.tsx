@@ -10,17 +10,13 @@ import {
   FormHelperText,
   FormLabel,
   Link,
-  List,
-  ListItem,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import { SignInCardMode } from "../types/SignInCardMode";
-import { enqueueSnackbar } from "notistack";
 import { User } from "@/types/User";
-import { unlink } from "@/lib/resources/SocialAccounts";
 
 const credentialSchema = z.object({
   name: z.string().min(1, { message: "名前を入力してください。" }),
@@ -35,14 +31,146 @@ const credentialSchema = z.object({
     .string()
     .nonempty({ message: "メールアドレスを入力してください。" })
     .email({ message: "有効なメールアドレスを入力してください。" }),
-  emailOrName: z.string().min(3, {
-    message: "メールアドレスまたはユーザー名は3文字以上で入力してください。",
-  }),
   password: z
     .string()
     .min(8, { message: "パスワードは8文字以上で入力してください。" }),
-  birthdate: z.string().min(1, { message: "生年月日を入力してください。" }), // Add more validation if needed
+  confirmPassword: z
+    .string()
+    .min(1, { message: "パスワード確認を入力してください。" }),
+  birthdate: z.string().min(1, { message: "生年月日を入力してください。" }),
 });
+
+type FormField = {
+  value: string;
+  error: boolean;
+  message: string;
+};
+
+type FormState = {
+  name: FormField;
+  email: FormField;
+  password: FormField;
+  confirmPassword: FormField;
+  username: FormField;
+  period: FormField;
+  birthdate: FormField;
+  forgotPasswordOpen: boolean;
+};
+
+type FormAction =
+  | {
+      type: "SET_FIELD";
+      field: keyof Omit<FormState, "forgotPasswordOpen">;
+      value: string;
+    }
+  | {
+      type: "SET_ERROR";
+      field: keyof Omit<FormState, "forgotPasswordOpen">;
+      error: boolean;
+      message: string;
+    }
+  | { type: "RESET_ERROR"; field: keyof Omit<FormState, "forgotPasswordOpen"> }
+  | { type: "TOGGLE_FORGOT_PASSWORD" };
+
+const initialFormState = (initialValues?: {
+  name?: string;
+  email?: string;
+  period?: string;
+  username?: string;
+}): FormState => ({
+  name: { value: initialValues?.name || "", error: false, message: "" },
+  email: { value: initialValues?.email || "", error: false, message: "" },
+  password: { value: "", error: false, message: "" },
+  confirmPassword: { value: "", error: false, message: "" },
+  username: { value: initialValues?.username || "", error: false, message: "" },
+  period: { value: initialValues?.period || "", error: false, message: "" },
+  birthdate: { value: "", error: false, message: "" },
+  forgotPasswordOpen: false,
+});
+
+const formReducer = (state: FormState, action: FormAction): FormState => {
+  switch (action.type) {
+    case "SET_FIELD":
+      return {
+        ...state,
+        [action.field]: { ...state[action.field], value: action.value },
+      };
+    case "SET_ERROR":
+      return {
+        ...state,
+        [action.field]: {
+          ...state[action.field],
+          error: action.error,
+          message: action.message,
+        },
+      };
+    case "RESET_ERROR":
+      return {
+        ...state,
+        [action.field]: { ...state[action.field], error: false, message: "" },
+      };
+    case "TOGGLE_FORGOT_PASSWORD":
+      return { ...state, forgotPasswordOpen: !state.forgotPasswordOpen };
+    default:
+      return state;
+  }
+};
+
+interface FormFieldProps {
+  label: string;
+  id: string;
+  type?: string;
+  name: string;
+  placeholder: string;
+  value: string;
+  error: boolean;
+  errorMessage: string;
+  onChange: (value: string) => void;
+  onBlur: () => void;
+  helperText?: string;
+  autoFocus?: boolean;
+  autoComplete?: string;
+}
+
+const FormField: React.FC<FormFieldProps> = ({
+  label,
+  id,
+  type = "text",
+  name,
+  placeholder,
+  value,
+  error,
+  errorMessage,
+  onChange,
+  onBlur,
+  helperText,
+  autoFocus,
+  autoComplete,
+}) => {
+  const hasValue = value.length > 0;
+  return (
+    <FormControl>
+      <FormLabel htmlFor={id}>{label}</FormLabel>
+      <TextField
+        error={hasValue && error}
+        helperText={hasValue && error ? errorMessage : helperText || ""}
+        id={id}
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        required
+        fullWidth
+        variant="outlined"
+        color={hasValue && error ? "error" : "primary"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        autoComplete={autoComplete}
+      />
+    </FormControl>
+  );
+};
 
 export default function CredentialFormClient(props: {
   mode: SignInCardMode;
@@ -50,375 +178,282 @@ export default function CredentialFormClient(props: {
   user?: User;
   code?: string;
   redirect?: string;
+  initialFormValues?: {
+    name?: string;
+    email?: string;
+    period?: string;
+    username?: string;
+  };
 }) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [name, setName] = React.useState("");
-  const [username, setUsername] = React.useState("");
-  const [period, setPeriod] = React.useState("");
-  const [birthdate, setBirthdate] = React.useState("");
+  const [state, dispatch] = React.useReducer(
+    formReducer,
+    props.initialFormValues,
+    initialFormState,
+  );
 
-  const [nameError, setNameError] = React.useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = React.useState("");
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  const [usernameError, setUsernameError] = React.useState(false);
-  const [usernameErrorMessage, setUsernameErrorMessage] = React.useState("");
-  const [birthdateError, setBirthdateError] = React.useState(false);
-  const [birthdateErrorMessage, setBirthdateErrorMessage] = React.useState("");
+  const validateField = React.useCallback(
+    (fieldName: keyof Omit<FormState, "forgotPasswordOpen">, value: string) => {
+      try {
+        const fieldValue = value || "";
 
-  const [open, setOpen] = React.useState(false);
+        // Special validation for confirmPassword
+        if (fieldName === "confirmPassword") {
+          if (fieldValue !== state.password.value) {
+            dispatch({
+              type: "SET_ERROR",
+              field: fieldName,
+              error: true,
+              message: "パスワードが一致しません。",
+            });
+          } else {
+            dispatch({ type: "RESET_ERROR", field: fieldName });
+          }
+          return;
+        }
 
-  const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const validateField = React.useCallback((name: string, value: string) => {
-    // validate single field using partial parsing
-    try {
-      if (name === "name") {
-        credentialSchema.pick({ name: true }).parse({ name: value });
-        setNameError(false);
-        setNameErrorMessage("");
-      }
-      if (name === "email") {
-        credentialSchema.pick({ email: true }).parse({ email: value });
-        setEmailError(false);
-        setEmailErrorMessage("");
-      }
-      if (name === "password") {
-        credentialSchema.pick({ password: true }).parse({ password: value });
-        setPasswordError(false);
-        setPasswordErrorMessage("");
-      }
-      if (name === "username") {
-        credentialSchema.pick({ username: true }).parse({ username: value });
-        setUsernameError(false);
-        setUsernameErrorMessage("");
-      }
-      if (name === "birthdate") {
-        // Add validation for birthdate if needed
-        setBirthdateError(false);
-        setBirthdateErrorMessage("");
-      }
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        for (const issue of err.issues) {
-          if (issue.path[0] === "email") {
-            setEmailError(true);
-            setEmailErrorMessage(issue.message);
-          }
-          if (issue.path[0] === "password") {
-            setPasswordError(true);
-            setPasswordErrorMessage(issue.message);
-          }
-          if (issue.path[0] === "name") {
-            setNameError(true);
-            setNameErrorMessage(issue.message);
-          }
-          if (issue.path[0] === "username") {
-            setUsernameError(true);
-            setUsernameErrorMessage(issue.message);
-          }
-          if (issue.path[0] === "birthdate") {
-            setBirthdateError(true);
-            setBirthdateErrorMessage(issue.message);
-          }
+        // Zod validation for other fields
+        if (
+          ["name", "email", "password", "username", "birthdate"].includes(
+            fieldName,
+          )
+        ) {
+          credentialSchema
+            .pick({ [fieldName]: true } as never)
+            .parse({ [fieldName]: fieldValue });
+          dispatch({ type: "RESET_ERROR", field: fieldName });
+        }
+      } catch (err) {
+        if (err instanceof z.ZodError && err.issues.length > 0) {
+          dispatch({
+            type: "SET_ERROR",
+            field: fieldName,
+            error: true,
+            message: err.issues[0].message,
+          });
         }
       }
+    },
+    [state.password.value],
+  );
+
+  // Real-time validation for email and password
+  React.useEffect(() => {
+    if (state.email.value.length > 0) {
+      validateField("email", state.email.value);
     }
-  }, []);
+  }, [state.email.value, validateField]);
 
   React.useEffect(() => {
-    // validate on change (real-time)
-    validateField("email", email);
-  }, [email, validateField]);
+    if (state.password.value.length > 0) {
+      validateField("password", state.password.value);
+    }
+  }, [state.password.value, validateField]);
 
   React.useEffect(() => {
-    validateField("password", password);
-  }, [password, validateField]);
+    if (state.confirmPassword.value.length > 0) {
+      validateField("confirmPassword", state.confirmPassword.value);
+    }
+  }, [state.confirmPassword.value, state.password.value, validateField]);
 
-  return (
-    <>
-      <input type="hidden" name="csrfToken" value={props.csrfToken} />
-      {props.redirect && (
-        <input type="hidden" name="redirect" value={props.redirect} />
-      )}
-      {(() => {
-        switch (props.mode) {
-          case SignInCardMode.SignUp:
-            return (
-              <>
-                <FormControl>
-                  <FormLabel htmlFor="name">名前 (ニックネーム可)</FormLabel>
-                  <TextField
-                    error={name.length > 0 && nameError}
-                    helperText={name.length > 0 && nameErrorMessage}
-                    id="name"
-                    type="text"
-                    name="name"
-                    placeholder="ゆに太郎"
-                    autoFocus
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={name.length > 0 && nameError ? "error" : "primary"}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    onBlur={(e) => validateField("name", e.target.value)}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="username">ユーザー名</FormLabel>
-                  <TextField
-                    error={username.length > 0 && usernameError}
-                    helperText={username.length > 0 && usernameErrorMessage}
-                    id="username"
-                    type="text"
-                    name="username"
-                    placeholder="your-username"
-                    autoFocus
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={
-                      username.length > 0 && usernameError ? "error" : "primary"
-                    }
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onBlur={(e) => validateField("username", e.target.value)}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="email">メールアドレス</FormLabel>
-                  <TextField
-                    error={email.length > 0 && emailError}
-                    helperText={email.length > 0 && emailErrorMessage}
-                    id="email"
-                    type="email"
-                    name="email"
-                    placeholder="your@email.com"
-                    autoComplete="email"
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={email.length > 0 && emailError ? "error" : "primary"}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onBlur={(e) => validateField("email", e.target.value)}
-                  />
-                </FormControl>
-              </>
-            );
-          case SignInCardMode.SignUpEmailValidated:
-            return (
-              <>
-                <input
-                  type="hidden"
-                  name="userId"
-                  value={props.user?.id || ""}
-                />
-                <input type="hidden" name="code" value={props.code || ""} />
-                <Stack direction={"row"} alignItems="center" spacing={1}>
-                  <Typography variant="h6" textAlign={"left"}>
-                    Discordアカウント
-                  </Typography>
-                  <Divider sx={{ flexGrow: 1 }} />
-                </Stack>
-                <Typography variant="body2">
-                  サークル参加にあたって、Discordアカウントの連携を行います。
-                </Typography>
-                {props.user!.discords?.length !== 0 ? (
-                  <List>
-                    {props.user!.discords!.map((discord) => (
-                      <ListItem key={discord.discordId}>
-                        <Typography variant="body2">
-                          {discord.customId} (ID: {discord.discordId})
-                        </Typography>
-                        <Button
-                          onClick={() =>
-                            unlink("discord", discord.discordId)
-                              .then(() => {
-                                enqueueSnackbar(
-                                  "Discordアカウントの連携を解除しました。",
-                                  { variant: "success" },
-                                );
-                              })
-                              .catch((error) => {
-                                enqueueSnackbar(
-                                  `Discordアカウントの連携解除に失敗しました: ${error.message}`,
-                                  { variant: "error" },
-                                );
-                              })
-                          }
-                        >
-                          連携解除
-                        </Button>
-                      </ListItem>
-                    ))}
-                  </List>
-                ) : (
-                  <Typography variant="body2">
-                    現在、Discordアカウントは連携されていません。
-                  </Typography>
-                )}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href={`/api/oauth/discord?signup=${props.code}`}
-                >
-                  Discordアカウントを連携する
-                </Button>
-                <FormControl>
-                  <Stack direction={"row"} alignItems="center" spacing={1}>
-                    <Typography variant="h6" textAlign={"left"}>
-                      生年月日
-                    </Typography>
-                    <Divider sx={{ flexGrow: 1 }} />
-                  </Stack>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    未成年者保護の観点から、生年月日の提供をお願いしております。
-                  </Typography>
-                  <TextField
-                    error={birthdate.length > 0 && birthdateError}
-                    helperText={birthdate.length > 0 && birthdateErrorMessage}
-                    id="birthdate"
-                    type="date"
-                    name="birthdate"
-                    placeholder="birthdate"
-                    autoFocus
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={
-                      birthdate.length > 0 && birthdateError
-                        ? "error"
-                        : "primary"
-                    }
-                    value={birthdate}
-                    onChange={(e) => setBirthdate(e.target.value)}
-                    onBlur={(e) => validateField("birthdate", e.target.value)}
-                  />
-                </FormControl>
-              </>
-            );
-          case SignInCardMode.SignIn:
-            return (
-              <FormControl>
-                <FormLabel htmlFor="username">ユーザー名</FormLabel>
-                <TextField
-                  error={username.length > 0 && usernameError}
-                  helperText={username.length > 0 && usernameErrorMessage}
-                  id="username"
-                  type="text"
-                  name="username"
-                  placeholder="username"
-                  autoFocus
-                  required
-                  fullWidth
-                  variant="outlined"
-                  color={
-                    username.length > 0 && usernameError ? "error" : "primary"
-                  }
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onBlur={(e) => validateField("username", e.target.value)}
-                />
-              </FormControl>
-            );
-          case SignInCardMode.Migrate:
-            return (
-              <>
-                <FormControl>
-                  <FormLabel htmlFor="name">名前 (ニックネーム可)</FormLabel>
-                  <TextField
-                    error={name.length > 0 && nameError}
-                    helperText={name.length > 0 && nameErrorMessage}
-                    id="name"
-                    type="text"
-                    name="name"
-                    placeholder="ゆに太郎"
-                    autoFocus
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={name.length > 0 && nameError ? "error" : "primary"}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    onBlur={(e) => validateField("name", e.target.value)}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="email">外部メールアドレス</FormLabel>
-                  <TextField
-                    error={email.length > 0 && emailError}
-                    helperText={email.length > 0 && emailErrorMessage}
-                    id="email"
-                    type="email"
-                    name="email"
-                    placeholder="example@exsample.com"
-                    autoComplete="email"
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={email.length > 0 && emailError ? "error" : "primary"}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onBlur={(e) => validateField("email", e.target.value)}
-                  />
-                  <FormHelperText>
-                    UniProに登録している外部のメールアドレス(@uniproject.jpではないもの)を入力してください。
-                  </FormHelperText>
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="period">所属期</FormLabel>
-                  <TextField
-                    id="period"
-                    type="text"
-                    name="period"
-                    placeholder="01A"
-                    autoFocus
-                    required
-                    fullWidth
-                    variant="outlined"
-                    value={period}
-                    onChange={(e) => setPeriod(e.target.value)}
-                    onBlur={(e) => validateField("period", e.target.value)}
-                  />
-                  <FormHelperText>例:01A、02C、00など</FormHelperText>
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="username">ユーザー名</FormLabel>
-                  <TextField
-                    error={username.length > 0 && usernameError}
-                    helperText={username.length > 0 && usernameErrorMessage}
-                    id="username"
-                    type="text"
-                    name="username"
-                    placeholder="username"
-                    autoFocus
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={
-                      username.length > 0 && usernameError ? "error" : "primary"
-                    }
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onBlur={(e) => validateField("username", e.target.value)}
-                  />
-                  <FormHelperText>
-                    メールアドレス&lt;所属期&gt;.xxxx@uniproject.jpのxxxx部分を
-                    <wbr />
-                    入力してください。
-                  </FormHelperText>
-                </FormControl>
-              </>
-            );
-        }
-      })()}
-      {![SignInCardMode.SignUpEmailValidated].includes(props.mode) && (
+  const setFieldValue = (
+    field: keyof Omit<FormState, "forgotPasswordOpen">,
+    value: string,
+  ) => {
+    dispatch({ type: "SET_FIELD", field, value });
+  };
+
+  const handleForgotPassword = () => {
+    dispatch({ type: "TOGGLE_FORGOT_PASSWORD" });
+  };
+
+  const renderModeSpecificFields = () => {
+    switch (props.mode) {
+      case SignInCardMode.SignUp:
+        return (
+          <>
+            <FormField
+              label="名前 (ニックネーム可)"
+              id="name"
+              name="name"
+              placeholder="ゆに太郎"
+              value={state.name.value}
+              error={state.name.error}
+              errorMessage={state.name.message}
+              onChange={(v) => setFieldValue("name", v)}
+              onBlur={() => validateField("name", state.name.value)}
+              autoFocus
+            />
+            <FormField
+              label="ユーザー名"
+              id="username"
+              name="username"
+              placeholder="your-username"
+              value={state.username.value}
+              error={state.username.error}
+              errorMessage={state.username.message}
+              onChange={(v) => setFieldValue("username", v)}
+              onBlur={() => validateField("username", state.username.value)}
+            />
+            <FormField
+              label="メールアドレス"
+              id="email"
+              type="email"
+              name="email"
+              placeholder="your@email.com"
+              value={state.email.value}
+              error={state.email.error}
+              errorMessage={state.email.message}
+              onChange={(v) => setFieldValue("email", v)}
+              onBlur={() => validateField("email", state.email.value)}
+              autoComplete="email"
+            />
+          </>
+        );
+
+      case SignInCardMode.SignUpEmailValidated:
+        return (
+          <>
+            <input type="hidden" name="userId" value={props.user?.id || ""} />
+            <input type="hidden" name="code" value={props.code || ""} />
+            <Stack direction={"row"} alignItems="center" spacing={1}>
+              <Typography variant="h6">Discordアカウント</Typography>
+              <Divider sx={{ flexGrow: 1 }} />
+            </Stack>
+            <Typography variant="body2">
+              サークル参加にあたって、Discordアカウントの連携を行います。
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Discord連携は現在利用できません（未実装）。
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              href={`/api/oauth/discord?signup=${props.code}`}
+            >
+              Discordアカウントを連携する
+            </Button>
+            <FormControl>
+              <Stack direction={"row"} alignItems="center" spacing={1}>
+                <Typography variant="h6">生年月日</Typography>
+                <Divider sx={{ flexGrow: 1 }} />
+              </Stack>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                未成年者保護の観点から、生年月日の提供をお願いしております。
+              </Typography>
+              <TextField
+                error={
+                  state.birthdate.value.length > 0 && state.birthdate.error
+                }
+                helperText={
+                  state.birthdate.value.length > 0
+                    ? state.birthdate.message
+                    : ""
+                }
+                id="birthdate"
+                type="date"
+                name="birthdate"
+                required
+                fullWidth
+                variant="outlined"
+                color={
+                  state.birthdate.value.length > 0 && state.birthdate.error
+                    ? "error"
+                    : "primary"
+                }
+                value={state.birthdate.value}
+                onChange={(e) => setFieldValue("birthdate", e.target.value)}
+                onBlur={() => validateField("birthdate", state.birthdate.value)}
+              />
+            </FormControl>
+          </>
+        );
+
+      case SignInCardMode.SignIn:
+        return (
+          <FormField
+            label="ユーザー名"
+            id="username"
+            name="username"
+            placeholder="username"
+            value={state.username.value}
+            error={state.username.error}
+            errorMessage={state.username.message}
+            onChange={(v) => setFieldValue("username", v)}
+            onBlur={() => validateField("username", state.username.value)}
+            autoFocus
+          />
+        );
+
+      case SignInCardMode.Migrate:
+        return (
+          <>
+            <FormField
+              label="名前 (ニックネーム可)"
+              id="name"
+              name="name"
+              placeholder="ゆに太郎"
+              value={state.name.value}
+              error={state.name.error}
+              errorMessage={state.name.message}
+              onChange={(v) => setFieldValue("name", v)}
+              onBlur={() => validateField("name", state.name.value)}
+              autoFocus
+            />
+            <FormField
+              label="外部メールアドレス"
+              id="email"
+              type="email"
+              name="email"
+              placeholder="example@exsample.com"
+              value={state.email.value}
+              error={state.email.error}
+              errorMessage={state.email.message}
+              onChange={(v) => setFieldValue("email", v)}
+              onBlur={() => validateField("email", state.email.value)}
+              helperText="UniProに登録しているお持ちのメールアドレス (@uniproject.jp 以外) をご入力ください"
+              autoComplete="email"
+            />
+            <FormControl>
+              <FormLabel htmlFor="period">所属期</FormLabel>
+              <TextField
+                id="period"
+                type="text"
+                name="period"
+                placeholder="01A"
+                required
+                fullWidth
+                variant="outlined"
+                value={state.period.value}
+                onChange={(e) => setFieldValue("period", e.target.value)}
+              />
+              <FormHelperText>
+                例: 01A、02C、00 などのように入力してください
+              </FormHelperText>
+            </FormControl>
+            <FormField
+              label="ユーザー名"
+              id="username"
+              name="username"
+              placeholder="username"
+              value={state.username.value}
+              error={state.username.error}
+              errorMessage={state.username.message}
+              onChange={(v) => setFieldValue("username", v)}
+              onBlur={() => validateField("username", state.username.value)}
+              helperText="メールアドレス&lt;所属期&gt;.xxxx@uniproject.jp の xxxx 部分をご入力ください"
+            />
+          </>
+        );
+    }
+  };
+
+  const renderPasswordFields = () => {
+    if ([SignInCardMode.SignUpEmailValidated].includes(props.mode)) {
+      return null;
+    }
+
+    return (
+      <>
         <FormControl>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <FormLabel htmlFor="password">パスワード</FormLabel>
@@ -426,7 +461,7 @@ export default function CredentialFormClient(props: {
               <Link
                 component="button"
                 variant="body2"
-                onClick={handleClickOpen}
+                onClick={handleForgotPassword}
                 sx={{ alignSelf: "center" }}
               >
                 パスワードをお忘れですか？
@@ -434,8 +469,14 @@ export default function CredentialFormClient(props: {
             )}
           </Box>
           <TextField
-            error={password.length > 0 && passwordError}
-            helperText={password.length > 0 && passwordErrorMessage}
+            error={state.password.value.length > 0 && state.password.error}
+            helperText={
+              state.password.value.length > 0 && state.password.error
+                ? state.password.message
+                : props.mode !== SignInCardMode.SignIn
+                  ? "8文字以上で、安全なパスワードを決めてください"
+                  : ""
+            }
             name="password"
             placeholder="••••••"
             type="password"
@@ -444,68 +485,120 @@ export default function CredentialFormClient(props: {
             required
             fullWidth
             variant="outlined"
-            color={password.length > 0 && passwordError ? "error" : "primary"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onBlur={(e) => validateField("password", e.target.value)}
+            color={
+              state.password.value.length > 0 && state.password.error
+                ? "error"
+                : "primary"
+            }
+            value={state.password.value}
+            onChange={(e) => setFieldValue("password", e.target.value)}
+            onBlur={() => validateField("password", state.password.value)}
           />
         </FormControl>
-      )}
-      {(() => {
-        switch (props.mode) {
-          case SignInCardMode.SignIn:
-            return (
-              <FormControlLabel
-                control={<Checkbox name="remember" color="primary" />}
-                label="ログイン状態を保持する"
-              />
-            );
-          case SignInCardMode.SignUp:
-          case SignInCardMode.Migrate:
-          case SignInCardMode.SignUpEmailValidated:
-            return (
-              <FormControlLabel
-                sx={{ wordBreak: "keep-all" }}
-                control={<Checkbox name="remember" color="primary" />}
-                label={
-                  <>
-                    <Link href="/terms" target="_blank">
-                      利用規約
-                    </Link>
-                    と
-                    <Link href="/privacy" target="_blank">
-                      プライバシーポリシー
-                    </Link>
-                    、
-                    <Link href="/club_statute" target="_blank">
-                      サークル規約
-                    </Link>
-                    に
-                    <wbr />
-                    同意します。
-                  </>
-                }
-              />
-            );
+        {props.mode !== SignInCardMode.SignIn && (
+          <FormControl>
+            <FormLabel htmlFor="confirmPassword">パスワード確認</FormLabel>
+            <TextField
+              error={
+                state.confirmPassword.value.length > 0 &&
+                state.confirmPassword.error
+              }
+              helperText={
+                state.confirmPassword.value.length > 0 &&
+                state.confirmPassword.error
+                  ? state.confirmPassword.message
+                  : "上記で入力したパスワードをもう一度ご入力ください"
+              }
+              name="confirmPassword"
+              placeholder="••••••"
+              type="password"
+              id="confirmPassword"
+              autoComplete="new-password"
+              required
+              fullWidth
+              variant="outlined"
+              color={
+                state.confirmPassword.value.length > 0 &&
+                state.confirmPassword.error
+                  ? "error"
+                  : "primary"
+              }
+              value={state.confirmPassword.value}
+              onChange={(e) => setFieldValue("confirmPassword", e.target.value)}
+              onBlur={() =>
+                validateField("confirmPassword", state.confirmPassword.value)
+              }
+            />
+          </FormControl>
+        )}
+      </>
+    );
+  };
+
+  const renderTermsCheckbox = () => {
+    if (props.mode === SignInCardMode.SignIn) {
+      return (
+        <FormControlLabel
+          control={<Checkbox name="remember" color="primary" />}
+          label="ログイン状態を保持する"
+        />
+      );
+    }
+
+    return (
+      <FormControlLabel
+        sx={{ wordBreak: "keep-all" }}
+        control={<Checkbox name="remember" color="primary" />}
+        label={
+          <>
+            <Link href="/terms" target="_blank">
+              利用規約
+            </Link>
+            と
+            <Link href="/privacy" target="_blank">
+              プライバシーポリシー
+            </Link>
+            、
+            <Link href="/club_statute" target="_blank">
+              サークル規約
+            </Link>
+            に
+            <wbr />
+            同意します。
+          </>
         }
-      })()}
+      />
+    );
+  };
+
+  const getButtonText = () => {
+    switch (props.mode) {
+      case SignInCardMode.SignUp:
+        return "メンバー登録を申請";
+      case SignInCardMode.SignUpEmailValidated:
+        return "申請を完了する";
+      case SignInCardMode.SignIn:
+        return "サインイン";
+      case SignInCardMode.Migrate:
+        return "アカウント移行を完了する";
+    }
+  };
+
+  return (
+    <>
+      <input type="hidden" name="csrfToken" value={props.csrfToken} />
+      {props.redirect && (
+        <input type="hidden" name="redirect" value={props.redirect} />
+      )}
+      {renderModeSpecificFields()}
+      {renderPasswordFields()}
+      {renderTermsCheckbox()}
       <Button type="submit" fullWidth variant="contained">
-        {(() => {
-          switch (props.mode) {
-            case SignInCardMode.SignUp:
-              return "メンバー登録を申請";
-            case SignInCardMode.SignUpEmailValidated:
-              return "申請を完了する";
-            case SignInCardMode.SignIn:
-              return "サインイン";
-            case SignInCardMode.Migrate:
-              return "アカウント移行を完了する";
-          }
-        })()}
+        {getButtonText()}
       </Button>
       <ForgotPassword
-        open={open}
-        handleClose={handleClose}
+        open={state.forgotPasswordOpen}
+        handleClose={handleForgotPassword}
         csrfToken={props.csrfToken}
       />
     </>

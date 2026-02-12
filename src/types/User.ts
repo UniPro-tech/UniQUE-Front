@@ -1,197 +1,319 @@
-import { apiGet, apiPatch, apiPost, apiPut } from "@/lib/apiClient";
-import { Discord } from "./Discord";
-import { Role } from "./Role";
+import { apiGet, apiPost, apiPut } from "@/lib/apiClient";
 import { AuthorizationErrors } from "./Errors/AuthorizationErrors";
 import { ResourceApiErrors } from "./Errors/ResourceApiErrors";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 
-// ジェネリッククラス: Simple版とFull版を型パラメータで制御
-export class User<T extends "Simple" | "Full" = "Full"> {
-  id: string | null = null;
-  name!: string;
-  customId!: string;
-  email!: string;
-  externalEmail!: string;
-  period: string | null = null;
-  isEnable!: boolean;
-  isSuspended!: boolean;
-  isSystem!: boolean;
-  suspendedReason: string | null = null;
-  suspendedUntil: Date | null = null;
-  joinedAt: Date | null = null;
-  createdAt!: Date;
-  updatedAt!: Date;
-  discords?: Discord[];
-  roles?: Role[];
+// ============================
+// DTO definitions (Swagger準拠)
+// ============================
 
-  constructor(
-    data: T extends "Full"
-      ? {
-          id: string | null;
-          name: string;
-          customId: string;
-          email: string;
-          externalEmail: string;
-          period: string | null;
-          isEnable: boolean;
-          isSuspended: boolean;
-          isSystem: boolean;
-          suspendedReason: string | null;
-          suspendedUntil: Date | null;
-          joinedAt: Date | null;
-          createdAt: Date;
-          updatedAt: Date;
-          discords?: Discord[];
-          roles?: Role[];
-        }
-      : {
-          id: string | null;
-          name: string;
-          customId: string;
-          email: string;
-          period: string | null;
-          joinedAt: Date | null;
-          createdAt?: Date;
-          updatedAt?: Date;
-          discords?: Discord[];
-          roles?: Role[];
-        },
-  ) {
-    if (data.id) this.id = data.id;
-    if (data.name) this.name = data.name;
-    if (data.customId) this.customId = data.customId;
-    if (data.email) this.email = data.email;
-    if ("externalEmail" in data && data.externalEmail)
+/** routes.ProfileDTO */
+export interface ProfileDTO {
+  userId?: string;
+  displayName?: string;
+  bio?: string;
+  websiteUrl?: string;
+  twitterHandle?: string;
+  joinedAt?: string;
+  birthdate?: string;
+  birthdateVisible?: boolean;
+}
+
+/** routes.UserDTO
+ * 注意: 返されるフィールドはアクセスコンテキストに依存します
+ * - 公開エンドポイント(GET /users): id, customId, profile(基本情報のみ)
+ * - 自分のデータ(GET /users/{id} 認証済み自分): 全フィールド
+ * - 他人のデータ(GET /users/{id}): 基本情報のみ (email, status等は含まれない)
+ */
+export interface UserDTO {
+  id: string;
+  customId?: string;
+  email?: string;
+  externalEmail?: string;
+  pendingEmail?: string;
+  emailVerified?: boolean;
+  affiliationPeriod?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  profile?: ProfileDTO;
+}
+
+/** routes.CreateUserRequest */
+export interface CreateUserRequest {
+  custom_id: string;
+  email: string;
+  password?: string;
+  external_email?: string;
+  status?: string;
+  affiliation_period?: string;
+  profile?: {
+    display_name?: string;
+    bio?: string;
+    website_url?: string;
+    twitter_handle?: string;
+    joined_at?: string;
+    birthdate?: string;
+  };
+}
+
+/** routes.UpdateUserRequest */
+export interface UpdateUserRequest {
+  custom_id?: string;
+  email?: string;
+  external_email?: string;
+  affiliation_period?: string;
+  status?: string;
+  profile?: {
+    display_name?: string;
+    bio?: string;
+    website_url?: string;
+    twitter_handle?: string;
+    joined_at?: string;
+    birthdate?: string;
+    birthdate_visible?: boolean;
+  };
+}
+
+/** routes.CreateUserRoleRequest */
+export interface CreateUserRoleRequest {
+  role_id: string;
+}
+
+/** routes.UserListResponse */
+export interface UserListResponse {
+  data: UserDTO[];
+}
+
+// ============================
+// User class
+// ============================
+
+export class User {
+  id!: string;
+  customId?: string;
+  email?: string;
+  externalEmail?: string;
+  pendingEmail?: string;
+  emailVerified?: boolean;
+  affiliationPeriod?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  profile?: ProfileDTO;
+
+  constructor(data: Partial<UserDTO> & { id: string }) {
+    this.id = data.id;
+    if (data.customId !== undefined) this.customId = data.customId;
+    if (data.email !== undefined) this.email = data.email;
+    if (data.externalEmail !== undefined)
       this.externalEmail = data.externalEmail;
-    if (data.period !== undefined) this.period = data.period;
-    if ("isEnable" in data && data.isEnable !== undefined)
-      this.isEnable = data.isEnable;
-    if ("isSuspended" in data && data.isSuspended !== undefined)
-      this.isSuspended = data.isSuspended;
-    if ("isSystem" in data && data.isSystem !== undefined)
-      this.isSystem = data.isSystem;
-    if ("suspendedReason" in data && data.suspendedReason)
-      this.suspendedReason = data.suspendedReason;
-    if ("suspendedUntil" in data && data.suspendedUntil)
-      this.suspendedUntil = data.suspendedUntil;
-    if (data.joinedAt !== undefined) this.joinedAt = data.joinedAt;
-    if (data.createdAt) this.createdAt = data.createdAt;
-    if (data.updatedAt) this.updatedAt = data.updatedAt;
-    if (data.discords) this.discords = data.discords;
-    if (data.roles) this.roles = data.roles;
+    if (data.pendingEmail !== undefined) this.pendingEmail = data.pendingEmail;
+    if (data.emailVerified !== undefined)
+      this.emailVerified = data.emailVerified;
+    if (data.affiliationPeriod !== undefined)
+      this.affiliationPeriod = data.affiliationPeriod;
+    if (data.status !== undefined) this.status = data.status;
+    if (data.createdAt !== undefined) this.createdAt = data.createdAt;
+    if (data.updatedAt !== undefined) this.updatedAt = data.updatedAt;
+    if (data.profile !== undefined) this.profile = data.profile;
   }
 
+  /**
+   * ユーザーがパブリック情報のみ含むデータ（他のユーザー情報）を持つかチェック
+   * email, statusなどの機密情報がない場合はtrue
+   */
+  isPublicOnly(): boolean {
+    return this.email === undefined || this.status === undefined;
+  }
+
+  /**
+   * ユーザーが自分のフルなデータを持つかチェック
+   * email, status, createdAtなどの全フィールドが含まれている場合はtrue
+   */
+  hasFullData(): boolean {
+    return (
+      this.email !== undefined &&
+      this.status !== undefined &&
+      this.createdAt !== undefined &&
+      this.updatedAt !== undefined
+    );
+  }
+
+  /** 表示名を取得 (profile.displayName ?? customId ?? id) */
+  get displayName(): string {
+    return this.profile?.displayName || this.customId || this.id || "";
+  }
+
+  /** PUT /users/{id} でユーザー情報を更新
+   * 注意: このメソッドは完全なフルデータ(自分のデータ)を編集する場合のみ使用してください
+   */
   async save(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const snakeCaseData: Record<string, any> = {};
-    for (const key in this) {
-      if (this.hasOwnProperty(key)) {
-        const snakeKey = key.replace(
-          /[A-Z]/g,
-          (letter) => `_${letter.toLowerCase()}`,
-        );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        snakeCaseData[snakeKey] = (this as any)[key];
-      }
+    // メールアドレスが含まれていない場合は編集不可
+    if (!this.email) {
+      throw new Error(
+        "Cannot save user data without email. You may not have permission to edit this user.",
+      );
     }
-    await apiPatch(`/users/${this.id}`, snakeCaseData);
-  }
 
-  async create(data?: {
-    name: string;
-    customId: string;
-    email: string;
-    externalEmail?: string;
-    period: string | null;
-    isEnable: boolean;
-    isSuspended: boolean;
-    isSystem: boolean;
-    suspendedReason: string | null;
-    suspendedUntil: Date | null;
-    joinedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-    discords?: Discord[];
-    roles?: Role[];
-  }): Promise<void | User> {
-    if (data) {
-      // クラスのインスタンス自体を生成して返す
-      const res = new User({
-        id: null,
-        name: data.name,
-        customId: data.customId,
-        email: data.email,
-        externalEmail: data.externalEmail ?? "",
-        period: data.period,
-        isEnable: data.isEnable,
-        isSuspended: data.isSuspended,
-        isSystem: data.isSystem,
-        suspendedReason: data.suspendedReason,
-        suspendedUntil: data.suspendedUntil,
-        joinedAt: data.joinedAt,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        discords: data.discords,
-        roles: data.roles,
-      });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const snakeCaseData: Record<string, any> = {};
-      for (const key in this) {
-        if (this.hasOwnProperty(key)) {
-          const snakeKey = key.replace(
-            /[A-Z]/g,
-            (letter) => `_${letter.toLowerCase()}`,
-          );
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          snakeCaseData[snakeKey] = (this as any)[key];
-        }
-      }
-      await apiPost(`/users`, snakeCaseData);
-      return res;
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const snakeCaseData: Record<string, any> = {};
-      for (const key in this) {
-        if (this.hasOwnProperty(key)) {
-          const snakeKey = key.replace(
-            /[A-Z]/g,
-            (letter) => `_${letter.toLowerCase()}`,
-          );
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          snakeCaseData[snakeKey] = (this as any)[key];
-        }
-      }
-      await apiPost(`/users`, snakeCaseData);
-    }
-  }
-
-  async getPermissions(): Promise<UserPermissionsResponse> {
-    if (!this.id) {
-      throw new Error("User ID is not set");
-    }
-    const response = await apiPost(`/users/${this.id}/permissions`);
-    if (!response.ok) {
-      switch (response.status) {
+    const body: UpdateUserRequest = {
+      custom_id: this.customId,
+      email: this.email,
+      external_email: this.externalEmail,
+      affiliation_period: this.affiliationPeriod,
+      status: this.status,
+      profile: this.profile
+        ? {
+            display_name: this.profile.displayName,
+            bio: this.profile.bio,
+            website_url: this.profile.websiteUrl,
+            twitter_handle: this.profile.twitterHandle,
+            joined_at: this.profile.joinedAt,
+            birthdate: this.profile.birthdate,
+            birthdate_visible: this.profile.birthdateVisible,
+          }
+        : undefined,
+    };
+    const res = await apiPut(`/users/${this.id}`, body);
+    if (!res.ok) {
+      switch (res.status) {
         case 401:
           throw AuthorizationErrors.Unauthorized;
         case 403:
           throw AuthorizationErrors.AccessDenied;
         default:
-          console.log("Unexpected error:", response.statusText);
+          throw ResourceApiErrors.ResourceUpdateFailed;
+      }
+    }
+    const data = await res.json();
+    const updated = toCamelcase<UserDTO>(data);
+    Object.assign(this, updated);
+  }
+
+  /** POST /users/{id}/approve でユーザー登録を承認する */
+  async approve(): Promise<void> {
+    const res = await apiPost(`/users/${this.id}/approve`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
           throw ResourceApiErrors.ApiServerInternalError;
       }
     }
-    const data = await response.json();
-    const parsedData: UserPermissionsResponse = {
-      bit: data.permissions_bit,
-      permissions: data.permissions_text,
-    };
-    return parsedData;
   }
 
-  static async getById<T extends "Simple" | "Full" = "Full">(
-    userId: string,
-  ): Promise<User<T>> {
+  /** GET /users/{id}/roles でユーザーのロール一覧を取得 */
+  async getRoles(): Promise<import("./Role").RoleDTO[]> {
+    const res = await apiGet(`/users/${this.id}/roles`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+    const json = await res.json();
+    return toCamelcase<import("./Role").RoleDTO[]>(json.data ?? []);
+  }
+
+  /** POST /users/{id}/roles でロールを割り当て */
+  async assignRole(roleId: string): Promise<void> {
+    const res = await apiPost(`/users/${this.id}/roles`, {
+      role_id: roleId,
+    });
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+  }
+
+  /** DELETE /users/{id}/roles/{roleId} でロール割り当てを解除 */
+  async unassignRole(roleId: string): Promise<void> {
+    const { apiDelete } = await import("@/lib/apiClient");
+    const res = await apiDelete(`/users/${this.id}/roles/${roleId}`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+  }
+
+  /** GET /users/{id}/apps でユーザーのアプリ一覧を取得 */
+  async getApps(): Promise<import("./App").ApplicationDTO[]> {
+    const res = await apiGet(`/users/${this.id}/apps`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+    const json = await res.json();
+    return toCamelcase<import("./App").ApplicationDTO[]>(json.data ?? []);
+  }
+
+  /** TODO: パスワード変更 (将来実装) */
+  async passwordChange(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    // TODO: パスワード変更APIが実装されたら対応
+    console.warn("passwordChange is not yet implemented in the API");
+    console.log(
+      "currentPassword:",
+      currentPassword,
+      "newPassword:",
+      newPassword,
+    );
+    throw new Error("Not implemented");
+  }
+
+  /** プレーンオブジェクトに変換 (Client Components用) */
+  convertPlain(): UserDTO {
+    return {
+      id: this.id,
+      customId: this.customId,
+      email: this.email,
+      externalEmail: this.externalEmail,
+      pendingEmail: this.pendingEmail,
+      emailVerified: this.emailVerified,
+      affiliationPeriod: this.affiliationPeriod,
+      status: this.status,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      profile: this.profile ? { ...this.profile } : undefined,
+    };
+  }
+
+  // ============================
+  // Static methods
+  // ============================
+
+  static async getById(userId: string): Promise<User> {
     const response = await apiGet(`/users/${userId}`);
     if (!response.ok) {
       switch (response.status) {
@@ -202,69 +324,67 @@ export class User<T extends "Simple" | "Full" = "Full"> {
         case 404:
           throw ResourceApiErrors.ResourceNotFound;
         default:
-          console.log("Unexpected error:", response.statusText);
           throw ResourceApiErrors.ApiServerInternalError;
       }
     }
     const data = await response.json();
-    const res = new User<T>(toCamelcase<User<T>>(data));
-    return res;
+    return new User(toCamelcase<UserDTO>(data));
   }
 
-  async passwordChange(
-    currentPassword: string,
-    newPassword: string,
-  ): Promise<void> {
-    if (!this.id) {
-      throw new Error("User ID is not set");
-    }
-    const res = await apiPut(`/users/${this.id}/password/change`, {
-      current_password: currentPassword,
-      new_password: newPassword,
+  /** POST /internal/users で新規ユーザー作成 */
+  static async create(
+    req: CreateUserRequest,
+    options?: { headers?: Record<string, string> },
+  ): Promise<User> {
+    const res = await apiPost(`/internal/users`, req, {
+      headers: options?.headers,
     });
-
     if (!res.ok) {
+      // エラーレスポンスからエラーコードを取得
+      try {
+        const errorData = await res.json();
+        const errorCode = errorData?.code;
+
+        if (errorCode === "R0006") {
+          throw ResourceApiErrors.UsernameAlreadyExists;
+        } else if (errorCode === "R0007") {
+          throw ResourceApiErrors.EmailAlreadyExists;
+        }
+      } catch (parseError) {
+        // JSON parseに失敗した場合は continue
+      }
+
       switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 409:
+          throw ResourceApiErrors.ResourceAlreadyExists;
+        default:
+          console.error("User creation failed with status:", res.status);
+          throw ResourceApiErrors.ResourceCreationFailed;
+      }
+    }
+    const data = await res.json();
+    return new User(toCamelcase<UserDTO>(data));
+  }
+
+  /** GET /users でユーザー一覧取得 */
+  static async list(): Promise<User[]> {
+    const response = await apiGet(`/users`, { cache: "no-store" });
+    if (!response.ok) {
+      switch (response.status) {
         case 401:
           throw AuthorizationErrors.Unauthorized;
         case 403:
           throw AuthorizationErrors.AccessDenied;
         default:
-          console.log("Unexpected error:", res.statusText);
           throw ResourceApiErrors.ApiServerInternalError;
       }
     }
-  }
-
-  convertPlain(): object {
-    return {
-      id: this.id,
-      name: this.name,
-      customId: this.customId,
-      email: this.email,
-      externalEmail: this.externalEmail,
-      period: this.period,
-      isEnable: this.isEnable,
-      isSuspended: this.isSuspended,
-      isSystem: this.isSystem,
-      suspendedReason: this.suspendedReason,
-      suspendedUntil: this.suspendedUntil,
-      joinedAt: this.joinedAt,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-      discords: this.discords,
-      roles: this.roles,
-    } as User<T>;
+    const json = await response.json();
+    const items = toCamelcase<UserDTO[]>(json.data ?? []);
+    return items.map((item) => new User(item));
   }
 }
-
-type UserPermissionsResponse = {
-  bit: number;
-  permissions: string[];
-};
-
-// 型エイリアス: 使いやすさのため
-export type UserSimple = User<"Simple">;
-export type UserFull = User<"Full">;
 
 export default User;

@@ -2,7 +2,7 @@
 import { headers } from "next/headers";
 
 export async function generateMailVerificationTemplate(
-  verificationCode: string
+  verificationCode: string,
 ) {
   const headersList = await headers();
   const host = headersList.get("host") || "localhost";
@@ -18,7 +18,7 @@ export async function generateMailVerificationTemplate(
           <h2>メールアドレス認証</h2>
           <p>以下のURLからメールアドレスの認証を完了してください。</p>
           <a
-            href="${baseUrl}/signup?code=${verificationCode}"
+            href="${baseUrl}/email-verify?code=${verificationCode}"
             style='display: inline-block; padding: 10px 20px; background-color: #1976d2; color: #ffffff; text-decoration: none; border-radius: 4px; margin-top: 10px;'
           >
             メールアドレスを認証する
@@ -34,7 +34,7 @@ export async function generateMailVerificationTemplate(
     html: mailTemplate,
     text:
       "メールアドレスの認証を完了するには、以下のリンクをクリックしてください。\n" +
-      `${baseUrl}/signup?code=${verificationCode}` +
+      `${baseUrl}/email-verify?code=${verificationCode}` +
       "\n\nもしこのメールに心当たりがない場合は、無視してください。" +
       "\n\n(c) 2025 UniProject. All rights reserved.",
   };

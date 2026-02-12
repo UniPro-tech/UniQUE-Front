@@ -1,5 +1,6 @@
 import { Card, Stack, Typography } from "@mui/material";
 import Link from "next/link";
+import { AccessDeniedAlert } from "@/components/AccessDeniedAlert";
 
 export const metadata = {
   title: "ダッシュボード",
@@ -9,6 +10,7 @@ export const metadata = {
 export default async function DashboardPage() {
   return (
     <Stack>
+      <AccessDeniedAlert />
       <Typography variant="h4" gutterBottom>
         おかえりなさい！
       </Typography>

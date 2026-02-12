@@ -11,11 +11,18 @@ export default async function SignInCard({
   user,
   code,
   redirect: redirectParam,
+  initialFormValues,
 }: {
   mode?: SignInCardMode;
   user?: User;
   code?: string;
   redirect?: string;
+  initialFormValues?: {
+    name?: string;
+    email?: string;
+    period?: string;
+    username?: string;
+  };
 }) {
   const session = await Session.get();
   if (session) {
@@ -29,6 +36,7 @@ export default async function SignInCard({
       user={user}
       code={code}
       redirect={redirectParam}
+      initialFormValues={initialFormValues}
     />
   );
 }

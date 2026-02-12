@@ -24,7 +24,7 @@ export default function ForgotPassword({
 }: ForgotPasswordProps) {
   const [state, action, isPending] = React.useActionState(
     resetPasswordAction,
-    null as null | FormStatus
+    null as null | FormStatus,
   );
   React.useEffect(() => {
     if (state) {
@@ -54,20 +54,18 @@ export default function ForgotPassword({
             }}
           >
             <DialogContentText>
-              アカウントのユーザーIDを入力してください。パスワードをリセットするためのリンクをお送りします。
-              <br />
-              ユーザーIDをお忘れの場合は管理者までお問い合わせください。
+              アカウントに登録されている外部メールアドレスを入力してください。パスワードをリセットするためのリンクをお送りします。
             </DialogContentText>
             <input type="hidden" name="csrfToken" value={csrfToken} />
             <OutlinedInput
               autoFocus
               required
               margin="dense"
-              id="username"
-              name="username"
-              label="ユーザーID"
-              placeholder="ユーザーID"
-              type="text"
+              id="email"
+              name="email"
+              label="メールアドレス"
+              placeholder="example@example.com"
+              type="email"
               fullWidth
             />
           </DialogContent>

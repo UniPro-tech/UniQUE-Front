@@ -19,13 +19,16 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
-import Session from "@/types/Session";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import AppsIcon from "@mui/icons-material/Apps";
 import AccountButton from "./Sidebar/AccountButton";
+import DiscordLinkAlert from "./DiscordLinkAlert";
 import { Stack } from "@mui/material";
 import { PermissionBitsFields } from "@/types/Permission";
 import Image from "next/image";
 import Link from "next/link";
-// use native img to avoid next/image dev-time optimization errors for this small logo
+import type { SessionPlain } from "@/types/Session";
+import type { RoleDTO } from "@/types/Role";
 
 const drawerWidth = 240;
 
@@ -55,7 +58,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -119,37 +121,61 @@ interface NavLink {
 
 export default function MiniDrawer({
   session,
+  userRoles,
   children,
 }: {
-  session: Session | null;
+  session: SessionPlain | null;
+  userRoles?: RoleDTO[];
   children: React.ReactNode;
 }) {
-  const isAdmin = session?.user.roles?.some(
-    (role) =>
-      role.permissionBit & PermissionBitsFields.USER_CREATE &&
-      role.permissionBit & PermissionBitsFields.USER_DELETE &&
-      role.permissionBit & PermissionBitsFields.ROLE_MANAGE &&
-      role.permissionBit & PermissionBitsFields.USER_DISABLE &&
-      role.permissionBit & PermissionBitsFields.USER_UPDATE &&
-      role.permissionBit & PermissionBitsFields.PERMISSION_MANAGE
-  );
+  /**
+   * 権限チェックヘルパー関数
+   * 複数の権限幅を持つロールの場合、オブジェクトで渡して（OR結合で）チェック
+   */
+  const hasPermission = (requiredFlag: number): boolean => {
+    return (
+      userRoles?.some((role) => role.permissionBitmask & requiredFlag) ?? false
+    );
+  };
+
+  const canManageRequests = hasPermission(PermissionBitsFields.USER_CREATE);
+  const canManageRoles = hasPermission(PermissionBitsFields.ROLE_MANAGE);
+
   const NAVIGSTION_LINKS: NavLink[][] = [
     [
-      { text: "ホーム", href: "/dashboard", icon: <HomeIcon /> },
+      { text: "ダッシュボード", href: "/dashboard", icon: <HomeIcon /> },
       {
         text: "メンバー管理",
         href: "/dashboard/members",
         icon: <PeopleIcon />,
       },
+      {
+        text: "アプリケーション管理",
+        href: "/dashboard/applications",
+        icon: <AppsIcon />,
+      },
     ],
-    ...(isAdmin
+    ...(canManageRequests || canManageRoles
       ? [
           [
-            {
-              text: "メンバー申請管理",
-              href: "/dashboard/requests",
-              icon: <PersonAddIcon />,
-            },
+            ...(canManageRequests
+              ? [
+                  {
+                    text: "メンバー申請管理",
+                    href: "/dashboard/requests",
+                    icon: <PersonAddIcon />,
+                  },
+                ]
+              : []),
+            ...(canManageRoles
+              ? [
+                  {
+                    text: "ロール管理",
+                    href: "/dashboard/roles",
+                    icon: <AdminPanelSettingsIcon />,
+                  },
+                ]
+              : []),
           ],
         ]
       : []),
@@ -209,6 +235,7 @@ export default function MiniDrawer({
           <Box sx={{ flexGrow: 1 }} />
           <AccountButton session={session} />
         </Toolbar>
+        <DiscordLinkAlert />
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>

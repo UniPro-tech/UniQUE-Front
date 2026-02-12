@@ -20,8 +20,10 @@ export interface SnackbarData {
  */
 export default function TemporarySnackProvider({
   snacks,
+  replaceDuration = 0,
 }: {
   snacks: SnackbarData[];
+  replaceDuration?: number;
 }) {
   const path = usePathname();
   useEffect(() => {
@@ -29,9 +31,9 @@ export default function TemporarySnackProvider({
       enqueueSnackbar(snack.message, { variant: snack.variant });
     });
     if (snacks.length > 0) {
-      replacePath(path);
+      replacePath(path, replaceDuration);
     }
-  }, [snacks]);
+  }, [snacks, replaceDuration]);
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}></SnackbarProvider>
   );

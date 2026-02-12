@@ -1,10 +1,30 @@
 import RoleUsersDataGrid from "@/components/DataGrids/RoleUsers";
-import PermissionsPanel from "@/components/Pages/Roles/PermissionsPanel";
+import RoleEditForm from "@/components/Forms/RoleEditForm";
 import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
 import { Role } from "@/types/Role";
-import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
+import { Breadcrumbs, Link, Stack, Typography, Box } from "@mui/material";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  try {
+    const role = await Role.getRoleById(id);
+    return {
+      title: `${role.name} - ロール編集`,
+      description: `${role.name}の詳細設定を行います`,
+    };
+  } catch {
+    return {
+      title: "ロール編集",
+      description: "ロールの詳細設定を行います",
+    };
+  }
+}
 
 export default async function Page({
   params,
@@ -24,32 +44,37 @@ export default async function Page({
     notFound();
   }
   return (
-    <Stack spacing={2}>
+    <Stack spacing={3}>
       <Breadcrumbs aria-label="breadcrumb">
         <Link underline="hover" color="inherit" href="/dashboard/roles">
           ロール管理
         </Link>
-        <Typography sx={{ color: "text.primary" }}>詳細管理</Typography>
+        <Typography sx={{ color: "text.primary" }}>編集</Typography>
       </Breadcrumbs>
-      <Typography variant="h4" gutterBottom>
-        {role.name}
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom>
-        ロールの詳細設定を行います。
-      </Typography>
+
       <Stack>
+        <Typography variant="h4" gutterBottom>
+          {role.name}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          ロールの詳細設定を行います。
+        </Typography>
+      </Stack>
+
+      <Box>
+        <RoleEditForm role={role.toPlainObject()} />
+      </Box>
+
+      <Stack spacing={2}>
         <Typography variant="h5" gutterBottom>
-          紐ついたユーザー一覧
+          紐づいたユーザー
+        </Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          このロールが割り当てられているユーザーの一覧です。
         </Typography>
         <Suspense fallback={<div>Loading...</div>}>
           <RoleUsersDataGrid role={role} />
         </Suspense>
-      </Stack>
-      <Stack>
-        <Typography variant="h5" gutterBottom>
-          設定された権限一覧
-        </Typography>
-        <PermissionsPanel role={role} />
       </Stack>
     </Stack>
   );

@@ -5,8 +5,6 @@ import { SignInCardMode } from "@/components/mui-template/signup-side/types/Sign
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import { verifyEmailCode } from "@/lib/EmailVerification";
-import { getUserById } from "@/lib/resources/Users";
 import {
   AuthenticationErrorCodes,
   getAuthenticationErrorSnackbarData,
@@ -20,10 +18,13 @@ import {
   getFormRequestErrorSnackbarData,
 } from "@/types/Errors/FormRequestErrors";
 import {
+  FrontendErrorCodes,
+  getFrontendErrorSnackbarData,
+} from "@/types/Errors/FrontendErrors";
+import {
   getResourceApiErrorSnackbarData,
   ResourceApiErrorCodes,
 } from "@/types/Errors/ResourceApiErrors";
-import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "メンバー登録申請",
@@ -35,36 +36,44 @@ export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
-    code?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
       | AuthServerErrorCodes
-      | ResourceApiErrorCodes;
+      | ResourceApiErrorCodes
+      | FrontendErrorCodes;
     oauth?: string;
     status?: string;
     completed?: boolean;
+    name?: string;
+    email?: string;
+    username?: string;
   }>;
 }) {
-  const { code, error, oauth, status, completed } = await searchParams;
+  const { error, oauth, status, completed, name, email, username } =
+    await searchParams;
   const snackbars: SnackbarData[] = [];
 
   if (error) {
     if (error.startsWith("A")) {
       snackbars.push(
-        getAuthenticationErrorSnackbarData(error as AuthenticationErrorCodes)
+        getAuthenticationErrorSnackbarData(error as AuthenticationErrorCodes),
       );
     } else if (error.startsWith("F")) {
       snackbars.push(
-        getFormRequestErrorSnackbarData(error as FormRequestErrorCodes)
+        getFormRequestErrorSnackbarData(error as FormRequestErrorCodes),
       );
     } else if (error.startsWith("D")) {
       snackbars.push(
-        getAuthServerErrorSnackbarData(error as AuthServerErrorCodes)
+        getAuthServerErrorSnackbarData(error as AuthServerErrorCodes),
       );
     } else if (error.startsWith("R")) {
       snackbars.push(
-        getResourceApiErrorSnackbarData(error as ResourceApiErrorCodes)
+        getResourceApiErrorSnackbarData(error as ResourceApiErrorCodes),
+      );
+    } else if (error.startsWith("E")) {
+      snackbars.push(
+        getFrontendErrorSnackbarData(error as FrontendErrorCodes),
       );
     }
   }
@@ -80,33 +89,7 @@ export default async function Page({
       variant: "error" as const,
     });
   }
-  if (code) {
-    const validatedRes = await verifyEmailCode(code);
-    if (validatedRes) {
-      const userId = validatedRes.user_id;
-      const user = await getUserById(userId);
-      if (!user) {
-        redirect(
-          "/signup?error=" +
-            AuthenticationErrorCodes.InvalidEmailVerificationCode
-        );
-      }
-      return (
-        <>
-          <Content mode={SignInCardMode.SignUpEmailValidated} />
-          <SignInCard
-            mode={SignInCardMode.SignUpEmailValidated}
-            user={user}
-            code={code}
-          />
-        </>
-      );
-    } else {
-      redirect(
-        "/signup?error=" + AuthenticationErrorCodes.InvalidEmailVerificationCode
-      );
-    }
-  }
+
   return (
     <>
       <TemporarySnackProvider snacks={snackbars} />
@@ -115,7 +98,10 @@ export default async function Page({
       ) : (
         <>
           <Content mode={SignInCardMode.SignUp} />
-          <SignInCard mode={SignInCardMode.SignUp} />
+          <SignInCard
+            mode={SignInCardMode.SignUp}
+            initialFormValues={{ name, email, username }}
+          />
         </>
       )}
     </>

@@ -10,6 +10,8 @@ export enum ResourceApiErrorCodes {
   ResourceCreationFailed = "R0003",
   ResourceUpdateFailed = "R0004",
   ResourceDeletionFailed = "R0005",
+  UsernameAlreadyExists = "R0006",
+  EmailAlreadyExists = "R0007",
   ApiServerInternalError = "R1001",
 }
 
@@ -28,6 +30,12 @@ export const ResourceApiErrors = {
   ),
   ResourceDeletionFailed: new Error(
     `[${ResourceApiErrorCodes.ResourceDeletionFailed}] Resource deletion failed.`
+  ),
+  UsernameAlreadyExists: new Error(
+    `[${ResourceApiErrorCodes.UsernameAlreadyExists}] Username already exists.`
+  ),
+  EmailAlreadyExists: new Error(
+    `[${ResourceApiErrorCodes.EmailAlreadyExists}] Email already exists.`
   ),
   ApiServerInternalError: new Error(
     `[${ResourceApiErrorCodes.ApiServerInternalError}] API server internal error.`
@@ -61,6 +69,16 @@ export function getResourceApiErrorSnackbarData(
     case ResourceApiErrorCodes.ResourceDeletionFailed:
       return {
         message: `[${ResourceApiErrorCodes.ResourceDeletionFailed}] リソースの削除に失敗しました。再度お試しください。`,
+        variant: "error",
+      };
+    case ResourceApiErrorCodes.UsernameAlreadyExists:
+      return {
+        message: `[${ResourceApiErrorCodes.UsernameAlreadyExists}] このユーザー名は既に使用されています。別のユーザー名を入力してください。`,
+        variant: "error",
+      };
+    case ResourceApiErrorCodes.EmailAlreadyExists:
+      return {
+        message: `[${ResourceApiErrorCodes.EmailAlreadyExists}] このメールアドレスは既に使用されています。別のメールアドレスを入力してください。`,
         variant: "error",
       };
     case ResourceApiErrorCodes.ApiServerInternalError:

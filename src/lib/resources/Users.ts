@@ -1,27 +1,26 @@
 "use server";
-import { User } from "@/types/User";
-import { toCamelcase, toSnakecase } from "../SnakeCamlUtil";
-import { convertToDateTime } from "../DateTimeUtils";
-import { apiGet, apiPut, apiDelete } from "@/lib/apiClient";
+import User, { UserDTO, UpdateUserRequest } from "@/types/User";
+import { toCamelcase } from "../SnakeCamlUtil";
+import { apiGet, apiPut } from "@/lib/apiClient";
 import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
 import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
 
-export const getUserById = async (userId: string) => {
+/** GET /users/{id} で単一ユーザー取得 */
+export const getUserById = async (userId: string): Promise<User | null> => {
   const res = await apiGet(`/users/${userId}`);
   if (!res.ok) {
-    if (res.status === 404) {
-      return null;
-    }
+    if (res.status === 404) return null;
     throw new Error("Failed to fetch user");
   }
-  const user = toCamelcase(await res.json()) as User;
-  return user;
+  const data = toCamelcase<UserDTO>(await res.json());
+  return new User(data);
 };
 
-export const getUsersList = async () => {
-  const res = await apiGet(`/users`, {
-    cache: "no-store",
-  });
+/** GET /users でユーザー一覧取得 */
+export const getUsersList = async (options?: {
+  filterPendingApplicants?: boolean;
+}): Promise<User[]> => {
+  const res = await apiGet(`/users`, { cache: "no-store" });
   if (!res.ok) {
     switch (res.status) {
       case 401:
@@ -32,54 +31,47 @@ export const getUsersList = async () => {
         throw ResourceApiErrors.ApiServerInternalError;
     }
   }
-  const users = await res.json();
-  if (!Array.isArray(users.data)) {
-    throw ResourceApiErrors.ApiServerInternalError;
+  const json = await res.json();
+  const items = toCamelcase<UserDTO[]>(json.data ?? []);
+  let users = items.map((item) => new User(item));
+
+  // メンバー申請者のみにフィルタ (established かつ email が tmp_ から始まる)
+  if (options?.filterPendingApplicants) {
+    users = users.filter((user) => user.status === "established");
   }
-  if (users.data.length != 0) {
-    if (!users.data[0].hasOwnProperty("is_suspended")) {
-      return toCamelcase<User<"Simple">[]>(users.data);
-    }
-  }
-  return toCamelcase<User[]>(users.data);
+
+  return users;
 };
 
+/** PUT /users/{id} でユーザー情報を更新 */
 export const saveUser = async (user: User): Promise<User> => {
-  try {
-    const res = await apiPut(`/users/${user.id}`, {
-      ...toSnakecase<User>(convertToDateTime(user)),
-    });
-    if (!res.ok) {
-      switch (res.status) {
-        case 401:
-          throw AuthorizationErrors.Unauthorized;
-        case 403:
-          throw AuthorizationErrors.AccessDenied;
-        default:
-          throw ResourceApiErrors.ResourceUpdateFailed;
-      }
+  const body: UpdateUserRequest = {
+    custom_id: user.customId,
+    email: user.email,
+    external_email: user.externalEmail,
+    affiliation_period: user.affiliationPeriod,
+    status: user.status,
+    profile: user.profile
+      ? {
+          display_name: user.profile.displayName,
+          bio: user.profile.bio,
+          website_url: user.profile.websiteUrl,
+          joined_at: user.profile.joinedAt,
+          birthdate: user.profile.birthdate,
+        }
+      : undefined,
+  };
+  const res = await apiPut(`/users/${user.id}`, body);
+  if (!res.ok) {
+    switch (res.status) {
+      case 401:
+        throw AuthorizationErrors.Unauthorized;
+      case 403:
+        throw AuthorizationErrors.AccessDenied;
+      default:
+        throw ResourceApiErrors.ResourceUpdateFailed;
     }
-    const data = await res.json();
-    return toCamelcase<User>(data);
-  } catch (error) {
-    throw error;
   }
-};
-
-export const deleteUser = async (userId: string) => {
-  try {
-    const res = await apiDelete(`/users/${userId}`);
-    if (!res.ok) {
-      switch (res.status) {
-        case 401:
-          throw AuthorizationErrors.Unauthorized;
-        case 403:
-          throw AuthorizationErrors.AccessDenied;
-        default:
-          throw ResourceApiErrors.ResourceDeletionFailed;
-      }
-    }
-  } catch (error) {
-    throw error;
-  }
+  const data = toCamelcase<UserDTO>(await res.json());
+  return new User(data);
 };

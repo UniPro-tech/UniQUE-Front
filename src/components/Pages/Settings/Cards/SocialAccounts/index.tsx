@@ -1,13 +1,24 @@
-import { generateCSRFToken } from "@/lib/CSRF";
-import { User } from "@/types/User";
+import type { UserDTO } from "@/types/User";
 import SocialAccountsCardClietnt from "./Client";
+import * as SocialAccounts from "@/lib/resources/SocialAccounts";
 
 export default async function SocialAccountsSettingsCard({
   user,
 }: {
-  user: User;
+  user: UserDTO;
 }) {
-  const sid = user.id;
-  const csrfToken = generateCSRFToken(sid!);
-  return <SocialAccountsCardClietnt user={user} csrfToken={csrfToken} />;
+  // 外部アイデンティティのリストを取得
+  let externalIdentities: Awaited<ReturnType<typeof SocialAccounts.list>> = [];
+  try {
+    externalIdentities = await SocialAccounts.list(user.id);
+  } catch (error) {
+    console.error("Failed to fetch external identities:", error);
+  }
+
+  return (
+    <SocialAccountsCardClietnt
+      user={user}
+      externalIdentities={externalIdentities}
+    />
+  );
 }

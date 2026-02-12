@@ -1,41 +1,56 @@
 "use server";
-import Session from "@/types/Session";
-import { apiDelete } from "@/lib/apiClient";
 
-export const unlink = async (provider: string, id: string) => {
-  try {
-    const session = await Session.get();
-    const user = session?.user;
-    if (!user) {
-      throw new Error("User not authenticated");
-    }
-    const response = await apiDelete(`/users/${user.id}/${provider}/${id}`);
+import { apiGet } from "@/lib/apiClient";
+import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import type {
+  ExternalIdentityDTO,
+  ExternalIdentityListResponse,
+} from "@/types/ExternalIdentity";
+import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
+import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
 
-    if (!response.ok) {
-      switch (response.status) {
-        case 400:
-          throw new Error("Bad Request: Invalid parameters");
-        case 401:
-          throw new Error("Unauthorized: Please log in again");
-        case 403:
-          throw new Error(
-            "Forbidden: You do not have permission to perform this action"
-          );
-        case 404:
-          throw new Error(
-            "Not Found: The specified social account does not exist"
-          );
-        case 500:
-          throw new Error("Internal Server Error: Please try again later");
-        case 502:
-          throw new Error("Bad Gateway: Invalid response from upstream server");
-        case 503:
-          throw new Error("Service Unavailable: Please try again later");
-        default:
-          throw new Error(`Unexpected error: ${response.statusText}`);
-      }
+/**
+ * GET /users/{id}/external_identities
+ * ユーザーにリンクされた外部アイデンティティの一覧を取得
+ */
+export const list = async (userId: string): Promise<ExternalIdentityDTO[]> => {
+  const res = await apiGet(`/users/${userId}/external_identities`);
+  if (!res.ok) {
+    switch (res.status) {
+      case 401:
+        throw AuthorizationErrors.Unauthorized;
+      case 403:
+        throw AuthorizationErrors.AccessDenied;
+      case 404:
+        throw ResourceApiErrors.ResourceNotFound;
+      default:
+        throw ResourceApiErrors.ApiServerInternalError;
     }
-  } catch (error) {
-    console.error("Error unlinking social account:", error);
+  }
+  const json = await res.json();
+  const response = toCamelcase<ExternalIdentityListResponse>(json);
+  return response.data ?? [];
+};
+
+/**
+ * DELETE /users/{id}/external_identities/{eid}
+ * ソーシャルアカウント連携を解除
+ */
+export const unlink = async (userId: string, identityId: string) => {
+  const { apiDelete } = await import("@/lib/apiClient");
+  const res = await apiDelete(
+    `/users/${userId}/external_identities/${identityId}`,
+  );
+  if (!res.ok) {
+    switch (res.status) {
+      case 401:
+        throw AuthorizationErrors.Unauthorized;
+      case 403:
+        throw AuthorizationErrors.AccessDenied;
+      case 404:
+        throw ResourceApiErrors.ResourceNotFound;
+      default:
+        throw ResourceApiErrors.ApiServerInternalError;
+    }
   }
 };
