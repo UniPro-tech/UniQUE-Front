@@ -25,7 +25,7 @@ export default function DeleteDialog({
   handleClose,
   title,
 }: DeleteDialogProps) {
-  const [state, action, isPending] = React.useActionState(
+  const [state, action] = React.useActionState(
     dataAction,
     null as null | FormStatus,
   );
