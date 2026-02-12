@@ -31,23 +31,25 @@ export default function RoleUsersDataGridClient({
   const apiRef = useGridApiRef();
   const [localRows, setLocalRows] = React.useState<UserDTO[]>(() => rows);
   const [assignDialogOpen, setAssignDialogOpen] = React.useState(false);
-  
+
   React.useEffect(() => {
     setLocalRows(rows);
   }, [rows]);
-  
+
   const [undeletedRows, setUndeletedRows] = React.useState<GridRowId | null>(
     null,
   );
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  
+
   const handleAssignSuccess = () => {
     // ページをリロードして最新のデータを取得
     window.location.reload();
   };
-  
+
   const handleDelete = async (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _prevState: FormStatus | null,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _formData: FormData | null,
   ) => {
     try {
@@ -57,16 +59,19 @@ export default function RoleUsersDataGridClient({
           message: "削除対象が選択されていません",
         } as FormStatus;
       }
-      
-      const result = await unassignUserFromRole(role.id, undeletedRows as string);
-      
+
+      const result = await unassignUserFromRole(
+        role.id,
+        undeletedRows as string,
+      );
+
       if (!result.success) {
         return {
           status: "error",
           message: result.error || "削除に失敗しました",
         } as FormStatus;
       }
-      
+
       setLocalRows((prev) =>
         prev.filter((r) => String(r.id) !== String(undeletedRows)),
       );
@@ -116,9 +121,9 @@ export default function RoleUsersDataGridClient({
           ];
         },
       },
-      { 
-        field: "id", 
-        headerName: "ID", 
+      {
+        field: "id",
+        headerName: "ID",
         width: 200,
         flex: 0.5,
       },
