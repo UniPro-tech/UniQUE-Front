@@ -24,7 +24,13 @@ export function sanitizeForLog(input: unknown, maxLen = 1000): string {
     return s;
   } catch {
     try {
-      return String(input).slice(0, maxLen);
+      let fallback = String(input);
+      fallback = fallback.replace(/[\u0000-\u001f\u007f-\u009f]/g, (c) => {
+        const code = c.charCodeAt(0).toString(16).padStart(2, "0");
+        return `<0x${code}>`;
+      });
+      if (fallback.length > maxLen) return fallback.slice(0, maxLen) + "...";
+      return fallback;
     } catch {
       return "[unserializable]";
     }
