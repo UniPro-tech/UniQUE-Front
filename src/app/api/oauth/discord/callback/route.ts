@@ -4,6 +4,7 @@ import { apiPost } from "@/lib/apiClient";
 import type { CreateExternalIdentityRequest } from "@/types/ExternalIdentity";
 import { getUserById } from "@/lib/resources/Users";
 import { assignDiscordRole } from "@/lib/discord";
+import { sanitizeForLog } from "@/lib/logSanitize";
 
 /**
  * Discord Botを使用してユーザーをギルド（サーバー）に追加
@@ -81,12 +82,12 @@ export const GET = async (request: NextRequest) => {
       emailVerifyCode = stateObj.code;
     }
   } catch (e) {
-    console.error("Failed to parse state:", e);
+    console.error("Failed to parse state:", sanitizeForLog(e));
   }
 
   // エラーチェック
   if (error) {
-    console.error("Discord OAuth error:", error);
+    console.error("Discord OAuth error:", sanitizeForLog(error));
     let redirectPath: string;
     if (from === "email_verify" && emailVerifyCode) {
       redirectPath = `/email-verify?code=${encodeURIComponent(emailVerifyCode)}&discord_error=true`;
@@ -146,9 +147,10 @@ export const GET = async (request: NextRequest) => {
     });
 
     if (!tokenResponse.ok) {
+      const tokenErr = await tokenResponse.text().catch(() => null);
       console.error(
         "Failed to get Discord access token:",
-        await tokenResponse.text(),
+        sanitizeForLog(tokenErr),
       );
       let redirectPath: string;
       if (from === "email_verify" && emailVerifyCode) {
@@ -180,9 +182,10 @@ export const GET = async (request: NextRequest) => {
     });
 
     if (!userResponse.ok) {
+      const userErr = await userResponse.text().catch(() => null);
       console.error(
         "Failed to get Discord user info:",
-        await userResponse.text(),
+        sanitizeForLog(userErr),
       );
       let redirectPath: string;
       if (from === "email_verify" && emailVerifyCode) {
@@ -196,7 +199,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     const discordUser = await userResponse.json();
-    const discordUserId = discordUser.id;
+    const discordUserId = sanitizeForLog(discordUser.id, 64);
 
     // 3. 外部アイデンティティをAPIに登録
     const expiresAt = new Date(Date.now() + expires_in * 1000).toISOString();
@@ -233,7 +236,10 @@ export const GET = async (request: NextRequest) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("Failed to link Discord account:", errorData);
+      console.error(
+        "Failed to link Discord account:",
+        sanitizeForLog(errorData),
+      );
 
       // 409 Conflict エラーの場合、既に連携されているアカウント
       if (response.status === 409) {
@@ -288,11 +294,11 @@ export const GET = async (request: NextRequest) => {
           const roleAssigned = await assignDiscordRole(discordUserId);
           if (roleAssigned) {
             console.log(
-              `Discord メンバーロールを付与しました: userId=${userId}, discordUserId=${discordUserId}`,
+              `Discord メンバーロールを付与しました: userId=${sanitizeForLog(userId, 64)}, discordUserId=${sanitizeForLog(discordUserId, 64)}`,
             );
           } else {
             console.warn(
-              `Discord メンバーロールの付与に失敗しました: userId=${userId}`,
+              `Discord メンバーロールの付与に失敗しました: userId=${sanitizeForLog(userId, 64)}`,
             );
           }
         } else {
@@ -302,7 +308,10 @@ export const GET = async (request: NextRequest) => {
         }
       }
     } catch (error) {
-      console.error("メンバーロール付与処理中にエラーが発生:", error);
+      console.error(
+        "メンバーロール付与処理中にエラーが発生:",
+        sanitizeForLog(error),
+      );
       // エラーが発生してもDiscord連携自体は成功とする
     }
 
@@ -318,7 +327,7 @@ export const GET = async (request: NextRequest) => {
     }
     return Response.redirect(new URL(redirectPath, request.nextUrl.origin));
   } catch (error) {
-    console.error("Discord OAuth callback error:", error);
+    console.error("Discord OAuth callback error:", sanitizeForLog(error));
     let redirectPath: string;
     if (from === "email_verify" && emailVerifyCode) {
       redirectPath = `/email-verify?code=${encodeURIComponent(emailVerifyCode)}&discord_error=true`;
