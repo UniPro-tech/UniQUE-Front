@@ -350,7 +350,7 @@ export class User {
         } else if (errorCode === "R0007") {
           throw ResourceApiErrors.EmailAlreadyExists;
         }
-      } catch (parseError) {
+      } catch {
         // JSON parseに失敗した場合は continue
       }
 
