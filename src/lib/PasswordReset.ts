@@ -16,7 +16,21 @@ export async function requestPasswordReset(
   email: string,
 ): Promise<PasswordResetResponse> {
   try {
-    const response = await fetch("/api/password-reset/request", {
+    // サーバーサイドかどうか判定
+    const isServer = typeof window === "undefined";
+    let url = "/api/password-reset/request";
+    if (isServer) {
+      // サーバーサイドなら絶対URLを組み立てる
+      const base =
+        process.env.NEXT_PUBLIC_BASE_URL ||
+        process.env.VERCEL_URL ||
+        "http://localhost:3000";
+      // VERCEL_URLはドメインだけなのでhttp(s)付与
+      url = base.startsWith("http")
+        ? `${base}/api/password-reset/request`
+        : `https://${base}/api/password-reset/request`;
+    }
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
