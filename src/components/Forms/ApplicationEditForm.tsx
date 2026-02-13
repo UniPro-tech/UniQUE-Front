@@ -60,6 +60,8 @@ export default function ApplicationEditForm({
   });
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
+  const [secretSaved, setSecretSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -86,8 +88,39 @@ export default function ApplicationEditForm({
   };
 
   const handleRegenerateSecret = () => {
-    setClientSecret(generateClientSecret());
+    const newSecret = generateClientSecret();
+    setClientSecret(newSecret);
     setCopySuccess(false);
+    setSecretSaved(false);
+    // 即時でサーバー側に保存する
+    (async () => {
+      setRegenerating(true);
+      try {
+        const res = await fetch(
+          `/api/applications/${encodeURIComponent(application.id)}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ clientSecret: newSecret }),
+          },
+        );
+        const data = await res.json().catch(() => null);
+        if (!res.ok || (data && data.ok === false)) {
+          const message = data?.error ?? "シークレットの更新に失敗しました";
+          throw new Error(message);
+        }
+        setSecretSaved(true);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "シークレットの再生成に失敗しました",
+        );
+        console.error(err);
+      } finally {
+        setRegenerating(false);
+      }
+    })();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -209,10 +242,10 @@ export default function ApplicationEditForm({
                 variant="outlined"
                 color="warning"
                 onClick={handleRegenerateSecret}
-                disabled={loading}
+                disabled={loading || regenerating}
                 sx={{ cursor: "pointer" }}
               >
-                シークレットを再生成
+                {regenerating ? <CircularProgress size={16} /> : "シークレットを再生成"}
               </Button>
             ) : (
               <Stack spacing={1}>
@@ -246,16 +279,19 @@ export default function ApplicationEditForm({
                     },
                   }}
                 />
+                {secretSaved && (
+                  <Alert severity="success">シークレットを更新しました</Alert>
+                )}
                 <Button
                   variant="outlined"
                   size="small"
                   onClick={handleRegenerateSecret}
-                  disabled={loading}
+                  disabled={loading || regenerating}
                   sx={{
-                    cursor: loading ? "progress" : "pointer",
+                    cursor: loading || regenerating ? "progress" : "pointer",
                   }}
                 >
-                  別のシークレットを生成
+                  {regenerating ? <CircularProgress size={16} /> : "別のシークレットを生成"}
                 </Button>
               </Stack>
             )}
