@@ -36,3 +36,28 @@ export async function PATCH(
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  const params = await context.params;
+  const { id } = params;
+  try {
+    const app = await Application.getApplicationById(id);
+    if (!app) {
+      return NextResponse.json(
+        { ok: false, error: "not_found" },
+        { status: 404 },
+      );
+    }
+
+    await app.delete();
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("/api/applications/[id] DELETE error:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  }
+}

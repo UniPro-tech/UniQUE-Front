@@ -215,6 +215,42 @@ export class Application {
     return new Application(data);
   }
 
+  /** DELETE /applications/{id} でアプリケーションを削除 */
+  async delete(): Promise<void> {
+    const { apiDelete } = await import("@/lib/apiClient");
+    const res = await apiDelete(`/applications/${this.id}`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+  }
+
+  /** 指定IDのアプリケーションを削除（便利メソッド） */
+  static async deleteById(id: string): Promise<void> {
+    const { apiDelete } = await import("@/lib/apiClient");
+    const res = await apiDelete(`/applications/${id}`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+  }
+
   /** GET /users/{id}/apps でユーザーが所有するアプリケーション一覧を取得 */
   static async getApplicationsByUserId(userId: string): Promise<Application[]> {
     const response = await apiGet(`/users/${userId}/apps`);

@@ -9,7 +9,11 @@ import {
 } from "@mui/x-data-grid";
 import React from "react";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
+import DeleteDialog from "@/components/Dialogs/Delete";
+import { Application } from "@/types/Application";
+import { deleteApplicationById } from "@/app/dashboard/applications/delete-action";
 import type { ApplicationWithOwner } from "@/types/Application";
 import { redirect, RedirectType } from "next/navigation";
 import { Box, Paper, Link as MuiLink } from "@mui/material";
@@ -24,6 +28,33 @@ export default function ApplicationsDataGridClient({
   const [localRows, setLocalRows] = React.useState<ApplicationWithOwner[]>(
     () => rows,
   );
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [deletedAppId, setDeletedAppId] = React.useState<string | null>(null);
+
+  const handleDelete = async (
+    _prevState: unknown,
+    _formData: FormData | null,
+  ) => {
+    void _prevState;
+    void _formData;
+    try {
+      if (!deletedAppId) {
+        return { status: "error", message: "削除対象が選択されていません" };
+      }
+      const result = await deleteApplicationById(deletedAppId);
+      if (!result.success) {
+        return { status: "error", message: result.error || "削除に失敗しました" };
+      }
+      setLocalRows((prev) => prev.filter((r) => r.id !== deletedAppId));
+      setDeletedAppId(null);
+      setDeleteDialogOpen(false);
+      return { status: "success", message: "アプリケーションを削除しました" };
+    } catch (err) {
+      console.error(err);
+      return { status: "error", message: String(err) };
+    }
+  };
 
   React.useEffect(() => {
     setLocalRows(rows);
@@ -46,6 +77,15 @@ export default function ApplicationsDataGridClient({
               label="編集"
               onClick={() => {
                 redirect(`./applications/${id}`, RedirectType.push);
+              }}
+            />,
+            <GridActionsCellItem
+              key={"delete-row"}
+              icon={<DeleteIcon />}
+              label="削除"
+              onClick={() => {
+                setDeletedAppId(String(id));
+                setDeleteDialogOpen(true);
               }}
             />,
           ];
@@ -177,6 +217,12 @@ export default function ApplicationsDataGridClient({
           density="comfortable"
         />
       </Box>
+      <DeleteDialog
+        open={deleteDialogOpen}
+        dataAction={handleDelete}
+        handleClose={() => setDeleteDialogOpen(false)}
+        title="アプリケーション"
+      />
     </Paper>
   );
 }
