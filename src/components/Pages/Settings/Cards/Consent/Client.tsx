@@ -27,7 +27,7 @@ export interface ConsentDTO {
   applicationPrivacyPolicyUrl?: string;
 }
 
-async function revokeConsent(consentId: string): Promise<boolean> {
+async function clientRevokeConsent(consentId: string): Promise<boolean> {
   const authApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL || "";
   const res = await fetch(
     `${authApiUrl}/internal/consents/${encodeURIComponent(consentId)}`,
@@ -41,8 +41,10 @@ async function revokeConsent(consentId: string): Promise<boolean> {
 
 export default function ConsentSettingsCardClient({
   consents: initialConsents,
+  revokeConsent,
 }: {
   consents: ConsentDTO[];
+  revokeConsent?: (id: string) => Promise<boolean>;
 }) {
   const [consents, setConsents] = React.useState(initialConsents);
   const [revoking, setRevoking] = React.useState<string | null>(null);
@@ -52,7 +54,9 @@ export default function ConsentSettingsCardClient({
   const handleRevoke = async (consent: ConsentDTO) => {
     setRevoking(consent.id);
     try {
-      const ok = await revokeConsent(consent.id);
+      const ok = await (revokeConsent
+        ? revokeConsent(consent.id)
+        : clientRevokeConsent(consent.id));
       if (ok) {
         setConsents((prev) => prev.filter((c) => c.id !== consent.id));
         enqueueSnackbar("同意を取り消しました。", { variant: "success" });

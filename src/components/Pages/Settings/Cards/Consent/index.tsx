@@ -1,6 +1,7 @@
 import { createApiClient } from "@/lib/apiClient";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import ConsentSettingsCardClient, { type ConsentDTO } from "./Client";
+import { revokeConsentAction } from "./actions";
 
 export default async function ConsentSettingsCard() {
   const authApiUrl = process.env.AUTH_API_URL || "";
@@ -22,7 +23,11 @@ export default async function ConsentSettingsCard() {
   }
 
   // アプリ名解決: Resource API から application 情報を取得
-  const resourceClient = createApiClient();
+  const resourceApiUrl =
+    process.env.RESOURCE_API_URL ||
+    process.env.NEXT_PUBLIC_RESOURCE_API_URL ||
+    "";
+  const resourceClient = createApiClient(resourceApiUrl);
   const resolvedConsents = await Promise.all(
     consents.map(async (c) => {
       const appId = c.clientId || c.applicationId;
@@ -48,5 +53,10 @@ export default async function ConsentSettingsCard() {
     }),
   );
 
-  return <ConsentSettingsCardClient consents={resolvedConsents} />;
+  return (
+    <ConsentSettingsCardClient
+      consents={resolvedConsents}
+      revokeConsent={revokeConsentAction}
+    />
+  );
 }
