@@ -104,21 +104,31 @@ export default function ApplicationEditForm({
     }
 
     try {
-      const { Application } = await import("@/types/Application");
-      const app = await Application.getApplicationById(application.id);
-
-      // Update the application
-      app.name = formData.name;
-      app.description = formData.description;
-      app.websiteUrl = formData.websiteUrl;
-      app.privacyPolicyUrl = formData.privacyPolicyUrl;
-
-      // クライアントシークレットが再生成されている場合のみ含める
+      const payload: Record<string, unknown> = {
+        name: formData.name,
+        description: formData.description,
+        websiteUrl: formData.websiteUrl,
+        privacyPolicyUrl: formData.privacyPolicyUrl,
+      };
       if (clientSecret) {
-        app.clientSecret = clientSecret;
+        payload.clientSecret = clientSecret;
       }
 
-      await app.save();
+      const res = await fetch(
+        `/api/applications/${encodeURIComponent(application.id)}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || (data && data.ok === false)) {
+        const message = data?.error ?? "更新に失敗しました";
+        throw new Error(message);
+      }
+
       setSuccess(true);
       // 保存後はシークレットをリセット
       setClientSecret(null);
