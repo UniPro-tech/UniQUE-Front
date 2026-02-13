@@ -2,9 +2,10 @@ import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import ConsentCard from "@/components/mui-template/signup-side/components/ConsentCard";
+import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { createApiClient } from "@/lib/apiClient";
 import Session from "@/types/Session";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 
 export default async function Page({
@@ -139,7 +140,7 @@ export default async function Page({
     <>
       <TemporarySnackProvider snacks={snacks} />
       <ConsentCard
-        app={app}
+        app={toCamelcase(app)}
         user={session.user}
         scope={authReqData.scope}
         jwt={jwtToken}

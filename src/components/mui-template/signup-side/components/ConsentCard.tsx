@@ -4,6 +4,10 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import MuiCard from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
 import { Theme } from "@mui/material/styles";
@@ -55,54 +59,109 @@ export default function ConsentCard(props: {
         },
       })}
     >
-      <Typography component="h1" variant="h5">
-        {app.name} にアクセスを許可しますか？
-      </Typography>
-
-      <Box>
-        <Typography variant="body2">アプリケーション:</Typography>
-        <Typography variant="subtitle1">{app.name}</Typography>
-        <Typography variant="caption">
-          クライアントID: {app.id || app.id}
-        </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Avatar sx={{ width: 56, height: 56, bgcolor: "primary.main" }}>
+          {app.name ? app.name.charAt(0).toUpperCase() : "A"}
+        </Avatar>
+        <Box>
+          <Typography component="h1" variant="h6">
+            {app.name} にアクセスを許可しますか？
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            クライアントID: {app.id || "-"}
+          </Typography>
+        </Box>
       </Box>
 
-      <Box>
-        <Typography variant="body2">要求されている権限:</Typography>
-        <Stack spacing={1} sx={{ mt: 1 }}>
-          {scopes.length === 0 && <Typography>（なし）</Typography>}
-          {scopes.map((s) => (
-            <Box key={s} sx={{ display: "flex", gap: 1 }}>
-              <Typography variant="body2">•</Typography>
-              <Typography variant="body2">{s}</Typography>
-            </Box>
-          ))}
-        </Stack>
+      <Box sx={{ mt: 1 }}>
+        {app.websiteUrl && (
+          <Typography variant="body2" color="text.secondary">
+            ウェブサイト:
+            <Link
+              href={app.websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="hover"
+              sx={{ ml: 0.5 }}
+            >
+              {app.websiteUrl}
+            </Link>
+          </Typography>
+        )}
+
+        {app.privacyPolicyUrl && (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            プライバシーポリシー:
+            <Link
+              href={app.privacyPolicyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="hover"
+              sx={{ ml: 0.5 }}
+            >
+              表示する
+            </Link>
+          </Typography>
+        )}
       </Box>
 
-      <Box>
-        <Typography variant="body2">ログイン中のユーザー:</Typography>
-        <Typography variant="subtitle2">
-          {user?.customId ?? user?.email ?? "不明なユーザー"}
-        </Typography>
-      </Box>
+      <Divider sx={{ my: 1.5 }} />
 
-      <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-        <form action={formAction} method="post">
-          <input type="hidden" name="session_jwt" value={jwt} />
-          <input type="hidden" name="auth_request_id" value={auth_request_id} />
-          {state && <input type="hidden" name="state" value={state} />}
-          <Button type="submit" variant="contained" color="primary">
-            許可する
-          </Button>
-        </form>
+      <CardContent sx={{ px: 0 }}>
+        <Box sx={{ mb: 1 }}>
+          <Typography variant="body2">要求されている権限</Typography>
+          <Stack spacing={1} sx={{ mt: 1 }}>
+            {scopes.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                （なし）
+              </Typography>
+            )}
+            {scopes.map((s) => (
+              <Box key={s} sx={{ display: "flex", gap: 1 }}>
+                <Typography variant="body2">•</Typography>
+                <Typography variant="body2">{s}</Typography>
+              </Box>
+            ))}
+          </Stack>
+        </Box>
 
-        <Link href={denyHref} underline="none">
-          <Button variant="outlined" color="inherit">
-            拒否する
-          </Button>
-        </Link>
-      </Box>
+        <Box>
+          <Typography variant="body2">ログイン中のユーザー</Typography>
+          <Typography variant="subtitle2">
+            {user?.customId ?? user?.email ?? "不明なユーザー"}
+          </Typography>
+        </Box>
+      </CardContent>
+
+      <CardActions sx={{ px: 0, mt: 1 }}>
+        <Box sx={{ display: "flex", gap: 2, width: "100%", flexWrap: "wrap" }}>
+          <Box
+            component="form"
+            action={formAction}
+            method="post"
+            sx={{ flex: 1 }}
+          >
+            <input type="hidden" name="session_jwt" value={jwt} />
+            <input
+              type="hidden"
+              name="auth_request_id"
+              value={auth_request_id}
+            />
+            {state && <input type="hidden" name="state" value={state} />}
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              許可する
+            </Button>
+          </Box>
+
+          <Box sx={{ flexBasis: 200 }}>
+            <Link href={denyHref} underline="none">
+              <Button variant="outlined" color="inherit" fullWidth>
+                拒否する
+              </Button>
+            </Link>
+          </Box>
+        </Box>
+      </CardActions>
     </MuiCard>
   );
 }
