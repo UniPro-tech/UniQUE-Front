@@ -14,12 +14,22 @@ export default function ConsentCard(props: {
   app: AppType;
   user?: UserDTO;
   scope: string;
+  jwt: string;
   redirect_uri: string;
   state?: string;
   action?: string;
   auth_request_id?: string;
 }) {
-  const { app, user, scope, redirect_uri, state, action } = props;
+  const {
+    app,
+    user,
+    scope,
+    jwt,
+    redirect_uri,
+    state,
+    action,
+    auth_request_id,
+  } = props;
   const scopes = scope ? scope.split(" ") : [];
   // `action` should be provided by the server page (uses AUTH_API_URL). Fallback to relative endpoint.
   const formAction = action ?? "/auth";
@@ -79,16 +89,8 @@ export default function ConsentCard(props: {
 
       <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
         <form action={formAction} method="post">
-          <input type="hidden" name="client_id" value={app.id} />
-          <input type="hidden" name="redirect_uri" value={redirect_uri} />
-          <input type="hidden" name="scope" value={scope} />
-          {props.auth_request_id && (
-            <input
-              type="hidden"
-              name="auth_request_id"
-              value={props.auth_request_id}
-            />
-          )}
+          <input type="hidden" name="session_jwt" value={jwt} />
+          <input type="hidden" name="auth_request_id" value={auth_request_id} />
           {state && <input type="hidden" name="state" value={state} />}
           <Button type="submit" variant="contained" color="primary">
             許可する
