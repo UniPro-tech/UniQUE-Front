@@ -48,14 +48,14 @@ export function getSelectableAffiliationPeriods(): Array<{
         (currentMonth < q.month || (q.month === 1 && currentMonth >= 4))
       )
         break; // 今年度でまだ来ていない期はスキップ
-      const period = `${year - startYear + 1}${q.name}`;
+      const period = `${year - startYear + 1 < 10 ? "0" + (year - startYear + 1) : year - startYear + 1}${q.name}`;
       periods.push(period);
     }
   }
 
   return periods.map((period) => ({
     value: period,
-    label: period,
+    label: period.toLowerCase(),
   }));
 }
 

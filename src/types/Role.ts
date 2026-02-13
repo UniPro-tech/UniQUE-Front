@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut } from "@/lib/apiClient";
+import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/apiClient";
 import { AuthorizationErrors } from "./Errors/AuthorizationErrors";
 import { ResourceApiErrors } from "./Errors/ResourceApiErrors";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
@@ -203,6 +203,23 @@ export class Role {
     }
     const data = toCamelcase<RoleDTO>(await response.json());
     return new Role(data);
+  }
+
+  /** DELETE /roles/{id} でロールを削除 */
+  static async delete(id: string): Promise<void> {
+    const response = await apiDelete(`/roles/${id}`);
+    if (!response.ok) {
+      switch (response.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
+          throw ResourceApiErrors.ResourceDeletionFailed;
+      }
+    }
   }
 }
 

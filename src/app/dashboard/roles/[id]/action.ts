@@ -32,3 +32,15 @@ export async function updateRole(
     };
   }
 }
+
+export async function deleteRole(
+  roleId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await Role.delete(roleId);
+    return { success: true };
+  } catch (error) {
+    console.error("Role delete failed:", error);
+    return { success: false, error: "ロールの削除に失敗しました" };
+  }
+}

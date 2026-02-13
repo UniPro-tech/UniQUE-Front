@@ -9,18 +9,65 @@ import {
 } from "@mui/x-data-grid";
 import React from "react";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
 import type { PlainRole } from "@/types/Role";
+import DeleteDialog from "@/components/Dialogs/Delete";
+import { deleteRole } from "@/app/dashboard/roles/[id]/action";
 import { redirect, RedirectType } from "next/navigation";
 import { Box, Paper } from "@mui/material";
+import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 
 export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
   const apiRef = useGridApiRef();
   const [localRows, setLocalRows] = React.useState<PlainRole[]>(() => rows);
+  const [undeletedRole, setUndeletedRole] = React.useState<string | null>(
+    null,
+  );
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
     setLocalRows(rows);
   }, [rows]);
+
+  const handleDelete = async (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _prevState: FormStatus | null,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _formData: FormData | null,
+  ) => {
+    try {
+      if (!undeletedRole) {
+        return {
+          status: "error",
+          message: "削除対象が選択されていません",
+        } as FormStatus;
+      }
+
+      const result = await deleteRole(undeletedRole);
+
+      if (!result.success) {
+        return {
+          status: "error",
+          message: result.error || "削除に失敗しました",
+        } as FormStatus;
+      }
+
+      setLocalRows((prev) => prev.filter((r) => String(r.id) !== String(undeletedRole)));
+      apiRef.current?.updateRows([{ id: undeletedRole, _action: "delete" }]);
+      setUndeletedRole(null);
+      setDeleteDialogOpen(false);
+      return {
+        status: "success",
+        message: "ロールを削除しました",
+      } as FormStatus;
+    } catch (error) {
+      return {
+        status: "error",
+        message: `削除に失敗しました: ${String(error)}`,
+      } as FormStatus;
+    }
+  };
 
   const columns = React.useMemo<GridColDef[]>(() => {
     return [
@@ -39,6 +86,15 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
               label="編集"
               onClick={() => {
                 redirect(`./roles/${id}`, RedirectType.push);
+              }}
+            />,
+            <GridActionsCellItem
+              key={"delete-row"}
+              icon={<DeleteIcon />}
+              label="削除"
+              onClick={() => {
+                setUndeletedRole(String(id));
+                setDeleteDialogOpen(true);
               }}
             />,
           ];
@@ -114,6 +170,13 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
           density="comfortable"
         />
       </Box>
+      <DeleteDialog
+        open={deleteDialogOpen}
+        dataAction={handleDelete}
+        handleClose={() => setDeleteDialogOpen(false)}
+        title="ロール"
+      />
     </Paper>
   );
 }
+
