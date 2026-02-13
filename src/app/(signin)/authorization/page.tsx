@@ -114,8 +114,12 @@ export default async function Page({
 
       if (hasConsent && authReqData.prompt == "none") {
         // 同意済みであればconsentedにする
+        const query = new URLSearchParams();
+        query.append("user_id", session.user.id);
+        query.append("application_id", authReqData.client_id);
+        query.append("scope", authReqData.scope);
         const consentRes = await authClient.post(
-          `/internal/auth-requests/${auth_request_id}/consented`,
+          `/internal/auth-requests/${auth_request_id}/consented?${query.toString()}`,
         );
         if (!consentRes.ok) {
           throw new Error("Failed to create consent");
