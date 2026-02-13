@@ -18,7 +18,10 @@ import {
   redirectToMemberList,
   CreateMemberFormData,
 } from "@/app/dashboard/members/new/action";
-import { AFFILIATION_PERIOD_OPTIONS } from "@/lib/constants/UserConstants";
+import {
+  AFFILIATION_PERIOD_OPTIONS,
+  getAffiliationPeriodInfo,
+} from "@/lib/constants/UserConstants";
 import { useRouter } from "next/navigation";
 
 export default function MemberCreateForm() {
@@ -162,11 +165,20 @@ export default function MemberCreateForm() {
             helperText="所属期を選択（任意）"
             disabled={loading}
           >
-            {AFFILIATION_PERIOD_OPTIONS.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </MenuItem>
-            ))}
+            {AFFILIATION_PERIOD_OPTIONS.map((opt) => {
+              const info = getAffiliationPeriodInfo(opt.value);
+              return (
+                <MenuItem key={opt.value} value={opt.value}>
+                  <Typography>{opt.value}期</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ ml: 1, color: "text.secondary" }}
+                  >
+                    ({info.year}年度 {info.label})
+                  </Typography>
+                </MenuItem>
+              );
+            })}
           </TextField>
 
           <TextField
