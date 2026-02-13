@@ -546,28 +546,30 @@ export default function CredentialFormClient(props: {
     }
 
     return (
-      <FormControlLabel
-        sx={{ wordBreak: "keep-all" }}
-        control={<Checkbox name="remember" color="primary" />}
-        label={
-          <>
-            <Link href="/terms" target="_blank">
-              利用規約
-            </Link>
-            と
-            <Link href="/privacy" target="_blank">
-              プライバシーポリシー
-            </Link>
-            、
-            <Link href="/club_statute" target="_blank">
-              サークル規約
-            </Link>
-            に
-            <wbr />
-            同意します。
-          </>
-        }
-      />
+      <FormControl required sx={{ wordBreak: "keep-all" }}>
+        <FormControlLabel
+          control={<Checkbox name="termsAccepted" color="primary" />}
+          label={
+            <>
+              <Link href="/terms" target="_blank">
+                利用規約
+              </Link>
+              と
+              <Link href="/privacy" target="_blank">
+                プライバシーポリシー
+              </Link>
+              、
+              <Link href="/club_statute" target="_blank">
+                サークル規約
+              </Link>
+              に
+              <wbr />
+              同意します。
+            </>
+          }
+        />
+        <FormHelperText>申請の送信には同意が必要です</FormHelperText>
+      </FormControl>
     );
   };
 
