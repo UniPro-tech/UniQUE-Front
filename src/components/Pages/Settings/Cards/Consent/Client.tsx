@@ -22,6 +22,9 @@ export interface ConsentDTO {
   createdAt?: string;
   /** フロントで解決したアプリ名 */
   applicationName?: string;
+  applicationDescription?: string;
+  applicationWebsiteUrl?: string;
+  applicationPrivacyPolicyUrl?: string;
 }
 
 async function revokeConsent(consentId: string): Promise<boolean> {
@@ -43,6 +46,8 @@ export default function ConsentSettingsCardClient({
 }) {
   const [consents, setConsents] = React.useState(initialConsents);
   const [revoking, setRevoking] = React.useState<string | null>(null);
+
+  // アプリ名の解決はサーバーサイドで行われる想定なので、ここでは何もしない
 
   const handleRevoke = async (consent: ConsentDTO) => {
     setRevoking(consent.id);
@@ -108,10 +113,59 @@ export default function ConsentSettingsCardClient({
                       gap: 2,
                     }}
                   >
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box
+                      sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                      }}
+                    >
                       <Typography variant="subtitle1" noWrap>
                         {appLabel}
                       </Typography>
+                      {consent.applicationDescription && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          noWrap
+                        >
+                          {consent.applicationDescription}
+                        </Typography>
+                      )}
+                      {consent.applicationWebsiteUrl && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          noWrap
+                        >
+                          ウェブサイト:{" "}
+                          <a
+                            href={consent.applicationWebsiteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {consent.applicationWebsiteUrl}
+                          </a>
+                        </Typography>
+                      )}
+                      {consent.applicationPrivacyPolicyUrl && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          noWrap
+                        >
+                          プライバシーポリシー:{" "}
+                          <a
+                            href={consent.applicationPrivacyPolicyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {consent.applicationPrivacyPolicyUrl}
+                          </a>
+                        </Typography>
+                      )}
                       {scopes.length > 0 && (
                         <Stack direction="row" spacing={0.5} flexWrap="wrap">
                           {scopes.map((s) => (

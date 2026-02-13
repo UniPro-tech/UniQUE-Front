@@ -29,11 +29,17 @@ export default async function ConsentSettingsCard() {
       if (!appId) return c;
       try {
         const appRes = await resourceClient.get(
-          `/apps/${encodeURIComponent(appId)}`,
+          `/applications/${encodeURIComponent(appId)}`,
         );
         if (appRes.ok) {
           const app = await appRes.json();
-          return { ...c, applicationName: app.name ?? appId };
+          return {
+            ...c,
+            applicationName: app.name ?? appId,
+            applicationDescription: app.description,
+            applicationWebsiteUrl: app.website_url,
+            applicationPrivacyPolicyUrl: app.privacy_policy_url,
+          };
         }
       } catch {
         // ignore
