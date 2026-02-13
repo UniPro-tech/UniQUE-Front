@@ -13,6 +13,7 @@ import React from "react";
 import RestoreIcon from "@mui/icons-material/Restore";
 import CheckIcon from "@mui/icons-material/Check";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
@@ -25,13 +26,22 @@ import {
   AFFILIATION_PERIOD_OPTIONS,
 } from "@/lib/constants/UserConstants";
 import { useRouter } from "next/navigation";
+import DeleteDialog from "@/components/Dialogs/Delete";
+import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { deleteUserById } from "@/app/dashboard/members/delete-action";
 
 export default function MembersDataGrid({
   rows,
   beforeJoined = false,
+  canDelete = false,
+  canUpdate = false,
+  canRead = false,
 }: {
   rows: UserDTO[];
   beforeJoined?: boolean;
+  canDelete?: boolean;
+  canUpdate?: boolean;
+  canRead?: boolean;
 }) {
   const apiRef = useGridApiRef();
   const router = useRouter();
@@ -64,6 +74,8 @@ export default function MembersDataGrid({
 
   const [approveDialogOpen, setApproveDialogOpen] = React.useState(false);
   const [approvedUser, setApprovedUser] = React.useState<UserDTO | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [deletedUserId, setDeletedUserId] = React.useState<null | string>(null);
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -85,6 +97,7 @@ export default function MembersDataGrid({
               field: "actions",
               headerName: "操作",
               type: "actions",
+              width: 140,
               getActions: ({ id }: { id: GridRowId }) => {
                 return [
                   <GridActionsCellItem
@@ -108,8 +121,10 @@ export default function MembersDataGrid({
               field: "actions",
               headerName: "操作",
               type: "actions",
+              width: 140,
               getActions: ({ id }: { id: GridRowId }) => {
-                return [
+                const actions: React.ReactNode[] = [];
+                actions.push(
                   <GridActionsCellItem
                     key={"view-detail"}
                     icon={<VisibilityIcon />}
@@ -118,26 +133,44 @@ export default function MembersDataGrid({
                       router.push(`/dashboard/members/${id}`);
                     }}
                   />,
-                  <GridActionsCellItem
-                    key={"discard-changes"}
-                    icon={<RestoreIcon />}
-                    label="Discard changes"
-                    disabled={
-                      unsavedChangesRef.current.unsavedRows[id] === undefined
-                    }
-                    onClick={() => {
-                      apiRef.current?.updateRows([
-                        unsavedChangesRef.current.rowsBeforeChange[id],
-                      ]);
-                      delete unsavedChangesRef.current.rowsBeforeChange[id];
-                      delete unsavedChangesRef.current.unsavedRows[id];
-                      setHasUnsavedRows(
-                        Object.keys(unsavedChangesRef.current.unsavedRows)
-                          .length > 0,
-                      );
-                    }}
-                  />,
-                ];
+                );
+                if (canDelete) {
+                  actions.push(
+                    <GridActionsCellItem
+                      key={"delete-row"}
+                      icon={<DeleteIcon />}
+                      label="削除"
+                      onClick={() => {
+                        setDeletedUserId(String(id));
+                        setDeleteDialogOpen(true);
+                      }}
+                    />,
+                  );
+                }
+                if (canUpdate) {
+                  actions.push(
+                    <GridActionsCellItem
+                      key={"discard-changes"}
+                      icon={<RestoreIcon />}
+                      label="Discard changes"
+                      disabled={
+                        unsavedChangesRef.current.unsavedRows[id] === undefined
+                      }
+                      onClick={() => {
+                        apiRef.current?.updateRows([
+                          unsavedChangesRef.current.rowsBeforeChange[id],
+                        ]);
+                        delete unsavedChangesRef.current.rowsBeforeChange[id];
+                        delete unsavedChangesRef.current.unsavedRows[id];
+                        setHasUnsavedRows(
+                          Object.keys(unsavedChangesRef.current.unsavedRows)
+                            .length > 0,
+                        );
+                      }}
+                    />,
+                  );
+                }
+                return actions;
               },
             },
           ] as GridColDef[])),
@@ -152,7 +185,7 @@ export default function MembersDataGrid({
       {
         field: "customId",
         headerName: "カスタムID",
-        editable: !beforeJoined,
+        editable: !beforeJoined && canUpdate,
         width: 150,
       },
       // メール・ステータス等の機密情報は完全なデータがある場合のみ表示&編集可能
@@ -161,19 +194,23 @@ export default function MembersDataGrid({
             {
               field: "email",
               headerName: "メールアドレス",
-              editable: !beforeJoined,
+              editable: !beforeJoined && canUpdate,
               width: 250,
             } as GridColDef,
-            {
-              field: "externalEmail",
-              headerName: "外部メールアドレス",
-              width: 250,
-              editable: !beforeJoined,
-            } as GridColDef,
+            ...(canRead
+              ? [
+                  {
+                    field: "externalEmail",
+                    headerName: "外部メールアドレス",
+                    width: 250,
+                    editable: !beforeJoined && canUpdate,
+                  } as GridColDef,
+                ]
+              : []),
             {
               field: "affiliationPeriod",
               headerName: "所属期",
-              editable: !beforeJoined,
+              editable: !beforeJoined && canUpdate,
               width: 150,
               type: "singleSelect",
               valueOptions: affiliationPeriodValueOptionsArray,
@@ -181,7 +218,7 @@ export default function MembersDataGrid({
             {
               field: "status",
               headerName: "ステータス",
-              editable: !beforeJoined,
+              editable: !beforeJoined && canUpdate,
               width: 120,
               type: "singleSelect",
               valueOptions: statusValueOptionsArray,
@@ -226,7 +263,49 @@ export default function MembersDataGrid({
     statusValueOptionsArray,
     router,
     hasFullData,
+    canDelete,
+    canUpdate,
+    canRead,
   ]);
+
+  const handleDelete = async (
+    _prevState: FormStatus | null,
+    _formData: FormData | null,
+  ) => {
+    try {
+      if (!deletedUserId) {
+        return {
+          status: "error",
+          message: "削除対象が選択されていません",
+        } as FormStatus;
+      }
+
+      const result = await deleteUserById(deletedUserId);
+
+      if (!result.success) {
+        return {
+          status: "error",
+          message: result.error || "削除に失敗しました",
+        } as FormStatus;
+      }
+
+      setLocalRows((prev) =>
+        prev.filter((r) => String(r.id) !== deletedUserId),
+      );
+      apiRef.current?.updateRows([{ id: deletedUserId, _action: "delete" }]);
+      setDeletedUserId(null);
+      setDeleteDialogOpen(false);
+      return {
+        status: "success",
+        message: "ユーザーを削除しました",
+      } as FormStatus;
+    } catch (error) {
+      return {
+        status: "error",
+        message: `削除に失敗しました: ${String(error)}`,
+      } as FormStatus;
+    }
+  };
 
   const processRowUpdate = React.useCallback<
     NonNullable<DataGridProps["processRowUpdate"]>
@@ -311,7 +390,7 @@ export default function MembersDataGrid({
 
   return (
     <div style={{ width: "100%" }}>
-      {!beforeJoined && (
+      {!beforeJoined && canUpdate && (
         <div style={{ marginBottom: 8 }}>
           <Button
             disabled={!hasUnsavedRows}
@@ -376,6 +455,14 @@ export default function MembersDataGrid({
         handleClose={() => setApproveDialogOpen(false)}
         user={approvedUser}
       />
+      {canDelete && (
+        <DeleteDialog
+          open={deleteDialogOpen}
+          dataAction={handleDelete}
+          handleClose={() => setDeleteDialogOpen(false)}
+          title="ユーザー"
+        />
+      )}
     </div>
   );
 }

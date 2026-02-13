@@ -13,7 +13,11 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Save as SaveIcon, Cancel as CancelIcon } from "@mui/icons-material";
-import { createMember, redirectToMemberList, CreateMemberFormData } from "@/app/dashboard/members/new/action";
+import {
+  createMember,
+  redirectToMemberList,
+  CreateMemberFormData,
+} from "@/app/dashboard/members/new/action";
 import { AFFILIATION_PERIOD_OPTIONS } from "@/lib/constants/UserConstants";
 import { useRouter } from "next/navigation";
 
@@ -179,14 +183,21 @@ export default function MemberCreateForm() {
           </TextField>
 
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button variant="outlined" startIcon={<CancelIcon />} onClick={handleCancel} disabled={loading}>
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={handleCancel}
+              disabled={loading}
+            >
               キャンセル
             </Button>
 
             <Button
               type="submit"
               variant="contained"
-              startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+              startIcon={
+                loading ? <CircularProgress size={20} /> : <SaveIcon />
+              }
               disabled={loading}
             >
               {loading ? "作成中..." : "作成"}

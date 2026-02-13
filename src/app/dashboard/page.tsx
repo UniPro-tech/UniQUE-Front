@@ -51,7 +51,11 @@ export default async function DashboardPage() {
             <Typography variant="body1" sx={{ mb: 1 }}>
               管理者向けのクイックアクションです。
             </Typography>
-            <Button component={Link} href="/dashboard/members/new" variant="contained">
+            <Button
+              component={Link}
+              href="/dashboard/members/new"
+              variant="contained"
+            >
               ユーザー手動作成
             </Button>
           </Card>

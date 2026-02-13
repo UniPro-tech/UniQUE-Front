@@ -24,7 +24,9 @@ export async function createMember(
       external_email: data.externalEmail || undefined,
       affiliation_period: data.affiliationPeriod || undefined,
       status: data.status || undefined,
-      profile: data.displayName ? { display_name: data.displayName } : undefined,
+      profile: data.displayName
+        ? { display_name: data.displayName }
+        : undefined,
     };
 
     const user = await User.create(req);

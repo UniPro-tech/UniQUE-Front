@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut } from "@/lib/apiClient";
+import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/apiClient";
 import { AuthorizationErrors } from "./Errors/AuthorizationErrors";
 import { ResourceApiErrors } from "./Errors/ResourceApiErrors";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
@@ -253,6 +253,23 @@ export class User {
           throw AuthorizationErrors.Unauthorized;
         case 403:
           throw AuthorizationErrors.AccessDenied;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+  }
+
+  /** DELETE /users/{id} でユーザーを削除 */
+  async delete(): Promise<void> {
+    const res = await apiDelete(`/users/${this.id}`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
         default:
           throw ResourceApiErrors.ApiServerInternalError;
       }
