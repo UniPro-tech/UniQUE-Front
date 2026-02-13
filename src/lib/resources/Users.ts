@@ -44,20 +44,30 @@ export const getUsersList = async (options?: {
 };
 
 /** PUT /users/{id} でユーザー情報を更新 */
-export const saveUser = async (user: User): Promise<User> => {
+export const saveUser = async (
+  user: User | (Partial<UserDTO> & { id: string }),
+): Promise<UserDTO> => {
+  const src: Partial<UserDTO> & { id: string } =
+    user instanceof User
+      ? user.convertPlain()
+      : (user as Partial<UserDTO> & { id: string });
+  const profileSrc = src.profile as
+    | Partial<import("@/types/User").ProfileDTO>
+    | undefined;
   const body: UpdateUserRequest = {
-    custom_id: user.customId,
-    email: user.email,
-    external_email: user.externalEmail,
-    affiliation_period: user.affiliationPeriod,
-    status: user.status,
-    profile: user.profile
+    custom_id: src.customId,
+    email: src.email,
+    external_email: src.externalEmail,
+    affiliation_period: src.affiliationPeriod,
+    status: src.status,
+    profile: profileSrc
       ? {
-          display_name: user.profile.displayName,
-          bio: user.profile.bio,
-          website_url: user.profile.websiteUrl,
-          joined_at: user.profile.joinedAt,
-          birthdate: user.profile.birthdate,
+          display_name: profileSrc.displayName ?? undefined,
+          bio: profileSrc.bio ?? undefined,
+          website_url: profileSrc.websiteUrl ?? undefined,
+          twitter_handle: profileSrc.twitterHandle ?? undefined,
+          joined_at: profileSrc.joinedAt ?? undefined,
+          birthdate: profileSrc.birthdate ?? undefined,
         }
       : undefined,
   };
@@ -73,5 +83,5 @@ export const saveUser = async (user: User): Promise<User> => {
     }
   }
   const data = toCamelcase<UserDTO>(await res.json());
-  return new User(data);
+  return data;
 };

@@ -18,7 +18,7 @@ import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
 import type { UserDTO } from "@/types/User";
-import { User } from "@/types/User";
+import { enqueueSnackbar } from "notistack";
 import { saveUser } from "@/lib/resources/Users";
 import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
 import {
@@ -272,6 +272,8 @@ export default function MembersDataGrid({
     _prevState: FormStatus | null,
     _formData: FormData | null,
   ) => {
+    void _prevState;
+    void _formData;
     try {
       if (!deletedUserId) {
         return {
@@ -343,17 +345,18 @@ export default function MembersDataGrid({
             );
           }
 
-          const userInstance = new User({
-            id: row.id as string,
-            customId: row.customId,
-            email: row.email,
-            externalEmail: row.externalEmail,
-            affiliationPeriod: row.affiliationPeriod,
-            status: row.status,
-            profile: row.profile,
-          });
-          const saved = await saveUser(userInstance);
-          const savedPlain = saved.convertPlain();
+          const payload: Partial<UserDTO> & { id: string } = {
+            id: String(row.id),
+            customId: row.customId as string | undefined,
+            email: row.email as string | undefined,
+            externalEmail: row.externalEmail as string | undefined,
+            affiliationPeriod: row.affiliationPeriod as string | undefined,
+            status: row.status as string | undefined,
+            profile:
+              (row.profile as unknown as UserDTO["profile"]) ?? undefined,
+          };
+          const saved = await saveUser(payload);
+          const savedPlain = saved;
           apiRef.current?.updateRows([savedPlain]);
           setLocalRows((prev) =>
             prev.map((r) =>
@@ -366,6 +369,7 @@ export default function MembersDataGrid({
       }
       setIsSaving(false);
       setHasUnsavedRows(false);
+      enqueueSnackbar("変更を保存しました", { variant: "success" });
       unsavedChangesRef.current = {
         unsavedRows: {},
         rowsBeforeChange: {},
