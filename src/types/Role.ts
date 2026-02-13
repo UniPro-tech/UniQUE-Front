@@ -188,9 +188,9 @@ export class Role {
     return new Role(data);
   }
 
-  /** POST /internal/roles で新規ロール作成 */
+  /** POST /roles で新規ロール作成 */
   static async create(req: CreateRoleRequest): Promise<Role> {
-    const response = await apiPost("/internal/roles", req);
+    const response = await apiPost("/roles", req);
     if (!response.ok) {
       switch (response.status) {
         case 401:
