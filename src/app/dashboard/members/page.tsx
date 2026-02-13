@@ -1,5 +1,5 @@
 import { getUsersList } from "@/lib/resources/Users";
-import { Link, Stack, Typography } from "@mui/material";
+import { Link as MLink, Stack, Typography, Button } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
 
 export const metadata = {
@@ -15,12 +15,17 @@ export default async function Page() {
   return (
     <Stack spacing={4}>
       <Stack>
-        <Typography variant="h5">ユーザー一覧</Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h5">ユーザー一覧</Typography>
+          <Button component="a" href="/dashboard/members/new" variant="contained">
+            新規作成
+          </Button>
+        </Stack>
         <Typography variant="body1">
           UniProjectのメンバー一覧です。
           <br />
           メンバー申請者はここに表示されません。{" "}
-          <Link href="/dashboard/requests">メンバー申請一覧</Link>
+          <MLink href="/dashboard/requests">メンバー申請一覧</MLink>
         </Typography>
       </Stack>
       <MembersDataGrid rows={rows} />
