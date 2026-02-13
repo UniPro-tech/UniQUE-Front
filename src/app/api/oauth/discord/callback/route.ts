@@ -325,16 +325,12 @@ export const GET = async (request: NextRequest) => {
     } else {
       redirectPath = `/dashboard/settings?oauth=Discord&status=success`;
     }
-    const x_url_header = request.headers.get("x-url") || "unknown";
-    const origin = () => {
-      try {
-        const url = new URL(x_url_header);
-        return url.origin;
-      } catch {
-        return request.nextUrl.origin;
-      }
-    };
-    return Response.redirect(new URL(redirectPath, origin()));
+    return Response.redirect(
+      new URL(
+        redirectPath,
+        process.env.NEXT_PUBLIC_FRONTEND_URL || request.nextUrl.origin,
+      ),
+    );
   } catch (error) {
     console.error("Discord OAuth callback error:", sanitizeForLog(error));
     let redirectPath: string;
@@ -345,15 +341,11 @@ export const GET = async (request: NextRequest) => {
     } else {
       redirectPath = `/dashboard/settings?oauth=Discord&status=error`;
     }
-    const x_url_header = request.headers.get("x-url") || "unknown";
-    const origin = () => {
-      try {
-        const url = new URL(x_url_header);
-        return url.origin;
-      } catch {
-        return request.nextUrl.origin;
-      }
-    };
-    return Response.redirect(new URL(redirectPath, origin()));
+    return Response.redirect(
+      new URL(
+        redirectPath,
+        process.env.NEXT_PUBLIC_FRONTEND_URL || request.nextUrl.origin,
+      ),
+    );
   }
 };
