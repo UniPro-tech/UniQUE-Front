@@ -83,6 +83,25 @@ async function verifySessionJWT(token: string): Promise<{
 
     // JWT を検証
     const verified = await jwtVerify(token, key);
+    const sub = verified.payload.sub;
+    // sid_を外す
+    const sid =
+      typeof sub === "string" && sub.startsWith("SID_") ? sub.slice(4) : sub;
+    console.log("Verifying session with sid:", sid);
+    const sessionValidateResponse = await fetch(
+      `${AUTH_ISSUER}/internal/session_verify?jti=${sid}`,
+    );
+    if (!sessionValidateResponse.ok) {
+      throw new Error(
+        `Session validation failed: ${sessionValidateResponse.statusText}`,
+      );
+    }
+    const data = await sessionValidateResponse.json();
+    console.log("Session validation response:", data);
+    console.log("JWT payload:", verified.payload);
+    if (!data.valid) {
+      throw new Error("Session is not valid");
+    }
     return { valid: true, payload: verified.payload };
   } catch (error) {
     console.error("JWT verification failed:", error);
