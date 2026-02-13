@@ -46,19 +46,6 @@ export default async function DashboardPage() {
               2025年1月10日20時から25時までサービスが一時的に停止します。
             </Typography>
           </Card>
-          <Card variant="outlined" sx={{ padding: 2 }}>
-            <Typography variant="h6">管理者ショートカット</Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              管理者向けのクイックアクションです。
-            </Typography>
-            <Button
-              component={Link}
-              href="/dashboard/members/new"
-              variant="contained"
-            >
-              ユーザー手動作成
-            </Button>
-          </Card>
         </Stack>
       </Stack>
     </Stack>
