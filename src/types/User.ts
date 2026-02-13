@@ -281,15 +281,26 @@ export class User {
     currentPassword: string,
     newPassword: string,
   ): Promise<void> {
-    // TODO: パスワード変更APIが実装されたら対応
-    console.warn("passwordChange is not yet implemented in the API");
-    console.log(
-      "currentPassword:",
-      currentPassword,
-      "newPassword:",
-      newPassword,
-    );
-    throw new Error("Not implemented");
+    if (!this.id) {
+      throw new Error("Cannot change password: user id is not set");
+    }
+
+    const res = await apiPut(`/users/${this.id}/password/change`, {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        default:
+          console.log(await res.text());
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
   }
 
   /** プレーンオブジェクトに変換 (Client Components用) */
