@@ -62,6 +62,7 @@ export default function ApplicationEditForm({
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [regenerating, setRegenerating] = useState(false);
   const [secretSaved, setSecretSaved] = useState(false);
+  const [clientIdCopySuccess, setClientIdCopySuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -84,6 +85,16 @@ export default function ApplicationEditForm({
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
+    }
+  };
+
+  const handleCopyClientId = async () => {
+    try {
+      await navigator.clipboard.writeText(application.id);
+      setClientIdCopySuccess(true);
+      setTimeout(() => setClientIdCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy client id:", err);
     }
   };
 
@@ -195,16 +206,30 @@ export default function ApplicationEditForm({
               >
                 アプリケーションID (クライアントID)
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontFamily: "monospace",
-                  wordBreak: "break-all",
-                  mt: 0.5,
-                }}
-              >
-                {application.id}
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontFamily: "monospace",
+                    wordBreak: "break-all",
+                    mr: 1,
+                    flex: 1,
+                  }}
+                >
+                  {application.id}
+                </Typography>
+                <IconButton
+                  onClick={handleCopyClientId}
+                  size="small"
+                  title={clientIdCopySuccess ? "コピーしました!" : "コピー"}
+                >
+                  <ContentCopyIcon
+                    sx={{
+                      color: clientIdCopySuccess ? "success.main" : "inherit",
+                    }}
+                  />
+                </IconButton>
+              </Box>
             </Paper>
             <Paper variant="outlined" sx={{ p: 2, flex: 1 }}>
               <Typography
@@ -245,7 +270,11 @@ export default function ApplicationEditForm({
                 disabled={loading || regenerating}
                 sx={{ cursor: "pointer" }}
               >
-                {regenerating ? <CircularProgress size={16} /> : "シークレットを再生成"}
+                {regenerating ? (
+                  <CircularProgress size={16} />
+                ) : (
+                  "シークレットを再生成"
+                )}
               </Button>
             ) : (
               <Stack spacing={1}>
@@ -291,7 +320,11 @@ export default function ApplicationEditForm({
                     cursor: loading || regenerating ? "progress" : "pointer",
                   }}
                 >
-                  {regenerating ? <CircularProgress size={16} /> : "別のシークレットを生成"}
+                  {regenerating ? (
+                    <CircularProgress size={16} />
+                  ) : (
+                    "別のシークレットを生成"
+                  )}
                 </Button>
               </Stack>
             )}
