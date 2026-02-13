@@ -87,7 +87,6 @@ async function verifySessionJWT(token: string): Promise<{
     // sid_を外す
     const sid =
       typeof sub === "string" && sub.startsWith("SID_") ? sub.slice(4) : sub;
-    console.log("Verifying session with sid:", sid);
     const sessionValidateResponse = await fetch(
       `${AUTH_ISSUER}/internal/session_verify?jti=${sid}`,
     );
@@ -97,8 +96,6 @@ async function verifySessionJWT(token: string): Promise<{
       );
     }
     const data = await sessionValidateResponse.json();
-    console.log("Session validation response:", data);
-    console.log("JWT payload:", verified.payload);
     if (!data.valid) {
       throw new Error("Session is not valid");
     }
