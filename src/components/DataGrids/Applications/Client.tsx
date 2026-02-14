@@ -12,6 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
 import DeleteDialog from "@/components/Dialogs/Delete";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { Application } from "@/types/Application";
 import { deleteApplicationById } from "@/app/dashboard/applications/delete-action";
 import type { ApplicationWithOwner } from "@/types/Application";
@@ -33,9 +34,9 @@ export default function ApplicationsDataGridClient({
   const [deletedAppId, setDeletedAppId] = React.useState<string | null>(null);
 
   const handleDelete = async (
-    _prevState: unknown,
+    _prevState: FormStatus | null,
     _formData: FormData | null,
-  ) => {
+  ): Promise<FormStatus | null> => {
     void _prevState;
     void _formData;
     try {
@@ -44,7 +45,10 @@ export default function ApplicationsDataGridClient({
       }
       const result = await deleteApplicationById(deletedAppId);
       if (!result.success) {
-        return { status: "error", message: result.error || "削除に失敗しました" };
+        return {
+          status: "error",
+          message: result.error || "削除に失敗しました",
+        };
       }
       setLocalRows((prev) => prev.filter((r) => r.id !== deletedAppId));
       setDeletedAppId(null);
