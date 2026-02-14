@@ -103,7 +103,13 @@ export default async function Page({
   let consented = false;
   const consentedQuery = new URLSearchParams();
   try {
-    const consentsRes = await authClient.get(`/internal/consents`);
+    const query = new URLSearchParams();
+    query.append("user_id", session.user.id);
+    query.append("application_id", authReqData.client_id);
+    query.append("scope", authReqData.scope);
+    const consentsRes = await authClient.get(
+      `/internal/consents?${query.toString()}`,
+    );
     if (consentsRes.ok) {
       const consentsData = await consentsRes.json();
       const consents: { client_id?: string; application_id?: string }[] =
