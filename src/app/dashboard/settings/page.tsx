@@ -61,7 +61,7 @@ export default async function Page({
           <AccountSettingsCard user={user} />
           <SecuritySettingsCard user={user} />
           <SocialAccountsSettingsCard user={user} />
-          <ConsentSettingsCard />
+          <ConsentSettingsCard user={user} />
         </>
       )}
     </Stack>

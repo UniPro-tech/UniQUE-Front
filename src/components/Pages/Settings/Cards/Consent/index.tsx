@@ -2,14 +2,20 @@ import { createApiClient } from "@/lib/apiClient";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import ConsentSettingsCardClient, { type ConsentDTO } from "./Client";
 import { revokeConsentAction } from "./actions";
+import { UserDTO } from "@/types/User";
 
-export default async function ConsentSettingsCard() {
+export default async function ConsentSettingsCard({ user }: { user: UserDTO }) {
   const authApiUrl = process.env.AUTH_API_URL || "";
   const authClient = createApiClient(authApiUrl);
   let consents: ConsentDTO[] = [];
 
   try {
-    const res = await authClient.get("/internal/consents");
+    const requestQuery = new URLSearchParams({
+      user_id: user.id,
+    });
+    const res = await authClient.get(
+      `/internal/consents?${requestQuery.toString()}`,
+    );
     if (res.ok) {
       const data = await res.json();
       const raw = Array.isArray(data) ? data : (data.data ?? []);
