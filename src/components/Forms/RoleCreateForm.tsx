@@ -14,6 +14,11 @@ import {
   FormControlLabel,
   Checkbox,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { Save as SaveIcon, Cancel as CancelIcon } from "@mui/icons-material";
 import {
@@ -76,6 +81,7 @@ export default function RoleCreateForm({ onCancel }: RoleCreateFormProps) {
     name: "",
     description: "",
     permissionBitmask: 0,
+    isDefault: false,
   });
 
   const [loading, setLoading] = useState(false);
@@ -122,6 +128,13 @@ export default function RoleCreateForm({ onCancel }: RoleCreateFormProps) {
       return;
     }
 
+    // If isDefault is checked, ask whether to assign to existing users
+    if (formData.isDefault) {
+      setConfirmOpen(true);
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await createRole(formData);
 
@@ -134,6 +147,31 @@ export default function RoleCreateForm({ onCancel }: RoleCreateFormProps) {
     } catch (err) {
       setError("予期しないエラーが発生しました");
       console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleIsDefaultToggle = (v: boolean) => {
+    setFormData((prev) => ({ ...prev, isDefault: v }));
+    setError(null);
+  };
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleConfirm = async (assignExisting: boolean) => {
+    setConfirmOpen(false);
+    setLoading(true);
+    try {
+      const result = await createRole({ ...formData, assignExisting });
+      if (result.success) {
+        router.push("/dashboard/roles");
+      } else {
+        setError(result.error || "作成に失敗しました");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("予期しないエラーが発生しました");
     } finally {
       setLoading(false);
     }
@@ -193,6 +231,46 @@ export default function RoleCreateForm({ onCancel }: RoleCreateFormProps) {
           />
 
           <Divider />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!formData.isDefault}
+                onChange={(e) => handleIsDefaultToggle(e.target.checked)}
+                disabled={loading}
+              />
+            }
+            label="新規ユーザーにデフォルトで付与する"
+          />
+
+          <Dialog
+            open={confirmOpen}
+            onClose={() => setConfirmOpen(false)}
+            aria-labelledby="confirm-assign-existing-title"
+          >
+            <DialogTitle id="confirm-assign-existing-title">
+              既存ユーザーへの付与
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                新規ユーザーにデフォルトで付与する設定にしています。
+                既存ユーザー（status が active または established
+                のユーザー）にも このロールを付与しますか？
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => handleConfirm(false)} disabled={loading}>
+                付与しない
+              </Button>
+              <Button
+                onClick={() => handleConfirm(true)}
+                variant="contained"
+                disabled={loading}
+              >
+                全員に付与する
+              </Button>
+            </DialogActions>
+          </Dialog>
 
           <Box>
             <Typography variant="subtitle1" gutterBottom>

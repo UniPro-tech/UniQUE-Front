@@ -74,6 +74,7 @@ export default function RoleEditForm({ role }: RoleEditFormProps) {
     name: role.name || "",
     description: role.description || "",
     permissionBitmask: role.permissionBitmask || 0,
+    isDefault: role.isDefault || false,
   });
 
   const [loading, setLoading] = useState(false);
@@ -140,6 +141,12 @@ export default function RoleEditForm({ role }: RoleEditFormProps) {
     }
   };
 
+  const handleIsDefaultToggle = (v: boolean) => {
+    setFormData((prev) => ({ ...prev, isDefault: v }));
+    setError(null);
+    setSuccess(false);
+  };
+
   return (
     <Card sx={{ p: 3 }}>
       <Typography variant="h6" gutterBottom>
@@ -192,6 +199,17 @@ export default function RoleEditForm({ role }: RoleEditFormProps) {
           />
 
           <Divider />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!formData.isDefault}
+                onChange={(e) => handleIsDefaultToggle(e.target.checked)}
+                disabled={loading}
+              />
+            }
+            label="新規ユーザーにデフォルトで付与する"
+          />
 
           <Box>
             <Typography variant="subtitle1" gutterBottom>

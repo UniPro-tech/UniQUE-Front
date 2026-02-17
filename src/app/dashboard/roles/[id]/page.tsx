@@ -1,5 +1,6 @@
 import RoleUsersDataGrid from "@/components/DataGrids/RoleUsers";
 import RoleEditForm from "@/components/Forms/RoleEditForm";
+import RoleBulkAssignButton from "@/components/RoleBulkAssignButton";
 import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
 import { Role } from "@/types/Role";
 import { Breadcrumbs, Link, Stack, Typography, Box } from "@mui/material";
@@ -72,6 +73,7 @@ export default async function Page({
         <Typography variant="body2" color="text.secondary" gutterBottom>
           このロールが割り当てられているユーザーの一覧です。
         </Typography>
+        <RoleBulkAssignButton roleId={role.id} />
         <Suspense fallback={<div>Loading...</div>}>
           <RoleUsersDataGrid role={role} />
         </Suspense>

@@ -8,6 +8,8 @@ export interface CreateRoleFormData {
   name: string;
   description: string;
   permissionBitmask: number;
+  isDefault?: boolean;
+  assignExisting?: boolean;
 }
 
 export async function createRole(
@@ -19,6 +21,8 @@ export async function createRole(
       name: data.name,
       description: data.description || undefined,
       permission_bitmask: data.permissionBitmask,
+      is_default: data.isDefault,
+      assign_to_existing: data.assignExisting,
     };
 
     const role = await Role.create(request);

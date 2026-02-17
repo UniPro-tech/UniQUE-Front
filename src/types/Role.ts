@@ -15,6 +15,7 @@ export interface RoleDTO {
   name: string;
   description?: string;
   permissionBitmask: number;
+  isDefault?: boolean;
 }
 
 /** routes.CreateRoleRequest */
@@ -23,6 +24,8 @@ export interface CreateRoleRequest {
   name: string;
   description?: string;
   permission_bitmask: number;
+  is_default?: boolean;
+  assign_to_existing?: boolean;
 }
 
 /** routes.UpdateRoleRequest */
@@ -31,6 +34,7 @@ export interface UpdateRoleRequest {
   name?: string;
   description?: string;
   permission_bitmask?: number;
+  is_default?: boolean;
 }
 
 /** Client Components用のプレーン型 */
@@ -46,6 +50,7 @@ export class Role {
   name: string;
   description?: string;
   permissionBitmask: number;
+  isDefault?: boolean;
 
   constructor(data: RoleDTO) {
     this.id = data.id;
@@ -53,6 +58,7 @@ export class Role {
     this.name = data.name;
     this.description = data.description;
     this.permissionBitmask = data.permissionBitmask;
+    this.isDefault = data.isDefault;
   }
 
   /** GET /roles/{id}/users でロールに紐ついているユーザーを取得 */
@@ -117,6 +123,7 @@ export class Role {
       name: this.name,
       description: this.description,
       permission_bitmask: this.permissionBitmask,
+      is_default: this.isDefault,
     };
     const response = await apiPut(`/roles/${this.id}`, body);
     if (!response.ok) {
@@ -144,6 +151,7 @@ export class Role {
       name: this.name,
       description: this.description,
       permissionBitmask: this.permissionBitmask,
+      isDefault: this.isDefault,
     };
   }
 
@@ -198,6 +206,7 @@ export class Role {
         case 403:
           throw AuthorizationErrors.AccessDenied;
         default:
+          console.log("Role creation failed:", await response.text());
           throw ResourceApiErrors.ResourceCreationFailed;
       }
     }
