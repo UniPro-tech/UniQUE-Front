@@ -57,6 +57,9 @@ export default function ConsentCard(props: {
         [theme.breakpoints.up("sm")]: {
           width: "600px",
         },
+        [theme.breakpoints.down("sm")]: {
+          padding: theme.spacing(2),
+        },
       })}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
