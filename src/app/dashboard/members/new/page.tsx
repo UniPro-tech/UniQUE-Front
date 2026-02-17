@@ -1,4 +1,6 @@
 import MemberCreateForm from "@/components/Forms/MemberCreateForm";
+import { requirePermission } from "@/lib/permissions";
+import { PermissionBitsFields } from "@/types/Permission";
 import { Stack, Typography, Breadcrumbs, Link } from "@mui/material";
 
 export const metadata = {
@@ -7,6 +9,7 @@ export const metadata = {
 };
 
 export default async function Page() {
+  requirePermission(PermissionBitsFields.USER_CREATE);
   return (
     <Stack spacing={3}>
       <Breadcrumbs aria-label="breadcrumb">
