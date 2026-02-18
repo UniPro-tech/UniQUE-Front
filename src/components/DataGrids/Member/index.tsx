@@ -77,6 +77,8 @@ export default function MembersDataGrid({
   const [approvedUser, setApprovedUser] = React.useState<UserDTO | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deletedUserId, setDeletedUserId] = React.useState<null | string>(null);
+  const [rejectDialogOpen, setRejectDialogOpen] = React.useState(false);
+  const [rejectUserId, setRejectUserId] = React.useState<null | string>(null);
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -117,41 +119,9 @@ export default function MembersDataGrid({
                     key={"reject"}
                     icon={<DeleteIcon />}
                     label="Reject"
-                    onClick={async () => {
-                      const uid = String(id);
-                      if (
-                        !confirm(
-                          "この申請を却下しますか？ この操作はユーザーを削除します。",
-                        )
-                      )
-                        return;
-                      try {
-                        const res = await apiPost(
-                          `/users/${encodeURIComponent(uid)}/reject`,
-                        );
-                        if (!res.ok) {
-                          const text = await res.text();
-                          enqueueSnackbar(
-                            `却下に失敗しました: ${res.status} ${text}`,
-                            { variant: "error" },
-                          );
-                          return;
-                        }
-                        setLocalRows((prev) =>
-                          prev.filter((r) => String(r.id) !== uid),
-                        );
-                        apiRef.current?.updateRows([
-                          { id: uid, _action: "delete" },
-                        ]);
-                        enqueueSnackbar("申請を却下しました", {
-                          variant: "success",
-                        });
-                      } catch (err) {
-                        console.error("Reject failed:", err);
-                        enqueueSnackbar("却下中にエラーが発生しました", {
-                          variant: "error",
-                        });
-                      }
+                    onClick={() => {
+                      setRejectUserId(String(id));
+                      setRejectDialogOpen(true);
                     }}
                   />,
                 ];
@@ -351,6 +321,46 @@ export default function MembersDataGrid({
     }
   };
 
+  const handleReject = async (
+    _prevState: FormStatus | null,
+    _formData: FormData | null,
+  ) => {
+    void _prevState;
+    void _formData;
+    try {
+      if (!rejectUserId) {
+        return {
+          status: "error",
+          message: "却下対象が選択されていません",
+        } as FormStatus;
+      }
+
+      const res = await apiPost(
+        `/users/${encodeURIComponent(rejectUserId)}/reject`,
+      );
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Reject failed:", res.status, text);
+        return {
+          status: "error",
+          message: `却下に失敗しました: ${res.status}`,
+        } as FormStatus;
+      }
+
+      setLocalRows((prev) => prev.filter((r) => String(r.id) !== rejectUserId));
+      apiRef.current?.updateRows([{ id: rejectUserId, _action: "delete" }]);
+      setRejectUserId(null);
+      setRejectDialogOpen(false);
+      return { status: "success", message: "申請を却下しました" } as FormStatus;
+    } catch (err) {
+      console.error("Reject error:", err);
+      return {
+        status: "error",
+        message: "却下中にエラーが発生しました",
+      } as FormStatus;
+    }
+  };
+
   const processRowUpdate = React.useCallback<
     NonNullable<DataGridProps["processRowUpdate"]>
   >((newRow, oldRow) => {
@@ -500,6 +510,12 @@ export default function MembersDataGrid({
         open={approveDialogOpen}
         handleClose={() => setApproveDialogOpen(false)}
         user={approvedUser}
+      />
+      <DeleteDialog
+        open={rejectDialogOpen}
+        dataAction={handleReject}
+        handleClose={() => setRejectDialogOpen(false)}
+        title="申請"
       />
       {canDelete && (
         <DeleteDialog
