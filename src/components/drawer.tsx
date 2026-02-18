@@ -135,14 +135,9 @@ export default function MiniDrawer({
    */
   const hasPermission = (requiredFlag: bigint): boolean => {
     return (
-      userRoles?.some((role) => {
-        console.log(
-          "Check Type:",
-          typeof role.permissionBitmask,
-          role.permissionBitmask,
-        );
-        return (role.permissionBitmask & requiredFlag) !== 0n;
-      }) ?? false
+      userRoles?.some(
+        (role) => (role.permissionBitmask & requiredFlag) !== 0n,
+      ) ?? false
     );
   };
 
