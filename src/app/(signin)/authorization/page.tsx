@@ -13,10 +13,11 @@ export default async function Page({
 }: {
   searchParams: Promise<{
     auth_request_id?: string;
+    error?: string;
   }>;
 }) {
   const params = await searchParams;
-  const { auth_request_id } = params;
+  const { auth_request_id, error } = params;
 
   const session = await (await Session.get())?.convertPlain();
   if (!session) {
@@ -25,6 +26,21 @@ export default async function Page({
     redirect(
       `/signin?redirect=${encodeURIComponent(recirectpath)}`,
       RedirectType.replace,
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <main style={{ padding: 24 }}>
+          <h1>Authorization Error</h1>
+          <p>
+            {error == "forbidden_scope"
+              ? "このスコープに対する認可を行う権限がありません。"
+              : error}
+          </p>
+        </main>
+      </>
     );
   }
 
