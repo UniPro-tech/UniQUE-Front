@@ -16,6 +16,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import CampaignIcon from "@mui/icons-material/Campaign";
 import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
@@ -151,6 +152,11 @@ export default function MiniDrawer({
   const NAVIGSTION_LINKS: NavLink[][] = [
     [
       { text: "ダッシュボード", href: "/dashboard", icon: <HomeIcon /> },
+      {
+        text: "アナウンス",
+        href: "/dashboard/announcements",
+        icon: <CampaignIcon />,
+      },
       {
         text: "メンバー管理",
         href: "/dashboard/members",
