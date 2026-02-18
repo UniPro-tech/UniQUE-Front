@@ -7,7 +7,7 @@
 }
 
 .markdown > * + * {
-  @apply mt-0 mb-6;
+  @apply mt-0;
 }
 
 .markdown li + li {
@@ -63,7 +63,7 @@
 }
 
 .markdown pre {
-  @apply bg-gray-900 rounded-lg p-4 mb-6 overflow-x-auto;
+  @apply bg-gray-900 rounded-lg p-4 overflow-x-auto;
 }
 
 .markdown pre code {
@@ -71,11 +71,11 @@
 }
 
 .markdown ul {
-  @apply list-disc pl-6 mb-6 space-y-2 text-gray-700;
+  @apply list-disc pl-6 space-y-1 text-gray-700;
 }
 
 .markdown ol {
-  @apply list-decimal pl-6 mb-6 space-y-2 text-gray-700;
+  @apply list-decimal pl-6 space-y-1 text-gray-700;
 }
 
 .markdown kbd {
@@ -83,7 +83,7 @@
 }
 
 .markdown table {
-  @apply w-full border-collapse mb-6;
+  @apply w-full border-collapse;
 }
 
 .markdown th {
