@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import {
   Button,
   Dialog,
@@ -9,9 +10,21 @@ import {
   TextField,
   Snackbar,
   Alert,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Avatar,
+  Stack,
+  Divider,
+  Chip,
+  Box,
+  Typography,
 } from "@mui/material";
-import Link from "next/link";
-// Server-side proxy routes will be used to avoid CORS.
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PushPinIcon from "@mui/icons-material/PushPin";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export type AnnouncementDTO = {
   id: string;
@@ -22,17 +35,21 @@ export type AnnouncementDTO = {
   isPinned?: boolean;
 };
 
+type Props = {
+  initial?: AnnouncementDTO[];
+  canUpdate?: boolean;
+  canPin?: boolean;
+  canDelete?: boolean;
+  isAdmin?: boolean;
+};
+
 export default function AnnouncementsList({
   initial,
   canUpdate = false,
   canPin = false,
   canDelete = false,
-}: {
-  initial?: AnnouncementDTO[];
-  canUpdate?: boolean;
-  canPin?: boolean;
-  canDelete?: boolean;
-}) {
+  isAdmin = false,
+}: Props) {
   const [items, setItems] = React.useState<AnnouncementDTO[]>(
     () => initial || [],
   );
@@ -157,74 +174,112 @@ export default function AnnouncementsList({
   };
 
   if (!items || items.length === 0) {
-    return <div>お知らせはありません</div>;
+    return (
+      <Box textAlign="center" py={6}>
+        <Typography variant="h6">お知らせはありません</Typography>
+        <Typography variant="body2" color="text.secondary">
+          新しいお知らせが追加されるとここに表示されます。
+        </Typography>
+      </Box>
+    );
   }
 
-  return (
-    <div>
-      <ul style={{ padding: 0, listStyle: "none" }}>
-        {items.map((a) => (
-          <li
-            key={a.id}
-            style={{ border: "1px solid #ddd", padding: 12, marginBottom: 8 }}
-          >
-            <h3 style={{ margin: 0 }}>
-              {a.title} {a.isPinned ? "📌" : null}
-            </h3>
-            <div style={{ fontSize: 12, color: "#666" }}>
-              作成者: {a.createdBy || "system"} •{" "}
-              {new Date(a.createdAt).toLocaleString()}
-            </div>
-            <p style={{ whiteSpace: "pre-wrap" }}>{a.content}</p>
+  const effectiveCanUpdate = !!isAdmin || canUpdate;
+  const effectiveCanPin = !!isAdmin || canPin;
+  const effectiveCanDelete = !!isAdmin || canDelete;
 
-            <div style={{ display: "flex", gap: 8 }}>
-              <Link
-                href={`/dashboard/announcements/${a.id}`}
-                style={{ textDecoration: "none" }}
-              >
-                <Button variant="outlined" size="small" disabled={!!busy[a.id]}>
-                  詳細を表示
-                </Button>
-              </Link>
-              {canUpdate && (
+  return (
+    <>
+      <Box
+        sx={{
+          display: "grid",
+          gap: 16,
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+        }}
+      >
+        {items.map((a) => (
+          <Box key={a.id}>
+            <Card variant="outlined">
+              <CardHeader
+                avatar={<Avatar aria-label="announcement">A</Avatar>}
+                title={
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography variant="h6" component="div">
+                      {a.title}
+                    </Typography>
+                    {a.isPinned && (
+                      <Chip label="ピン" size="small" color="primary" />
+                    )}
+                  </Stack>
+                }
+                subheader={`作成者: ${a.createdBy || "system"} ・ ${new Date(a.createdAt).toLocaleString()}`}
+              />
+              <CardContent>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  component="div"
+                  sx={{ whiteSpace: "pre-wrap" }}
+                >
+                  {a.content}
+                </Typography>
+              </CardContent>
+              <Divider />
+              <CardActions>
                 <Link
-                  href={`/dashboard/announcements/${a.id}/edit`}
+                  href={`/dashboard/announcements/${a.id}`}
                   style={{ textDecoration: "none" }}
                 >
                   <Button
-                    variant="outlined"
+                    startIcon={<VisibilityIcon />}
                     size="small"
                     disabled={!!busy[a.id]}
                   >
-                    編集
+                    詳細
                   </Button>
                 </Link>
-              )}
-              {canDelete && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  color="error"
-                  onClick={() => confirmDelete(a.id)}
-                  disabled={!!busy[a.id]}
-                >
-                  削除
-                </Button>
-              )}
-              {canPin && (
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => handlePin(a.id, !a.isPinned)}
-                  disabled={!!busy[a.id]}
-                >
-                  {a.isPinned ? "ピン外し" : "ピン"}
-                </Button>
-              )}
-            </div>
-          </li>
+                {effectiveCanUpdate && (
+                  <Link
+                    href={`/dashboard/announcements/${a.id}/edit`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Button
+                      startIcon={<EditIcon />}
+                      size="small"
+                      disabled={!!busy[a.id]}
+                    >
+                      編集
+                    </Button>
+                  </Link>
+                )}
+                {effectiveCanDelete && (
+                  <Button
+                    startIcon={<DeleteIcon />}
+                    size="small"
+                    color="error"
+                    onClick={() => confirmDelete(a.id)}
+                    disabled={!!busy[a.id]}
+                  >
+                    削除
+                  </Button>
+                )}
+                {effectiveCanPin && (
+                  <Button
+                    startIcon={<PushPinIcon />}
+                    size="small"
+                    variant={a.isPinned ? "contained" : "outlined"}
+                    onClick={() => handlePin(a.id, !a.isPinned)}
+                    disabled={!!busy[a.id]}
+                  >
+                    {a.isPinned ? "ピン外し" : "ピン"}
+                  </Button>
+                )}
+              </CardActions>
+            </Card>
+          </Box>
         ))}
-      </ul>
+      </Box>
+
       <Dialog
         open={editDialogOpen}
         onClose={cancelEdit}
@@ -296,6 +351,6 @@ export default function AnnouncementsList({
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </div>
+    </>
   );
 }

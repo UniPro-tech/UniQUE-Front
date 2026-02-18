@@ -27,7 +27,7 @@ export default async function Page() {
         <Stack>
           <Typography variant="h5">アナウンス一覧</Typography>
           <Typography variant="body2" color="text.secondary">
-            アナウンスの一覧です。。
+            アナウンスの一覧です。
           </Typography>
         </Stack>
         {canCreate && (
