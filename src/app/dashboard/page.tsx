@@ -40,7 +40,7 @@ export default async function DashboardPage() {
           </Link>
         </Stack>
         <Box>
-          <AnnouncementsList initial={anns} isAdmin={false} />
+          <AnnouncementsList initial={anns} canUpdate={false} />
         </Box>
         <div
           style={{ display: "flex", justifyContent: "center", marginTop: 8 }}

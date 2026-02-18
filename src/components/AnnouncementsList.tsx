@@ -24,10 +24,14 @@ export type AnnouncementDTO = {
 
 export default function AnnouncementsList({
   initial,
-  isAdmin = false,
+  canUpdate = false,
+  canPin = false,
+  canDelete = false,
 }: {
   initial?: AnnouncementDTO[];
-  isAdmin?: boolean;
+  canUpdate?: boolean;
+  canPin?: boolean;
+  canDelete?: boolean;
 }) {
   const [items, setItems] = React.useState<AnnouncementDTO[]>(
     () => initial || [],
@@ -173,20 +177,16 @@ export default function AnnouncementsList({
             </div>
             <p style={{ whiteSpace: "pre-wrap" }}>{a.content}</p>
 
-            {isAdmin && (
-              <div style={{ display: "flex", gap: 8 }}>
-                <Link
-                  href={`/dashboard/announcements/${a.id}`}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    disabled={!!busy[a.id]}
-                  >
-                    詳細を表示
-                  </Button>
-                </Link>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Link
+                href={`/dashboard/announcements/${a.id}`}
+                style={{ textDecoration: "none" }}
+              >
+                <Button variant="outlined" size="small" disabled={!!busy[a.id]}>
+                  詳細を表示
+                </Button>
+              </Link>
+              {canUpdate && (
                 <Link
                   href={`/dashboard/announcements/${a.id}/edit`}
                   style={{ textDecoration: "none" }}
@@ -199,6 +199,8 @@ export default function AnnouncementsList({
                     編集
                   </Button>
                 </Link>
+              )}
+              {canDelete && (
                 <Button
                   variant="outlined"
                   size="small"
@@ -208,6 +210,8 @@ export default function AnnouncementsList({
                 >
                   削除
                 </Button>
+              )}
+              {canPin && (
                 <Button
                   variant="contained"
                   size="small"
@@ -216,8 +220,8 @@ export default function AnnouncementsList({
                 >
                   {a.isPinned ? "ピン外し" : "ピン"}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </li>
         ))}
       </ul>

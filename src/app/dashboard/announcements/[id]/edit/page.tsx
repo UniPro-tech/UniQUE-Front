@@ -1,6 +1,9 @@
 import Announcement from "@/types/Announcement";
 import AnnouncementEditForm from "@/components/Forms/AnnouncementEditForm";
 import { Stack, Typography } from "@mui/material";
+import { hasPermission } from "@/lib/permissions";
+import { PermissionBitsFields } from "@/types/Permission";
+import { forbidden } from "next/navigation";
 
 export const metadata = {
   title: "お知らせ編集",
@@ -13,6 +16,8 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const canEdit = await hasPermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE);
+  if (!canEdit) return forbidden();
   const ann = await Announcement.getById(id);
   const a = ann.toPlainObject();
 

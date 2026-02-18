@@ -4,6 +4,8 @@ import Announcement from "@/types/Announcement";
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
+import { hasPermission } from "@/lib/permissions";
+import { PermissionBitsFields } from "@/types/Permission";
 
 export const metadata = {
   title: "アナウンス詳細",
@@ -37,6 +39,8 @@ export default async function Page({
     snacks.push({ message: `エラー: ${error}`, variant: "error" });
   }
 
+  const canEdit = await hasPermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE);
+
   return (
     <Stack spacing={3}>
       <TemporarySnackProvider snacks={snacks} />
@@ -49,12 +53,14 @@ export default async function Page({
           >
             <Button variant="outlined">一覧へ戻る</Button>
           </Link>
-          <Link
-            href={`/dashboard/announcements/${a.id}/edit`}
-            style={{ textDecoration: "none", marginLeft: 8 }}
-          >
-            <Button variant="contained">編集</Button>
-          </Link>
+          {canEdit && (
+            <Link
+              href={`/dashboard/announcements/${a.id}/edit`}
+              style={{ textDecoration: "none", marginLeft: 8 }}
+            >
+              <Button variant="contained">編集</Button>
+            </Link>
+          )}
         </Box>
       </Stack>
 
