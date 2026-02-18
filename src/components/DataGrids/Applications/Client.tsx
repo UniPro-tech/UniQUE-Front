@@ -13,7 +13,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { Application } from "@/types/Application";
 import { deleteApplicationById } from "@/app/dashboard/applications/delete-action";
 import type { ApplicationWithOwner } from "@/types/Application";
 import { redirect, RedirectType } from "next/navigation";
