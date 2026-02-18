@@ -6,6 +6,8 @@ import TemporarySnackProvider, {
 } from "@/components/TemporarySnackProvider";
 import { hasPermission } from "@/lib/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export const metadata = {
   title: "アナウンス詳細",
@@ -65,13 +67,17 @@ export default async function Page({
       </Stack>
 
       <Box>
-        <Typography variant="h6">{a.title}</Typography>
+        <Typography variant="h5">{a.title}</Typography>
         <Typography variant="caption" color="text.secondary">
           作成者: {a.createdBy || "system"} •{" "}
           {new Date(a.createdAt).toLocaleString()}
         </Typography>
         <Box mt={2} style={{ whiteSpace: "pre-wrap" }}>
-          {a.content}
+          <div className="markdown">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {a.content}
+            </ReactMarkdown>
+          </div>
         </Box>
       </Box>
     </Stack>

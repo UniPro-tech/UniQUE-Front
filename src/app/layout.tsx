@@ -3,6 +3,8 @@ import BirthdateGuard from "@/components/BirthdateGuard";
 import Session from "@/types/Session";
 import { generateCSRFToken } from "@/lib/CSRF";
 
+import "./globals.css";
+
 export const metadata: Metadata = {
   title: {
     default: "UniQUE - デジタル創作サークルUniProject メンバーズポータル",
