@@ -199,106 +199,113 @@ export default function AnnouncementsList({
           gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
         }}
       >
-        {items.map((a) => (
-          <Box key={a.id}>
-            <Card variant="outlined">
-              <CardHeader
-                avatar={
-                  <Avatar
-                    aria-label={
-                      a.createdBy?.profile?.displayName ||
-                      a.createdBy?.customId ||
-                      a.createdBy?.id ||
-                      "system"
-                    }
+        {items.map((a) => {
+          const preview =
+            a.content && a.content.length > 200
+              ? a.content.slice(0, 200) + "…"
+              : a.content;
+
+          return (
+            <Box key={a.id}>
+              <Card variant="outlined">
+                <CardHeader
+                  avatar={
+                    <Avatar
+                      aria-label={
+                        a.createdBy?.profile?.displayName ||
+                        a.createdBy?.customId ||
+                        a.createdBy?.id ||
+                        "system"
+                      }
+                    >
+                      {a.createdBy?.profile?.displayName?.[0] ||
+                        a.createdBy?.customId?.[0] ||
+                        a.createdBy?.id?.[0] ||
+                        "S"}
+                    </Avatar>
+                  }
+                  title={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography variant="h6" component="div">
+                        {a.title}
+                      </Typography>
+                      {a.isPinned && (
+                        <Chip label="ピン" size="small" color="primary" />
+                      )}
+                    </Stack>
+                  }
+                  subheader={`作成者: ${
+                    a.createdBy?.profile?.displayName ||
+                    a.createdBy?.customId ||
+                    a.createdBy?.id ||
+                    "system"
+                  } ・ ${new Date(a.createdAt).toLocaleString()}`}
+                />
+                <CardContent>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    component="div"
+                    sx={{ whiteSpace: "pre-wrap" }}
                   >
-                    {a.createdBy?.profile?.displayName?.[0] ||
-                      a.createdBy?.customId?.[0] ||
-                      a.createdBy?.id?.[0] ||
-                      "S"}
-                  </Avatar>
-                }
-                title={
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="h6" component="div">
-                      {a.title}
-                    </Typography>
-                    {a.isPinned && (
-                      <Chip label="ピン" size="small" color="primary" />
-                    )}
-                  </Stack>
-                }
-                subheader={`作成者: ${
-                  a.createdBy?.profile?.displayName ||
-                  a.createdBy?.customId ||
-                  a.createdBy?.id ||
-                  "system"
-                } ・ ${new Date(a.createdAt).toLocaleString()}`}
-              />
-              <CardContent>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  component="div"
-                  sx={{ whiteSpace: "pre-wrap" }}
-                >
-                  {a.content}
-                </Typography>
-              </CardContent>
-              <Divider />
-              <CardActions>
-                <Link
-                  href={`/dashboard/announcements/${a.id}`}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Button
-                    startIcon={<VisibilityIcon />}
-                    size="small"
-                    disabled={!!busy[a.id]}
-                  >
-                    詳細
-                  </Button>
-                </Link>
-                {effectiveCanUpdate && (
+                    {preview}
+                  </Typography>
+                </CardContent>
+                <Divider />
+                <CardActions>
                   <Link
-                    href={`/dashboard/announcements/${a.id}/edit`}
+                    href={`/dashboard/announcements/${a.id}`}
                     style={{ textDecoration: "none" }}
                   >
                     <Button
-                      startIcon={<EditIcon />}
+                      startIcon={<VisibilityIcon />}
                       size="small"
                       disabled={!!busy[a.id]}
                     >
-                      編集
+                      詳細
                     </Button>
                   </Link>
-                )}
-                {effectiveCanDelete && (
-                  <Button
-                    startIcon={<DeleteIcon />}
-                    size="small"
-                    color="error"
-                    onClick={() => confirmDelete(a.id)}
-                    disabled={!!busy[a.id]}
-                  >
-                    削除
-                  </Button>
-                )}
-                {effectiveCanPin && (
-                  <Button
-                    startIcon={<PushPinIcon />}
-                    size="small"
-                    variant={a.isPinned ? "contained" : "outlined"}
-                    onClick={() => handlePin(a.id, !a.isPinned)}
-                    disabled={!!busy[a.id]}
-                  >
-                    {a.isPinned ? "ピン外し" : "ピン"}
-                  </Button>
-                )}
-              </CardActions>
-            </Card>
-          </Box>
-        ))}
+                  {effectiveCanUpdate && (
+                    <Link
+                      href={`/dashboard/announcements/${a.id}/edit`}
+                      style={{ textDecoration: "none" }}
+                    >
+                      <Button
+                        startIcon={<EditIcon />}
+                        size="small"
+                        disabled={!!busy[a.id]}
+                      >
+                        編集
+                      </Button>
+                    </Link>
+                  )}
+                  {effectiveCanDelete && (
+                    <Button
+                      startIcon={<DeleteIcon />}
+                      size="small"
+                      color="error"
+                      onClick={() => confirmDelete(a.id)}
+                      disabled={!!busy[a.id]}
+                    >
+                      削除
+                    </Button>
+                  )}
+                  {effectiveCanPin && (
+                    <Button
+                      startIcon={<PushPinIcon />}
+                      size="small"
+                      variant={a.isPinned ? "contained" : "outlined"}
+                      onClick={() => handlePin(a.id, !a.isPinned)}
+                      disabled={!!busy[a.id]}
+                    >
+                      {a.isPinned ? "ピン外し" : "ピン"}
+                    </Button>
+                  )}
+                </CardActions>
+              </Card>
+            </Box>
+          );
+        })}
       </Box>
 
       <Dialog
