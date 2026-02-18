@@ -20,7 +20,6 @@ import { jaJP } from "@mui/x-data-grid/locales";
 import type { UserDTO } from "@/types/User";
 import { enqueueSnackbar } from "notistack";
 import { saveUser } from "@/lib/resources/Users";
-import { apiPost } from "@/lib/apiClient";
 import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
 import {
   USER_STATUS_OPTIONS,
@@ -28,6 +27,7 @@ import {
 } from "@/lib/constants/UserConstants";
 import { useRouter } from "next/navigation";
 import DeleteDialog from "@/components/Dialogs/Delete";
+import RejectDialog from "@/components/Dialogs/Reject";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { deleteUserById } from "@/app/dashboard/members/delete-action";
 
@@ -43,6 +43,10 @@ export default function MembersDataGrid({
   canDelete?: boolean;
   canUpdate?: boolean;
   canRead?: boolean;
+  rejectAction?: (
+    _prevState: FormStatus | null,
+    formData: FormData | null,
+  ) => FormStatus | null | Promise<FormStatus | null>;
 }) {
   const apiRef = useGridApiRef();
   const router = useRouter();
@@ -78,7 +82,7 @@ export default function MembersDataGrid({
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deletedUserId, setDeletedUserId] = React.useState<null | string>(null);
   const [rejectDialogOpen, setRejectDialogOpen] = React.useState(false);
-  const [rejectUserId, setRejectUserId] = React.useState<null | string>(null);
+  const [rejectUser, setRejectUser] = React.useState<UserDTO | null>(null);
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -120,7 +124,10 @@ export default function MembersDataGrid({
                     icon={<DeleteIcon />}
                     label="Reject"
                     onClick={() => {
-                      setRejectUserId(String(id));
+                      setRejectUser(
+                        localRows.find((u) => String(u.id) === String(id)) ||
+                          null,
+                      );
                       setRejectDialogOpen(true);
                     }}
                   />,
@@ -321,46 +328,6 @@ export default function MembersDataGrid({
     }
   };
 
-  const handleReject = async (
-    _prevState: FormStatus | null,
-    _formData: FormData | null,
-  ) => {
-    void _prevState;
-    void _formData;
-    try {
-      if (!rejectUserId) {
-        return {
-          status: "error",
-          message: "却下対象が選択されていません",
-        } as FormStatus;
-      }
-
-      const res = await apiPost(
-        `/users/${encodeURIComponent(rejectUserId)}/reject`,
-      );
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Reject failed:", res.status, text);
-        return {
-          status: "error",
-          message: `却下に失敗しました: ${res.status}`,
-        } as FormStatus;
-      }
-
-      setLocalRows((prev) => prev.filter((r) => String(r.id) !== rejectUserId));
-      apiRef.current?.updateRows([{ id: rejectUserId, _action: "delete" }]);
-      setRejectUserId(null);
-      setRejectDialogOpen(false);
-      return { status: "success", message: "申請を却下しました" } as FormStatus;
-    } catch (err) {
-      console.error("Reject error:", err);
-      return {
-        status: "error",
-        message: "却下中にエラーが発生しました",
-      } as FormStatus;
-    }
-  };
-
   const processRowUpdate = React.useCallback<
     NonNullable<DataGridProps["processRowUpdate"]>
   >((newRow, oldRow) => {
@@ -511,11 +478,10 @@ export default function MembersDataGrid({
         handleClose={() => setApproveDialogOpen(false)}
         user={approvedUser}
       />
-      <DeleteDialog
+      <RejectDialog
         open={rejectDialogOpen}
-        dataAction={handleReject}
+        user={rejectUser}
         handleClose={() => setRejectDialogOpen(false)}
-        title="申請"
       />
       {canDelete && (
         <DeleteDialog

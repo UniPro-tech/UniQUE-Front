@@ -1,6 +1,7 @@
 import { getUsersList } from "@/lib/resources/Users";
 import { Stack, Typography } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
+import { rejectRegistApplyAction } from "@/components/Dialogs/actions/rejectRegistApplyAction";
 import { requirePermission } from "@/lib/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
 import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
@@ -29,7 +30,11 @@ export default async function Page() {
         <Typography variant="h5">メンバー申請一覧</Typography>
         <Typography variant="body1">メンバー申請一覧です。</Typography>
       </Stack>
-      <MembersDataGrid rows={rows} beforeJoined />
+      <MembersDataGrid
+        rows={rows}
+        beforeJoined
+        rejectAction={rejectRegistApplyAction}
+      />
     </Stack>
   );
 }
