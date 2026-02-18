@@ -6,7 +6,7 @@ export interface UpdateRoleFormData {
   customId: string;
   name: string;
   description: string;
-  permissionBitmask: number;
+  permissionBitmask: bigint;
   isDefault?: boolean;
 }
 
@@ -21,9 +21,9 @@ export async function updateRole(
     role.name = data.name;
     role.description = data.description;
     role.permissionBitmask = data.permissionBitmask;
-      if (typeof data.isDefault !== "undefined") {
-        role.isDefault = data.isDefault;
-      }
+    if (typeof data.isDefault !== "undefined") {
+      role.isDefault = data.isDefault;
+    }
 
     await role.save();
 

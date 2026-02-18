@@ -1,6 +1,5 @@
 "use server";
 import Session from "@/types/Session";
-import { PermissionBitsFields } from "@/types/Permission";
 import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
 import type { RoleDTO } from "@/types/Role";
 
@@ -30,11 +29,17 @@ export async function getCurrentUserRoles(): Promise<RoleDTO[]> {
  * @returns 権限があればtrue、なければfalse
  */
 export async function hasPermission(
-  requiredFlag: PermissionBitsFields,
+  requiredFlag: bigint,
   userRoles?: RoleDTO[],
 ): Promise<boolean> {
   const roles = userRoles ?? (await getCurrentUserRoles());
-  return roles.some((role) => (role.permissionBitmask ?? 0) & requiredFlag);
+  return roles.some((role) => {
+    const bitmask =
+      role.permissionBitmask !== undefined
+        ? BigInt(role.permissionBitmask)
+        : 0n;
+    return (bitmask & requiredFlag) !== 0n;
+  });
 }
 
 /**
@@ -43,7 +48,7 @@ export async function hasPermission(
  * @param userRoles - ユーザーのロール一覧（省略時は自動取得）
  */
 export async function requirePermission(
-  requiredFlag: PermissionBitsFields,
+  requiredFlag: bigint,
   userRoles?: RoleDTO[],
 ): Promise<void> {
   const hasPerm = await hasPermission(requiredFlag, userRoles);

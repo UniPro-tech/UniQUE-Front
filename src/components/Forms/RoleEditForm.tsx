@@ -22,58 +22,18 @@ import {
 } from "@/app/dashboard/roles/[id]/action";
 import { PermissionBitsFields, PermissionTexts } from "@/types/Permission";
 import type { PlainRole } from "@/types/Role";
+import { PermissionGroups } from "./PermissionGroups";
 
 interface RoleEditFormProps {
   role: PlainRole;
 }
-
-// 権限のグループ化
-const permissionGroups = [
-  {
-    title: "ユーザー管理",
-    permissions: [
-      PermissionBitsFields.USER_READ,
-      PermissionBitsFields.USER_CREATE,
-      PermissionBitsFields.USER_UPDATE,
-      PermissionBitsFields.USER_DELETE,
-      PermissionBitsFields.USER_DISABLE,
-    ],
-  },
-  {
-    title: "アプリケーション管理",
-    permissions: [
-      PermissionBitsFields.APP_READ,
-      PermissionBitsFields.APP_UPDATE,
-      PermissionBitsFields.APP_DELETE,
-      PermissionBitsFields.APP_SECRET_ROTATE,
-    ],
-  },
-  {
-    title: "システム管理",
-    permissions: [
-      PermissionBitsFields.TOKEN_REVOKE,
-      PermissionBitsFields.AUDIT_READ,
-      PermissionBitsFields.CONFIG_UPDATE,
-      PermissionBitsFields.KEY_MANAGE,
-    ],
-  },
-  {
-    title: "RBAC・セキュリティ",
-    permissions: [
-      PermissionBitsFields.ROLE_MANAGE,
-      PermissionBitsFields.PERMISSION_MANAGE,
-      PermissionBitsFields.SESSION_MANAGE,
-      PermissionBitsFields.MFA_MANAGE,
-    ],
-  },
-];
 
 export default function RoleEditForm({ role }: RoleEditFormProps) {
   const [formData, setFormData] = useState<UpdateRoleFormData>({
     customId: role.customId || "",
     name: role.name || "",
     description: role.description || "",
-    permissionBitmask: role.permissionBitmask || 0,
+    permissionBitmask: role.permissionBitmask || 0n,
     isDefault: role.isDefault || false,
   });
 
@@ -87,23 +47,30 @@ export default function RoleEditForm({ role }: RoleEditFormProps) {
     setSuccess(false);
   };
 
-  const handlePermissionToggle = (permission: PermissionBitsFields) => {
+  const handlePermissionToggle = (permission: bigint) => {
     setFormData((prev) => ({
       ...prev,
-      permissionBitmask: prev.permissionBitmask ^ permission,
+      permissionBitmask: BigInt(prev.permissionBitmask) ^ permission,
     }));
     setSuccess(false);
   };
 
-  const isPermissionChecked = (permission: PermissionBitsFields) => {
-    return (formData.permissionBitmask & permission) !== 0;
+  const isPermissionChecked = (permission: bigint) => {
+    return (formData.permissionBitmask & permission) !== 0n;
   };
 
-  const getPermissionName = (permission: PermissionBitsFields): string => {
-    const key = PermissionBitsFields[
-      permission
-    ] as keyof typeof PermissionTexts;
-    return PermissionTexts[key] || "不明な権限";
+  const getPermissionName = (permission: bigint): string => {
+    // PermissionBitsFieldsの値から対応するPermissionTextsのキーを取得
+    // PermissionBitsFieldsはconstのオブジェクト
+    const key = Object.keys(PermissionBitsFields).find(
+      (k) =>
+        PermissionBitsFields[k as keyof typeof PermissionBitsFields] ===
+        permission,
+    );
+    return key
+      ? PermissionTexts[key as keyof typeof PermissionTexts]
+      : "不明な権限";
+    // return PermissionTexts[permission as keyof typeof PermissionTexts] || "不明な権限"; --- IGNORE ---
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -219,7 +186,7 @@ export default function RoleEditForm({ role }: RoleEditFormProps) {
               このロールに付与する権限を選択してください
             </Typography>
 
-            {permissionGroups.map((group) => (
+            {PermissionGroups.map((group) => (
               <Box key={group.title} sx={{ mb: 2 }}>
                 <Typography
                   variant="subtitle2"

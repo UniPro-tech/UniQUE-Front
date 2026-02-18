@@ -132,9 +132,16 @@ export default function MiniDrawer({
    * 権限チェックヘルパー関数
    * 複数の権限幅を持つロールの場合、オブジェクトで渡して（OR結合で）チェック
    */
-  const hasPermission = (requiredFlag: number): boolean => {
+  const hasPermission = (requiredFlag: bigint): boolean => {
     return (
-      userRoles?.some((role) => role.permissionBitmask & requiredFlag) ?? false
+      userRoles?.some((role) => {
+        console.log(
+          "Check Type:",
+          typeof role.permissionBitmask,
+          role.permissionBitmask,
+        );
+        return (role.permissionBitmask & requiredFlag) !== 0n;
+      }) ?? false
     );
   };
 

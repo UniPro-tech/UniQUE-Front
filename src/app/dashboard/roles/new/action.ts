@@ -7,7 +7,7 @@ export interface CreateRoleFormData {
   customId: string;
   name: string;
   description: string;
-  permissionBitmask: number;
+  permissionBitmask: bigint;
   isDefault?: boolean;
   assignExisting?: boolean;
 }

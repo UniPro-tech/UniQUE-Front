@@ -17,16 +17,16 @@ export default function PermissionsPanelClient({
   permissionBitmask,
 }: {
   role: PlainRole;
-  permissionBitmask: number;
+  permissionBitmask: bigint;
 }) {
-  const [bits, setBits] = useState<number>(permissionBitmask ?? 0);
+  const [bits, setBits] = useState<bigint>(permissionBitmask ?? 0n);
 
   const names = Object.keys(PermissionBitsFields).filter((k) =>
     isNaN(Number(k)),
   );
 
   const handleToggle =
-    (bit: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (bit: bigint) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
       setBits((prev) => (checked ? prev | bit : prev & ~bit));
     };
@@ -53,7 +53,7 @@ export default function PermissionsPanelClient({
         }}
       >
         {names.map((name) => {
-          const bit = (PermissionBitsFields as never)[name] as number;
+          const bit = (PermissionBitsFields as never)[name] as bigint;
           const label = (PermissionTexts as never)[name] ?? name;
           const checked = (bits & bit) === bit;
           return (

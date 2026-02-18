@@ -82,24 +82,27 @@ export const apiFetch = async (path: string, init: RequestInit = {}) => {
 export const apiGet = (path: string, init?: RequestInit) =>
   apiFetch(path, { method: "GET", ...init });
 
+const jsonStringifySafe = (obj: any) =>
+  JSON.stringify(obj, (_k, v) => (typeof v === "bigint" ? Number(v) : v));
+
 export const apiPost = (path: string, body?: any, init?: RequestInit) =>
   apiFetch(path, {
     method: "POST",
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? jsonStringifySafe(body) : undefined,
     ...init,
   });
 
 export const apiPut = (path: string, body?: any, init?: RequestInit) =>
   apiFetch(path, {
     method: "PUT",
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? jsonStringifySafe(body) : undefined,
     ...init,
   });
 
 export const apiPatch = (path: string, body?: any, init?: RequestInit) =>
   apiFetch(path, {
     method: "PATCH",
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? jsonStringifySafe(body) : undefined,
     ...init,
   });
 
@@ -134,19 +137,19 @@ export const createApiClient = (base?: string) => {
     post: (path: string, body?: any, init?: RequestInit) =>
       apiFetchWithBase(path, {
         method: "POST",
-        body: body ? JSON.stringify(body) : undefined,
+        body: body ? jsonStringifySafe(body) : undefined,
         ...init,
       }),
     put: (path: string, body?: any, init?: RequestInit) =>
       apiFetchWithBase(path, {
         method: "PUT",
-        body: body ? JSON.stringify(body) : undefined,
+        body: body ? jsonStringifySafe(body) : undefined,
         ...init,
       }),
     patch: (path: string, body?: any, init?: RequestInit) =>
       apiFetchWithBase(path, {
         method: "PATCH",
-        body: body ? JSON.stringify(body) : undefined,
+        body: body ? jsonStringifySafe(body) : undefined,
         ...init,
       }),
     delete: (path: string, init?: RequestInit) =>

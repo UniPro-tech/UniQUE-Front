@@ -1,7 +1,8 @@
-import { Card, Stack, Typography } from "@mui/material";
+import { Stack, Typography, Box, Button } from "@mui/material";
 import Link from "next/link";
 import { AccessDeniedAlert } from "@/components/AccessDeniedAlert";
-import { Button } from "@mui/material";
+import AnnouncementsList from "@/components/AnnouncementsList";
+import Announcement from "@/types/Announcement";
 
 export const metadata = {
   title: "ダッシュボード",
@@ -9,6 +10,10 @@ export const metadata = {
 };
 
 export default async function DashboardPage() {
+  const anns = (await Announcement.getAll({ options: { limit: 5 } })).map((a) =>
+    a.toPlainObject(),
+  );
+
   return (
     <Stack>
       <AccessDeniedAlert />
@@ -19,34 +24,36 @@ export default async function DashboardPage() {
         ダッシュボードへようこそ。左のサイドバーからナビゲートしてください。
       </Typography>
       <Stack mt={4} spacing={2} id="announce">
-        <Typography variant="h5">お知らせ</Typography>
-        <Stack spacing={1}>
-          <Card variant="outlined" sx={{ padding: 2 }}>
-            <Typography variant="h6">🚧 Close Alpha版公開のお知らせ</Typography>
-            <Typography variant="body1">
-              この度、Close Alpha版を公開いたしました。
-              <br />
-              様々なバグ等が発生する可能性があります。
-              ご理解のほどよろしくお願いいたします。
-              <br />
-              バグが発生した場合は、下記リンクから報告をお願いいたします。
-              <br />
-              <Link
-                href="https://canary.discord.com/channels/1191346186880286770/1239215629962182789"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                UniQUE Discord スレッド
-              </Link>
-            </Typography>
-          </Card>
-          <Card variant="outlined" sx={{ padding: 2 }}>
-            <Typography variant="h6">🛠️ サービス停止のお知らせ</Typography>
-            <Typography variant="body1">
-              2025年1月10日20時から25時までサービスが一時的に停止します。
-            </Typography>
-          </Card>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="h5">最近のお知らせ</Typography>
+          <Link
+            href="/dashboard/announcements"
+            style={{ textDecoration: "none" }}
+          >
+            <Button size="small" variant="outlined">
+              お知らせ管理
+            </Button>
+          </Link>
         </Stack>
+        <Box>
+          <AnnouncementsList initial={anns} isAdmin={false} />
+        </Box>
+        <div
+          style={{ display: "flex", justifyContent: "center", marginTop: 8 }}
+        >
+          <Link
+            href="/dashboard/announcements"
+            style={{ textDecoration: "none" }}
+          >
+            <Button size="small" variant="outlined">
+              もっと見る
+            </Button>
+          </Link>
+        </div>
       </Stack>
     </Stack>
   );

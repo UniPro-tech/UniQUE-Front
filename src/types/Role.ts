@@ -14,7 +14,7 @@ export interface RoleDTO {
   customId: string;
   name: string;
   description?: string;
-  permissionBitmask: number;
+  permissionBitmask: bigint;
   isDefault?: boolean;
 }
 
@@ -23,7 +23,7 @@ export interface CreateRoleRequest {
   custom_id: string;
   name: string;
   description?: string;
-  permission_bitmask: number;
+  permission_bitmask: bigint;
   is_default?: boolean;
   assign_to_existing?: boolean;
 }
@@ -33,7 +33,7 @@ export interface UpdateRoleRequest {
   custom_id?: string;
   name?: string;
   description?: string;
-  permission_bitmask?: number;
+  permission_bitmask?: bigint;
   is_default?: boolean;
 }
 
@@ -49,7 +49,7 @@ export class Role {
   customId: string;
   name: string;
   description?: string;
-  permissionBitmask: number;
+  permissionBitmask: bigint;
   isDefault?: boolean;
 
   constructor(data: RoleDTO) {
@@ -57,7 +57,7 @@ export class Role {
     this.customId = data.customId;
     this.name = data.name;
     this.description = data.description;
-    this.permissionBitmask = data.permissionBitmask;
+    this.permissionBitmask = BigInt(data.permissionBitmask);
     this.isDefault = data.isDefault;
   }
 

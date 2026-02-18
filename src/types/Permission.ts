@@ -7,38 +7,44 @@
 /// 8-15    = CLIENT 系
 /// 16-23   = SYSTEM 系
 /// 24-31   = 予備
-export enum PermissionBitsFields {
+export const PermissionBitsFields = {
   // --- User Management ---
   // NOTE: もちろん自身のユーザー情報の更新・削除は別途許可される.
   // ここでは他者のユーザー情報に対する操作権限を定義する.
-  USER_READ = 1 << 0, // ユーザー読み取り
-  USER_CREATE = 1 << 1, // ユーザー作成
-  USER_UPDATE = 1 << 2, // ユーザー更新(パスワード無効化も含まれる)
-  USER_DELETE = 1 << 3, // ユーザー削除
-  USER_DISABLE = 1 << 4, // ユーザー無効化
+  USER_READ: 1n << 0n, // ユーザー読み取り
+  USER_CREATE: 1n << 1n, // ユーザー作成
+  USER_UPDATE: 1n << 2n, // ユーザー更新(パスワード無効化も含まれる)
+  USER_DELETE: 1n << 3n, // ユーザー削除
+  USER_DISABLE: 1n << 4n, // ユーザー無効化
 
   // --- Apps Management ---
   // NOTE: App は OAuth2 Client に相当する.
   // また、自身がOwnerである App に対しては別途許可される.
   // ここでは他者が所有する App に対する操作権限を定義する.
-  APP_READ = 1 << 8, // App読み取り
+  APP_READ: 1n << 8n, // App読み取り
   // APP_CREATE = 1 << 9, // App作成 廃止
-  APP_UPDATE = 1 << 10, // App更新
-  APP_DELETE = 1 << 11, // App削除
-  APP_SECRET_ROTATE = 1 << 12, // Appシークレットの再発行
+  APP_UPDATE: 1n << 10n, // App更新
+  APP_DELETE: 1n << 11n, // App削除
+  APP_SECRET_ROTATE: 1n << 12n, // Appシークレットの再発行
 
   // --- System / Config ---
-  TOKEN_REVOKE = 1 << 16, // トークンの取り消し
-  AUDIT_READ = 1 << 18, // 監査ログの読み取り
-  CONFIG_UPDATE = 1 << 19, //　 全体設定（認証フロー、署名鍵など）の変更
-  KEY_MANAGE = 1 << 20, // JWK鍵管理（追加／削除）
+  TOKEN_REVOKE: 1n << 16n, // トークンの取り消し
+  AUDIT_READ: 1n << 18n, // 監査ログの読み取り
+  CONFIG_UPDATE: 1n << 19n, //　 全体設定（認証フロー、署名鍵など）の変更
+  KEY_MANAGE: 1n << 20n, // JWK鍵管理（追加／削除）
 
   // --- RBAC / Security ---
-  ROLE_MANAGE = 1 << 24, // RBACロール自体の作成／編集／削除
-  PERMISSION_MANAGE = 1 << 25, // RBAC権限の割り当て管理
-  SESSION_MANAGE = 1 << 26, // セッション管理（強制ログアウトなど）
-  MFA_MANAGE = 1 << 27, // 多要素認証の管理(リセットなど)
-}
+  ROLE_MANAGE: 1n << 24n, // RBACロール自体の作成／編集／削除
+  PERMISSION_MANAGE: 1n << 25n, // RBAC権限の割り当て管理
+  SESSION_MANAGE: 1n << 26n, // セッション管理（強制ログアウトなど）
+  MFA_MANAGE: 1n << 27n, // 多要素認証の管理(リセットなど)
+
+  // --- Announcements (32-39) ---
+  ANNOUNCEMENT_CREATE: 1n << 32n, // お知らせの作成 (1 << 32)
+  ANNOUNCEMENT_UPDATE: 1n << 33n, // お知らせの編集 (1 << 33)
+  ANNOUNCEMENT_DELETE: 1n << 34n, // お知らせの削除 (1 << 34)
+  ANNOUNCEMENT_PIN: 1n << 35n, // お知らせのピン留め (1 << 35)
+};
 
 export enum PermissionTexts {
   "USER_READ" = "ユーザー読み取り",
@@ -59,4 +65,8 @@ export enum PermissionTexts {
   "PERMISSION_MANAGE" = "権限管理",
   "SESSION_MANAGE" = "セッション管理",
   "MFA_MANAGE" = "多要素認証管理",
+  "ANNOUNCEMENT_CREATE" = "お知らせ作成",
+  "ANNOUNCEMENT_UPDATE" = "お知らせ編集",
+  "ANNOUNCEMENT_DELETE" = "お知らせ削除",
+  "ANNOUNCEMENT_PIN" = "お知らせピン留め",
 }

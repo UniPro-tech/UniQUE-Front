@@ -240,7 +240,12 @@ export class User {
       }
     }
     const json = await res.json();
-    return toCamelcase<import("./Role").RoleDTO[]>(json.data ?? []);
+    return toCamelcase<import("./Role").RoleDTO[]>(json.data ?? []).map(
+      (role) => ({
+        ...role,
+        permissionBitmask: BigInt(role.permissionBitmask),
+      }),
+    );
   }
 
   /** POST /users/{id}/roles でロールを割り当て */
