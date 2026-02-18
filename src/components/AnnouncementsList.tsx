@@ -26,12 +26,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
+import type { UserDTO } from "@/types/User";
+
 export type AnnouncementDTO = {
   id: string;
   title: string;
   content: string;
   createdAt: string;
-  createdBy?: string | null;
+  createdBy?: UserDTO | null;
   isPinned?: boolean;
 };
 
@@ -201,7 +203,21 @@ export default function AnnouncementsList({
           <Box key={a.id}>
             <Card variant="outlined">
               <CardHeader
-                avatar={<Avatar aria-label="announcement">A</Avatar>}
+                avatar={
+                  <Avatar
+                    aria-label={
+                      a.createdBy?.profile?.displayName ||
+                      a.createdBy?.customId ||
+                      a.createdBy?.id ||
+                      "system"
+                    }
+                  >
+                    {a.createdBy?.profile?.displayName?.[0] ||
+                      a.createdBy?.customId?.[0] ||
+                      a.createdBy?.id?.[0] ||
+                      "S"}
+                  </Avatar>
+                }
                 title={
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Typography variant="h6" component="div">
@@ -212,7 +228,12 @@ export default function AnnouncementsList({
                     )}
                   </Stack>
                 }
-                subheader={`作成者: ${a.createdBy || "system"} ・ ${new Date(a.createdAt).toLocaleString()}`}
+                subheader={`作成者: ${
+                  a.createdBy?.profile?.displayName ||
+                  a.createdBy?.customId ||
+                  a.createdBy?.id ||
+                  "system"
+                } ・ ${new Date(a.createdAt).toLocaleString()}`}
               />
               <CardContent>
                 <Typography

@@ -2,13 +2,14 @@ import { apiGet, apiPost, apiPut } from "@/lib/apiClient";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { AuthorizationErrors } from "./Errors/AuthorizationErrors";
 import { ResourceApiErrors } from "./Errors/ResourceApiErrors";
+import type { UserDTO } from "./User";
 
 /** routes.AnnouncementDTO */
 export interface AnnouncementDTO {
   id: string;
   title: string;
   content: string;
-  createdBy?: string | null;
+  createdBy?: UserDTO | null;
   isPinned?: boolean;
   createdAt: string;
   updatedAt: string;
@@ -35,7 +36,7 @@ export class Announcement {
   id: string;
   title: string;
   content: string;
-  createdBy?: string | null;
+  createdBy?: UserDTO | null;
   isPinned?: boolean;
   createdAt: string;
   updatedAt: string;
@@ -44,7 +45,7 @@ export class Announcement {
     this.id = data.id;
     this.title = data.title;
     this.content = data.content;
-    this.createdBy = data.createdBy;
+    this.createdBy = data.createdBy ?? null;
     this.isPinned = data.isPinned;
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;
@@ -55,7 +56,7 @@ export class Announcement {
       id: this.id,
       title: this.title,
       content: this.content,
-      createdBy: this.createdBy,
+      createdBy: this.createdBy ?? null,
       isPinned: this.isPinned,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

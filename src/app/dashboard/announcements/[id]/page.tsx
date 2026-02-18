@@ -69,8 +69,12 @@ export default async function Page({
       <Box>
         <Typography variant="h5">{a.title}</Typography>
         <Typography variant="caption" color="text.secondary">
-          作成者: {a.createdBy || "system"} •{" "}
-          {new Date(a.createdAt).toLocaleString()}
+          作成者:{" "}
+          {a.createdBy?.profile?.displayName ||
+            a.createdBy?.customId ||
+            a.createdBy?.id ||
+            "system"}{" "}
+          • {new Date(a.createdAt).toLocaleString()}
         </Typography>
         <Box mt={2} style={{ whiteSpace: "pre-wrap" }}>
           <div className="markdown">
