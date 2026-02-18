@@ -207,6 +207,23 @@ export class User {
     }
   }
 
+  /** POST /users/{id}/reject でユーザー登録を却下（物理削除）する */
+  async reject(): Promise<void> {
+    const res = await apiPost(`/users/${this.id}/reject`);
+    if (!res.ok) {
+      switch (res.status) {
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+  }
+
   /** GET /users/{id}/roles でユーザーのロール一覧を取得 */
   async getRoles(): Promise<import("./Role").RoleDTO[]> {
     const res = await apiGet(`/users/${this.id}/roles`);

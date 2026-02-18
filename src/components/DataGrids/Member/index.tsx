@@ -20,6 +20,7 @@ import { jaJP } from "@mui/x-data-grid/locales";
 import type { UserDTO } from "@/types/User";
 import { enqueueSnackbar } from "notistack";
 import { saveUser } from "@/lib/resources/Users";
+import { apiPost } from "@/lib/apiClient";
 import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
 import {
   USER_STATUS_OPTIONS,
@@ -110,6 +111,47 @@ export default function MembersDataGrid({
                           null,
                       );
                       setApproveDialogOpen(true);
+                    }}
+                  />,
+                  <GridActionsCellItem
+                    key={"reject"}
+                    icon={<DeleteIcon />}
+                    label="Reject"
+                    onClick={async () => {
+                      const uid = String(id);
+                      if (
+                        !confirm(
+                          "この申請を却下しますか？ この操作はユーザーを削除します。",
+                        )
+                      )
+                        return;
+                      try {
+                        const res = await apiPost(
+                          `/users/${encodeURIComponent(uid)}/reject`,
+                        );
+                        if (!res.ok) {
+                          const text = await res.text();
+                          enqueueSnackbar(
+                            `却下に失敗しました: ${res.status} ${text}`,
+                            { variant: "error" },
+                          );
+                          return;
+                        }
+                        setLocalRows((prev) =>
+                          prev.filter((r) => String(r.id) !== uid),
+                        );
+                        apiRef.current?.updateRows([
+                          { id: uid, _action: "delete" },
+                        ]);
+                        enqueueSnackbar("申請を却下しました", {
+                          variant: "success",
+                        });
+                      } catch (err) {
+                        console.error("Reject failed:", err);
+                        enqueueSnackbar("却下中にエラーが発生しました", {
+                          variant: "error",
+                        });
+                      }
                     }}
                   />,
                 ];
