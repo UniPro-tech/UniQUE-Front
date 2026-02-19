@@ -97,7 +97,7 @@ export default function TOTPSection({
   const uri = genResult?.uri || null;
 
   return (
-    <Stack spacing={2} component={Card} sx={{ p: 2 }}>
+    <Stack spacing={2} sx={{ p: 2 }}>
       <Stack direction="row" alignItems="center" spacing={2}>
         <Typography variant="h6" component={"h4"}>
           二段階認証（TOTP）
