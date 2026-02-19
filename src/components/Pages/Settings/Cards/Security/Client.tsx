@@ -5,6 +5,7 @@ import { SnackbarProvider } from "notistack";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import React from "react";
 import PasswordSection from "./Password";
+import TOTPSection from "./TOTP";
 import SessionsSection from "./Sessions";
 import type { AuthSessionDTO } from "@/types/Session";
 
@@ -41,6 +42,7 @@ export default function SecuritySettingsCardClient({
           csrfToken={csrfToken}
           handleClickOpen={handleClickOpen}
         />
+        <TOTPSection user={user} csrfToken={csrfToken} />
         <SessionsSection
           currentSessionId={currentSessionId}
           sessions={sessions}

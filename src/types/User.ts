@@ -37,6 +37,7 @@ export interface UserDTO {
   createdAt?: string;
   updatedAt?: string;
   profile?: ProfileDTO;
+  isTotpEnabled?: boolean;
 }
 
 /** routes.CreateUserRequest */
@@ -101,6 +102,7 @@ export class User {
   createdAt?: string;
   updatedAt?: string;
   profile?: ProfileDTO;
+  isTOTPEnabled?: boolean;
 
   constructor(data: Partial<UserDTO> & { id: string }) {
     this.id = data.id;
@@ -117,6 +119,8 @@ export class User {
     if (data.createdAt !== undefined) this.createdAt = data.createdAt;
     if (data.updatedAt !== undefined) this.updatedAt = data.updatedAt;
     if (data.profile !== undefined) this.profile = data.profile;
+    if (data.isTotpEnabled !== undefined)
+      this.isTOTPEnabled = data.isTotpEnabled;
   }
 
   /**
@@ -356,6 +360,7 @@ export class User {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       profile: this.profile ? { ...this.profile } : undefined,
+      isTotpEnabled: this.isTOTPEnabled,
     };
   }
 
