@@ -1,4 +1,14 @@
+"use client";
+
 import * as React from "react";
+import { useRouter } from "next/navigation";
+import {
+  signInAction,
+  signUpAction,
+  applyCompleteAction,
+  migrateAction,
+  totpSignInAction,
+} from "@/components/mui-template/signup-side/lib/CredentialAction";
 import { z } from "zod";
 import {
   Box,
@@ -12,6 +22,7 @@ import {
   Link,
   Stack,
   TextField,
+  CircularProgress,
   Typography,
 } from "@mui/material";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
@@ -51,6 +62,7 @@ type FormState = {
   email: FormField;
   password: FormField;
   confirmPassword: FormField;
+  otp: FormField;
   username: FormField;
   period: FormField;
   birthdate: FormField;
@@ -82,6 +94,7 @@ const initialFormState = (initialValues?: {
   email: { value: initialValues?.email || "", error: false, message: "" },
   password: { value: "", error: false, message: "" },
   confirmPassword: { value: "", error: false, message: "" },
+  otp: { value: "", error: false, message: "" },
   username: { value: initialValues?.username || "", error: false, message: "" },
   period: { value: initialValues?.period || "", error: false, message: "" },
   birthdate: { value: "", error: false, message: "" },
@@ -130,6 +143,7 @@ interface FormFieldProps {
   helperText?: string;
   autoFocus?: boolean;
   autoComplete?: string;
+  disabled?: boolean;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -146,6 +160,7 @@ const FormField: React.FC<FormFieldProps> = ({
   helperText,
   autoFocus,
   autoComplete,
+  disabled = false,
 }) => {
   const hasValue = value.length > 0;
   return (
@@ -167,7 +182,16 @@ const FormField: React.FC<FormFieldProps> = ({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         autoComplete={autoComplete}
+        disabled={disabled}
+        inputProps={{ "aria-describedby": `${id}-helper` }}
       />
+      <FormHelperText
+        id={`${id}-helper`}
+        role={hasValue && error ? "alert" : "status"}
+        aria-live={hasValue && error ? "assertive" : "polite"}
+      >
+        {hasValue && error ? errorMessage : helperText || ""}
+      </FormHelperText>
     </FormControl>
   );
 };
@@ -184,12 +208,19 @@ export default function CredentialFormClient(props: {
     period?: string;
     username?: string;
   };
+  onClientModeChange?: (mode: SignInCardMode) => void;
 }) {
   const [state, dispatch] = React.useReducer(
     formReducer,
     props.initialFormValues,
     initialFormState,
   );
+  const router = useRouter();
+  const [clientMode, setClientMode] = React.useState<SignInCardMode>(
+    props.mode,
+  );
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const codeRef = React.useRef<HTMLInputElement | null>(null);
 
   const validateField = React.useCallback(
     (fieldName: keyof Omit<FormState, "forgotPasswordOpen">, value: string) => {
@@ -267,7 +298,8 @@ export default function CredentialFormClient(props: {
   };
 
   const renderModeSpecificFields = () => {
-    switch (props.mode) {
+    const mode = clientMode;
+    switch (mode) {
       case SignInCardMode.SignUp:
         return (
           <>
@@ -384,6 +416,50 @@ export default function CredentialFormClient(props: {
           />
         );
 
+      case SignInCardMode.Totp:
+        return (
+          <>
+            <FormField
+              label="ユーザー名"
+              id="username_tmp"
+              name="username_tmp"
+              placeholder="username"
+              value={state.username.value}
+              error={state.username.error}
+              errorMessage={state.username.message}
+              onChange={(v) => setFieldValue("username", v)}
+              onBlur={() => validateField("username", state.username.value)}
+              disabled={true}
+            />
+            <input type="hidden" name="username" value={state.username.value} />
+            <FormControl>
+              <FormLabel htmlFor="code">認証コード</FormLabel>
+              <TextField
+                id="code"
+                name="code"
+                placeholder="123456"
+                value={state.otp.value}
+                onChange={(e) => setFieldValue("otp", e.target.value)}
+                required
+                fullWidth
+                variant="outlined"
+                inputRef={codeRef}
+                inputProps={{
+                  inputMode: "numeric",
+                  pattern: "\\d*",
+                  maxLength: 6,
+                  "aria-describedby": "code-helper",
+                }}
+                autoComplete="one-time-code"
+                autoFocus
+              />
+              <FormHelperText id="code-helper" role="status" aria-live="polite">
+                認証アプリのコード（6桁）を入力してください
+              </FormHelperText>
+            </FormControl>
+          </>
+        );
+
       case SignInCardMode.Migrate:
         return (
           <>
@@ -448,7 +524,11 @@ export default function CredentialFormClient(props: {
   };
 
   const renderPasswordFields = () => {
-    if ([SignInCardMode.SignUpEmailValidated].includes(props.mode)) {
+    if (
+      [SignInCardMode.SignUpEmailValidated, SignInCardMode.Totp].includes(
+        clientMode,
+      )
+    ) {
       return null;
     }
 
@@ -574,20 +654,102 @@ export default function CredentialFormClient(props: {
   };
 
   const getButtonText = () => {
-    switch (props.mode) {
+    const mode = clientMode;
+    switch (mode) {
       case SignInCardMode.SignUp:
         return "メンバー登録を申請";
       case SignInCardMode.SignUpEmailValidated:
         return "申請を完了する";
       case SignInCardMode.SignIn:
         return "サインイン";
+      case SignInCardMode.Totp:
+        return "TOTPでサインイン";
       case SignInCardMode.Migrate:
         return "アカウント移行を完了する";
     }
   };
 
   return (
-    <>
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget as HTMLFormElement;
+        const fd = new FormData(form);
+        let action: (fd: FormData) => Promise<
+          | {
+              mfaRequired: boolean;
+              mfaType: string;
+              username: string;
+              redirectTo?: undefined;
+            }
+          | {
+              redirectTo: string;
+              mfaRequired?: undefined;
+              mfaType?: undefined;
+              username?: undefined;
+            }
+          | void
+        > = signInAction;
+        const mode = clientMode;
+        switch (mode) {
+          case SignInCardMode.SignUp:
+            action = signUpAction;
+            break;
+          case SignInCardMode.SignUpEmailValidated:
+            action = applyCompleteAction;
+            break;
+          case SignInCardMode.SignIn:
+            action = signInAction;
+            break;
+          case SignInCardMode.Totp:
+            action = totpSignInAction;
+            break;
+          case SignInCardMode.Migrate:
+            action = migrateAction;
+            break;
+        }
+
+        try {
+          setIsSubmitting(true);
+          const res = await action(fd);
+          if (res) {
+            if (res.redirectTo) {
+              router.push(res.redirectTo);
+              return;
+            }
+            if (res.mfaRequired) {
+              // switch to TOTP UI without changing URL
+              setClientMode(SignInCardMode.Totp);
+              props.onClientModeChange?.(SignInCardMode.Totp);
+              if (res.username) {
+                dispatch({
+                  type: "SET_FIELD",
+                  field: "username",
+                  value: res.username,
+                });
+              }
+              // focus code input on next tick
+              Promise.resolve().then(() => codeRef.current?.focus());
+              return;
+            }
+          }
+        } catch (err) {
+          console.error("Submit action error:", err);
+        } finally {
+          setIsSubmitting(false);
+        }
+      }}
+      aria-busy={isSubmitting}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        gap: 16,
+        opacity: isSubmitting ? 0.96 : 1,
+        transition: "opacity 180ms ease",
+        pointerEvents: isSubmitting ? "none" : "auto",
+      }}
+    >
       <input type="hidden" name="csrfToken" value={props.csrfToken} />
       {props.redirect && (
         <input type="hidden" name="redirect" value={props.redirect} />
@@ -595,14 +757,31 @@ export default function CredentialFormClient(props: {
       {renderModeSpecificFields()}
       {renderPasswordFields()}
       {renderTermsCheckbox()}
-      <Button type="submit" fullWidth variant="contained">
-        {getButtonText()}
+      <Button
+        type="submit"
+        fullWidth
+        variant="contained"
+        disabled={isSubmitting}
+        sx={{
+          transition: "transform 200ms ease, opacity 200ms ease",
+          transform: isSubmitting ? "scale(0.98)" : "scale(1)",
+          opacity: isSubmitting ? 0.95 : 1,
+        }}
+      >
+        {isSubmitting ? (
+          <>
+            <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
+            {getButtonText()}
+          </>
+        ) : (
+          getButtonText()
+        )}
       </Button>
       <ForgotPassword
         open={state.forgotPasswordOpen}
         handleClose={handleForgotPassword}
         csrfToken={props.csrfToken}
       />
-    </>
+    </form>
   );
 }

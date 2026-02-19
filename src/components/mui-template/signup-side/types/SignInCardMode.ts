@@ -3,4 +3,5 @@ export enum SignInCardMode {
   SignUp,
   SignUpEmailValidated,
   Migrate,
+  Totp,
 }

@@ -11,11 +11,14 @@ export type AuthenticationRequest = {
   ip_address?: string;
   user_agent?: string;
   remember?: boolean;
+  code?: string; // for mfa/totp
 };
 
 /** POST /internal/authentication レスポンス */
 export interface AuthResponse {
-  session_jwt: string;
+  session_jwt?: string;
+  require_mfa?: boolean;
+  mfa_type?: string[];
 }
 
 const authApi = createApiClient(process.env.AUTH_API_URL);

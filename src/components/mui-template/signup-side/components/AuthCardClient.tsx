@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Box from "@mui/material/Box";
 import MuiCard from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
@@ -20,6 +21,7 @@ export default function SignInCardClient(props: {
   user?: User;
   code?: string;
 }) {
+  const [hideTopLabel] = React.useState(false);
   return (
     <MuiCard
       variant="outlined"
@@ -60,7 +62,7 @@ export default function SignInCardClient(props: {
           }
         })()}
       </Typography>
-      {props.mode !== SignInCardMode.SignUpEmailValidated && (
+      {props.mode !== SignInCardMode.SignUpEmailValidated && !hideTopLabel && (
         <Stack
           direction="row"
           alignItems="center"

@@ -27,6 +27,9 @@ export default function SignInCardClient(props: {
     username?: string;
   };
 }) {
+  // no client-side URL-driven mode switching (security: avoid spoof via URL)
+  const effectiveMode = props.mode;
+  const effectiveInitial = props.initialFormValues;
   const buildHrefWithRedirect = (href: string): string => {
     if (!props.redirect) return href;
     const url = new URL(href, "http://localhost");
@@ -77,6 +80,8 @@ export default function SignInCardClient(props: {
             linkHref: buildHrefWithRedirect("/migrate"),
           },
         ];
+      default:
+        return [];
     }
   })();
 
@@ -147,12 +152,12 @@ export default function SignInCardClient(props: {
         </Stack>
       ))}
       <CredentialForm
-        mode={props.mode}
+        mode={effectiveMode}
         csrfToken={props.csrfToken}
         user={props.user}
         code={props.code}
         redirect={props.redirect}
-        initialFormValues={props.initialFormValues}
+        initialFormValues={effectiveInitial}
       />
       {/*}
       <Divider>もしくは</Divider>

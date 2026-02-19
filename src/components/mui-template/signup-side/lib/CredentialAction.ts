@@ -64,9 +64,18 @@ export async function signInAction(formData: FormData) {
       remember,
     });
 
+    // If MFA is required, inform client to switch to MFA/TOTP mode
+    if (data.require_mfa && data.mfa_type && data.mfa_type.includes("totp")) {
+      return {
+        mfaRequired: true,
+        mfaType: "totp",
+        username: username,
+      };
+    }
+
     // JWT Cookie をセット
-    const expiresAt = getJwtExp(data.session_jwt);
-    await Session.create(data.session_jwt, expiresAt);
+    const expiresAt = getJwtExp(data.session_jwt || "");
+    await Session.create(data.session_jwt || "", expiresAt);
   } catch (error) {
     console.error("Sign-in error:", error);
     const redirectQuery = redirectParam
@@ -74,48 +83,94 @@ export async function signInAction(formData: FormData) {
       : "";
     switch (error) {
       case FormRequestErrors.CSRFTokenMismatch:
-        redirect(
-          `/signin?error=${FormRequestErrorCodes.CSRFTokenMismatch}${redirectQuery}`,
-          RedirectType.push,
-        );
-        break;
+        return {
+          redirectTo: `/signin?error=${FormRequestErrorCodes.CSRFTokenMismatch}${redirectQuery}`,
+        };
       case AuthenticationErrors.MissingCredentials:
-        redirect(
-          `/signin?error=${AuthenticationErrorCodes.MissingCredentials}${redirectQuery}`,
-          RedirectType.push,
-        );
-        break;
+        return {
+          redirectTo: `/signin?error=${AuthenticationErrorCodes.MissingCredentials}${redirectQuery}`,
+        };
       case AuthenticationErrors.InvalidCredentials:
-        redirect(
-          `/signin?error=${AuthenticationErrorCodes.InvalidCredentials}${redirectQuery}`,
-          RedirectType.push,
-        );
-        break;
+        return {
+          redirectTo: `/signin?error=${AuthenticationErrorCodes.InvalidCredentials}${redirectQuery}`,
+        };
       case AuthenticationErrors.AccountLocked:
-        redirect(
-          `/signin?error=${AuthenticationErrorCodes.AccountLocked}${redirectQuery}`,
-          RedirectType.push,
-        );
-        break;
+        return {
+          redirectTo: `/signin?error=${AuthenticationErrorCodes.AccountLocked}${redirectQuery}`,
+        };
       case FrontendErrors.InvalidInput:
-        redirect(
-          `/signin?error=${FrontendErrorCodes.InvalidInput}${redirectQuery}`,
-          RedirectType.push,
-        );
-        break;
+        return {
+          redirectTo: `/signin?error=${FrontendErrorCodes.InvalidInput}${redirectQuery}`,
+        };
       default:
-        redirect(
-          `/signin?error=${FrontendErrorCodes.UnhandledException}${redirectQuery}`,
-          RedirectType.push,
-        );
+        return {
+          redirectTo: `/signin?error=${FrontendErrorCodes.UnhandledException}${redirectQuery}`,
+        };
     }
   }
 
-  // 成功時のリダイレクト
+  // 成功時のリダイレクト (返す)
   if (redirectParam) {
-    redirect(redirectParam, RedirectType.push);
+    return { redirectTo: redirectParam };
   }
-  redirect("/dashboard", RedirectType.push);
+  return { redirectTo: "/dashboard" };
+}
+
+export async function totpSignInAction(formData: FormData) {
+  const username = formData.get("username") as string;
+  const code = formData.get("code") as string;
+  const remember = formData.get("remember") === "on";
+  const csrfToken = formData.get("csrfToken") as string;
+  const redirectParam = formData.get("redirect") as string | null;
+
+  try {
+    const tokenVerified = VerifyCSRFToken(csrfToken);
+    if (!tokenVerified) {
+      throw FormRequestErrors.CSRFTokenMismatch;
+    }
+
+    const headersList = await headers();
+    const userAgent = headersList.get("user-agent") || "";
+    const ip = await getRealIPAddress();
+
+    const data = await authenticationRequest({
+      type: "totp",
+      username,
+      code,
+      ip_address: ip,
+      user_agent: userAgent,
+      remember,
+    });
+
+    // JWT Cookie をセット
+    const expiresAt = getJwtExp(data.session_jwt || "");
+    await Session.create(data.session_jwt || "", expiresAt);
+  } catch (error) {
+    console.error("TOTP sign-in error:", error);
+    const redirectQuery = redirectParam
+      ? `&redirect=${encodeURIComponent(redirectParam)}`
+      : "";
+    switch (error) {
+      case FormRequestErrors.CSRFTokenMismatch:
+        return {
+          redirectTo: `/signin?mfa=totp&username=${encodeURIComponent(username)}&error=${FormRequestErrorCodes.CSRFTokenMismatch}${redirectQuery}`,
+        };
+      case AuthenticationErrors.InvalidCredentials:
+        return {
+          redirectTo: `/signin?mfa=totp&username=${encodeURIComponent(username)}&error=${AuthenticationErrorCodes.InvalidCredentials}${redirectQuery}`,
+        };
+      default:
+        return {
+          redirectTo: `/signin?mfa=totp&username=${encodeURIComponent(username)}&error=${FrontendErrorCodes.UnhandledException}${redirectQuery}`,
+        };
+    }
+  }
+
+  // 成功時のリダイレクト (返す)
+  if (redirectParam) {
+    return { redirectTo: redirectParam };
+  }
+  return { redirectTo: "/dashboard" };
 }
 
 export async function signUpAction(formData: FormData) {
