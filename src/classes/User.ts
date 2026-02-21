@@ -11,6 +11,8 @@ import { Role, RoleData } from "./Role";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { IsIncludedInBitmask, MergeBitmask } from "@/libs/bitmask";
 import { ConvertPermissionBitsToText } from "@/constants/Permission";
+import { FrontendErrors } from "@/errors/FrontendErrors";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 
 export enum UserStatus {
   ESTABLISHED = "established",
@@ -114,11 +116,48 @@ export class User {
   // ------ CRUD Static Methods ------
 
   static async create(
-    userData: Omit<UserData, "id" | "createdAt" | "updatedAt" | "deletedAt">,
+    userData: Partial<
+      Omit<
+        UserData,
+        | "id"
+        | "createdAt"
+        | "updatedAt"
+        | "deletedAt"
+        | "profile"
+        | "emailVerified"
+        | "pendingEmail"
+        | "isTotpEnabled"
+      >
+    > & {
+      profile: Partial<
+        Omit<
+          ProfileData,
+          | "createdAt"
+          | "updatedAt"
+          | "deletedAt"
+          | "websiteUrl"
+          | "twitterHandle"
+          | "bio"
+          | "birthdate"
+          | "birthdateVisible"
+        >
+      >;
+    },
+    password: string,
   ): Promise<User> {
-    const response = await apiPost("/internal/users", userData);
+    const response = await apiPost("/internal/users", {
+      ...userData,
+      password,
+    });
     if (!response.ok) {
-      throw new Error(`Failed to create user: ${response.statusText}`);
+      switch (response.status) {
+        case 400:
+          throw FrontendErrors.InvalidInput;
+        case 409:
+          throw ResourceApiErrors.ResourceAlreadyExists;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
     }
     const responseJson = await response.json();
     return User.fromJson(responseJson);

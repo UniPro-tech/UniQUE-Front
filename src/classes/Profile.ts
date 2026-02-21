@@ -1,5 +1,4 @@
 export interface ProfileData {
-  userId: string;
   displayName: string;
   bio: string | null;
   birthdate: string | null;
@@ -15,7 +14,6 @@ export interface ProfileData {
 export const PROFILE_ENDPOINT = `${process.env.RESOURCE_API_URL}/profiles`;
 
 export class Profile {
-  private userId: string;
   displayName: string;
   bio: string | null;
   birthdate: string | null;
@@ -32,7 +30,6 @@ export class Profile {
   }
 
   constructor(data: ProfileData) {
-    this.userId = data.userId;
     this.displayName = data.displayName;
     this.bio = data.bio;
     this.birthdate = data.birthdate;
@@ -53,7 +50,6 @@ export class Profile {
 
   toJson(): ProfileData {
     return {
-      userId: this.userId,
       displayName: this.displayName,
       bio: this.bio,
       birthdate: this.birthdate,
