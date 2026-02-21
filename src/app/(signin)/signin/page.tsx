@@ -1,26 +1,26 @@
-import Content from "@/components/mui-template/signup-side/components/Content";
-import SignInCard from "@/components/mui-template/signup-side/components/SignInCard";
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import { VariantType } from "notistack";
-import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
 import {
   AuthenticationErrorCodes,
   getAuthenticationErrorSnackbarData,
-} from "@/types/Errors/AuthenticationErrors";
+} from "@/errors/AuthenticationErrors";
 import {
   FormRequestErrorCodes,
   getFormRequestErrorSnackbarData,
-} from "@/types/Errors/FormRequestErrors";
+} from "@/errors/FormRequestErrors";
 import {
   getAuthServerErrorSnackbarData,
   AuthServerErrorCodes,
-} from "@/types/Errors/AuthServerErrors";
+} from "@/errors/AuthServerErrors";
 import {
   FrontendErrorCodes,
   getFrontendErrorSnackbarData,
-} from "@/types/Errors/FrontendErrors";
+} from "@/errors/FrontendErrors";
+import AuthenticationPage, {
+  AuthorizationFormState,
+} from "@/components/Pages/Authentication/Client";
 
 export const metadata = {
   title: "サインイン",
@@ -31,10 +31,14 @@ export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
-    mail?: string;
-    migrated?: string;
+    name?: string;
+    username?: string;
+    email?: string;
+    externalEmail?: string;
+    agreeToTerms?: string;
+    rememberMe?: string;
+    migration?: string;
     signouted?: string;
-    redirect?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -42,7 +46,25 @@ export default async function Page({
       | FrontendErrorCodes;
   }>;
 }) {
-  const { mail, migrated, error, signouted, redirect } = await searchParams;
+  const {
+    migration,
+    error,
+    signouted,
+    name,
+    username,
+    email,
+    externalEmail,
+    agreeToTerms,
+    rememberMe,
+  } = await searchParams;
+  const initState: AuthorizationFormState = {
+    name,
+    username,
+    email,
+    externalEmail,
+    agreeToTerms: agreeToTerms === "1",
+    rememberMe: rememberMe === "1",
+  };
   const snacks: SnackbarData[] = [
     ...(signouted
       ? [
@@ -52,15 +74,7 @@ export default async function Page({
           },
         ]
       : []),
-    ...(mail
-      ? [
-          {
-            message: `メール認証を送信しました。メールをご確認ください。`,
-            variant: "success" as VariantType,
-          },
-        ]
-      : []),
-    ...(migrated
+    ...(migration
       ? [
           {
             message: `アカウントの移行が完了しました。サインインしてください。`,
@@ -81,8 +95,7 @@ export default async function Page({
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
-      <Content mode={SignInCardMode.SignIn} />
-      <SignInCard mode={SignInCardMode.SignIn} redirect={redirect} />
+      <AuthenticationPage initFormState={initState} />
     </>
   );
 }

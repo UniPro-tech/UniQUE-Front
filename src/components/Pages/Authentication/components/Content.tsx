@@ -9,7 +9,7 @@ import HubIcon from "@mui/icons-material/Hub";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { SitemarkIcon } from "./CustomIcons";
 import CachedIcon from "@mui/icons-material/Cached";
-import { AuthorizationPageMode, useAuthPageMode } from "..";
+import { AuthorizationPageMode, useAuthPageMode } from "../Client";
 
 const SignInItems = [
   {

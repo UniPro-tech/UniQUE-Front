@@ -3,7 +3,7 @@ import TemporarySnackProvider, {
 } from "@/components/TemporarySnackProvider";
 import ConsentCard from "@/components/mui-template/signup-side/components/ConsentCard";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
-import { createApiClient } from "@/lib/apiClient";
+import { createApiClient } from "@/libs/apiClient";
 import Session from "@/types/Session";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
