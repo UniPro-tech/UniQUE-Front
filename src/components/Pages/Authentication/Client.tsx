@@ -111,7 +111,6 @@ export const useSetAuthPageMode = () => useContext(SetAuthPageModeContext);
 export default function AuthenticationPageClient(props: SignInSideProps) {
   const [mode, setMode] = useState(props.mode || AuthorizationPageMode.SignIn);
   const [initState, setInitState] = useState(props.initFormState || undefined);
-  console.log(props);
   return (
     <AppTheme>
       <CssBaseline enableColorScheme />
