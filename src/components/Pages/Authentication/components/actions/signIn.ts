@@ -1,5 +1,5 @@
 "use server";
-import { AuthenticationRequest, Credentials } from "@/libs/authoentication";
+import { AuthenticationRequest, Credentials } from "@/libs/authentication";
 import { redirect, RedirectType } from "next/navigation";
 
 export const submitSignIn = async (formData: FormData) => {
