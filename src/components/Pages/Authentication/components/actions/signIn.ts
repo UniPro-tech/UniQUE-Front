@@ -1,8 +1,8 @@
+"use server";
 import { AuthenticationRequest, Credentials } from "@/libs/authoentication";
 import { redirect, RedirectType } from "next/navigation";
 
 export const submitSignIn = async (formData: FormData) => {
-  "use server";
   const username = formData.get("username") as string;
   const password = formData.get("password") as string;
   const remember = formData.get("remember") === "on";

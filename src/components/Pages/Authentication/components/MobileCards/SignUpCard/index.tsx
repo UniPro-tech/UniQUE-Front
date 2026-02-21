@@ -10,8 +10,8 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { SitemarkIcon } from "../../CustomIcons";
 import { Card, SignInContainer } from "../Base";
-import { useInitialFormState } from "../../..";
-import { submitSignUp } from "./action";
+import { useInitialFormState } from "../../../Client";
+import { submitSignUp } from "../../actions/signUp";
 import { Divider, FormHelperText } from "@mui/material";
 
 export default function SignUpCard() {

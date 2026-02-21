@@ -10,8 +10,8 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { SitemarkIcon } from "../../CustomIcons";
 import { Card } from "../Base";
-import { useInitialFormState } from "../../..";
-import { submitSignIn } from "./action";
+import { useInitialFormState } from "../../../Client";
+import { submitSignIn } from "../../actions/signIn";
 import ForgotPassword from "../../ForgotPassword";
 
 export default function SignUpCard() {
@@ -58,6 +58,22 @@ export default function SignUpCard() {
         sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
       >
         サインイン
+      </Typography>
+      <Typography sx={{ textAlign: "left" }}>
+        メンバーではありませんか？{" "}
+        <span>
+          <Link href="/signup" variant="body2" sx={{ alignSelf: "center" }}>
+            サインアップ
+          </Link>
+        </span>
+      </Typography>
+      <Typography sx={{ textAlign: "left" }}>
+        既存メンバーですか？{" "}
+        <span>
+          <Link href="/migrate" variant="body2" sx={{ alignSelf: "center" }}>
+            アカウント移行
+          </Link>
+        </span>
       </Typography>
       <Box
         component="form"
@@ -122,26 +138,6 @@ export default function SignUpCard() {
         >
           サインイン
         </Button>
-        <Typography sx={{ textAlign: "center" }}>
-          メンバーではありませんか？{" "}
-          <span>
-            <Link href="/signup" variant="body2" sx={{ alignSelf: "center" }}>
-              サインアップ
-            </Link>
-          </span>
-        </Typography>
-        <Typography sx={{ textAlign: "center" }}>
-          既存メンバーですか？{" "}
-          <span>
-            <Link
-              href="/migration"
-              variant="body2"
-              sx={{ alignSelf: "center" }}
-            >
-              アカウント移行
-            </Link>
-          </span>
-        </Typography>
       </Box>
     </Card>
   );

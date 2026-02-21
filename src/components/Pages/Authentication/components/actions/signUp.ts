@@ -1,8 +1,8 @@
+"use server";
 import { User } from "@/classes/User";
 import { redirect, RedirectType } from "next/navigation";
 
 export const submitSignUp = async (formData: FormData) => {
-  "use server";
   const external_email = formData.get("external_email") as string;
   const username = formData.get("username") as string;
   const name = formData.get("name") as string;

@@ -1,9 +1,9 @@
+"use server";
 import { User } from "@/classes/User";
 import { AuthenticationErrors } from "@/errors/AuthenticationErrors";
 import { redirect, RedirectType } from "next/navigation";
 
 export const submitMigration = async (formData: FormData) => {
-  "use server";
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const external_email = formData.get("external_email") as string;

@@ -10,8 +10,8 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { SitemarkIcon } from "../../CustomIcons";
 import { Card, SignInContainer } from "../Base";
-import { useInitialFormState } from "../../..";
-import { submitMigration } from "./action";
+import { useInitialFormState } from "../../../Client";
+import { submitMigration } from "../../actions/migration";
 import { Divider, FormHelperText } from "@mui/material";
 
 export default function MigrationCard() {
@@ -120,7 +120,7 @@ export default function MigrationCard() {
           variant="h4"
           sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
         >
-          マイグレーション
+          アカウント移行
         </Typography>
         <Box
           component="form"
