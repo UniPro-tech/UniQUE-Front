@@ -36,9 +36,9 @@ enum MultifactorAuthenticationType {
 }
 
 export interface AuthenticationResponse {
-  mfa_type?: MultifactorAuthenticationType[];
-  require_mfa?: boolean;
-  session_jwt?: string;
+  mfaType?: MultifactorAuthenticationType[];
+  requireMfa?: boolean;
+  sessionJwt?: string;
 }
 
 export const AuthenticationRequest = async (

@@ -24,12 +24,12 @@ export const ClearSessionCookie = async () => {
 };
 
 export const SetSessionCookie = async (response: AuthenticationResponse) => {
-  const { session_jwt } = response;
+  const { sessionJwt } = response;
   const cookieName = "session_jwt";
   const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // セッション終了時
 
   const cookieStore = await cookies();
-  cookieStore.set(cookieName, session_jwt || "", {
+  cookieStore.set(cookieName, sessionJwt || "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",

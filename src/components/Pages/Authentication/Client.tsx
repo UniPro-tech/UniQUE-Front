@@ -19,6 +19,7 @@ export enum AuthorizationPageMode {
   SignIn = "signin",
   SignUp = "signup",
   Migration = "migration",
+  MFA = "mfa",
 }
 
 export interface SignInSideProps {

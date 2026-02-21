@@ -1,7 +1,9 @@
 "use client";
 
+import { AuthorizationPageMode } from "../Client";
 import { useAuthPageMode } from "../Client";
 import MigrationCard from "./MobileCards/MigrationCard";
+import MultiFactorCard from "./MobileCards/MultiFactorCard";
 import SignInCard from "./MobileCards/SignInCard";
 import SignUpCard from "./MobileCards/SignUpCard";
 
@@ -9,12 +11,14 @@ export default function AuthCardMobile() {
   const mode = useAuthPageMode();
 
   switch (mode) {
-    case "signin":
+    case AuthorizationPageMode.SignIn:
       return <SignInCard />;
-    case "signup":
+    case AuthorizationPageMode.SignUp:
       return <SignUpCard />;
-    case "migration":
+    case AuthorizationPageMode.Migration:
       return <MigrationCard />;
+    case AuthorizationPageMode.MFA:
+      return <MultiFactorCard />;
     default:
       return null;
   }

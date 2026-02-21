@@ -1,5 +1,7 @@
 "use server";
 import { AuthenticationRequest, Credentials } from "@/libs/authentication";
+import { SetSessionCookie } from "@/libs/cookies";
+import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 
 export const submitSignIn = async (formData: FormData) => {
@@ -13,7 +15,7 @@ export const submitSignIn = async (formData: FormData) => {
     remember,
   };
 
-  AuthenticationRequest(credentials).catch((error) => {
+  const response = await AuthenticationRequest(credentials).catch((error) => {
     const errorCodeMatch = error.message.match(/\[(.*?)\]/);
     const errorCode = errorCodeMatch ? errorCodeMatch[1] : "E0001";
     const queryParams = new URLSearchParams({
@@ -24,5 +26,26 @@ export const submitSignIn = async (formData: FormData) => {
     redirect(`/signin?${queryParams.toString()}`, RedirectType.replace);
   });
 
-  redirect("/dashboard", RedirectType.replace);
+  if (response.requireMfa) {
+    const cookieStore = await cookies();
+    cookieStore.set("pending_mfa_user", username, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 5 * 60, // 5分間有効
+    });
+
+    cookieStore.set("pending_mfa_remember", remember ? "1" : "0", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 5 * 60, // 5分間有効
+    });
+
+    redirect("/signin/mfa", RedirectType.replace);
+  }
+
+  SetSessionCookie(response);
+
+  redirect("/dashboard", RedirectType.push);
 };
