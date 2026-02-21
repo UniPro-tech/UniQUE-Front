@@ -1,0 +1,231 @@
+import { PermissionTexts } from "@/constants/Permission";
+import { User } from "./User";
+import {
+  apiDelete,
+  apiGet,
+  apiPatch,
+  apiPost,
+  apiPut,
+  stringJsonParseSafe,
+} from "@/libs/apiClient";
+import { toCamelcase } from "@/lib/SnakeCamlUtil";
+
+export interface RoleData {
+  id: string;
+  name: string;
+  customId: string;
+  description: string;
+  permissionBits: number;
+  isDefault: boolean;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  deletedAt: string | Date | null;
+}
+
+export class Role {
+  id: string;
+  name: string;
+  customId: string;
+  description: string;
+  permissionBits: bigint;
+  isDefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+
+  get isDeleted(): boolean {
+    return this.deletedAt !== null;
+  }
+
+  get permissons(): PermissionTexts[] {
+    return [];
+  }
+
+  constructor(data: RoleData) {
+    this.id = data.id;
+    this.name = data.name;
+    this.customId = data.customId;
+    this.description = data.description;
+    this.permissionBits = BigInt(data.permissionBits);
+    this.isDefault = data.isDefault;
+    this.createdAt =
+      data.createdAt instanceof Date
+        ? data.createdAt
+        : new Date(data.createdAt);
+    this.updatedAt =
+      data.updatedAt instanceof Date
+        ? data.updatedAt
+        : new Date(data.updatedAt);
+    this.deletedAt = data.deletedAt
+      ? data.deletedAt instanceof Date
+        ? data.deletedAt
+        : new Date(data.deletedAt)
+      : null;
+  }
+
+  // ------ Converter Methods ------
+
+  static fromJson(data: RoleData): Role {
+    return new Role(data);
+  }
+
+  toJson(): RoleData {
+    return {
+      id: this.id,
+      name: this.name,
+      customId: this.customId,
+      description: this.description,
+      permissionBits: Number(this.permissionBits),
+      isDefault: this.isDefault,
+      createdAt:
+        this.createdAt instanceof Date
+          ? this.createdAt.toISOString()
+          : this.createdAt,
+      updatedAt:
+        this.updatedAt instanceof Date
+          ? this.updatedAt.toISOString()
+          : this.updatedAt,
+      deletedAt: this.deletedAt ? this.deletedAt.toISOString() : null,
+    };
+  }
+
+  // ------ Static Methods ------
+
+  static async create(
+    roleData: Omit<RoleData, "id" | "createdAt" | "updatedAt" | "deletedAt">,
+  ): Promise<Role> {
+    const response = await fetch(`${process.env.RESOURCE_API_URL}/roles`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(roleData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to create role: ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    return Role.fromJson(responseData);
+  }
+
+  static async getById(id: string): Promise<Role | null> {
+    const response = await apiGet(`/roles/${id}`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to fetch role: ${response.statusText}`);
+    }
+    const responseData = await response.text().then((text) => {
+      try {
+        return toCamelcase<RoleData>(
+          stringJsonParseSafe(text)
+            .then((json: never) => json)
+            .catch(() => {
+              throw new Error(`Failed to parse role data: ${text}`);
+            }),
+        );
+      } catch (error) {
+        throw new Error(`Failed to parse role data: ${text} - ${error}`);
+      }
+    });
+    return Role.fromJson(responseData);
+  }
+
+  static async updateById(
+    id: string,
+    roleData: Partial<
+      Omit<RoleData, "id" | "createdAt" | "updatedAt" | "deletedAt">
+    >,
+  ): Promise<Role> {
+    const response = await apiPatch(`/roles/${id}`, roleData);
+    if (!response.ok) {
+      throw new Error(`Failed to update role: ${response.statusText}`);
+    }
+    const responseData = await response.text().then((text) => {
+      try {
+        return toCamelcase<RoleData>(
+          stringJsonParseSafe(text)
+            .then((json: never) => json)
+            .catch(() => {
+              throw new Error(`Failed to parse role data: ${text}`);
+            }),
+        );
+      } catch (error) {
+        throw new Error(`Failed to parse role data: ${text} - ${error}`);
+      }
+    });
+    return Role.fromJson(responseData);
+  }
+
+  static async deleteById(id: string): Promise<void> {
+    const response = await apiDelete(`/roles/${id}`);
+    if (!response.ok) {
+      throw new Error(`Failed to delete role: ${response.statusText}`);
+    }
+  }
+
+  // ------ Instance Methods ------
+
+  async save(
+    roleData?: Partial<
+      Omit<RoleData, "id" | "createdAt" | "updatedAt" | "deletedAt">
+    >,
+  ): Promise<void> {
+    if (this.isDeleted) {
+      throw new Error("Cannot save a deleted role.");
+    }
+    const updatedRole = await Role.updateById(this.id, {
+      name: roleData?.name ?? this.name,
+      customId: roleData?.customId ?? this.customId,
+      description: roleData?.description ?? this.description,
+      permissionBits:
+        roleData?.permissionBits !== undefined
+          ? Number(roleData.permissionBits)
+          : Number(this.permissionBits),
+      isDefault: roleData?.isDefault ?? this.isDefault,
+    });
+    Object.assign(this, updatedRole);
+  }
+
+  async delete(): Promise<void> {
+    await Role.deleteById(this.id);
+    this.deletedAt = new Date();
+  }
+
+  async getUsers(): Promise<User[]> {
+    const response = await apiGet(`/roles/${this.id}/users`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch users for role: ${response.statusText}`);
+    }
+    const responseJson = toCamelcase<{ data: User[] }>(await response.json());
+    return responseJson.data.map((userData) => User.fromJson(userData));
+  }
+
+  async addUser(userId: string): Promise<void> {
+    const response = await apiPut(`/roles/${this.id}/users/${userId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to add user to role: ${response.statusText}`);
+    }
+  }
+
+  async removeUser(userId: string): Promise<void> {
+    const response = await apiDelete(`/roles/${this.id}/users/${userId}`);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to remove user from role: ${response.statusText}`,
+      );
+    }
+  }
+
+  async asignAllUsers(): Promise<void> {
+    const response = await apiPost(`/roles/${this.id}/assign_all`);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to assign all users to role: ${response.statusText}`,
+      );
+    }
+  }
+}
