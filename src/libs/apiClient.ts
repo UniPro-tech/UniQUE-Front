@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAllCookies } from "./cookies";
-import { logErrorLocally } from "../lib/errorHandler";
 import { toSnakecase } from "../lib/SnakeCamlUtil";
 
 const BASE = process.env.RESOURCE_API_URL || "";
@@ -72,11 +71,6 @@ export const apiFetch = async (path: string, init: RequestInit = {}) => {
     },
   );
 
-  // エラーレスポンスの場合、詳細情報をログに記録
-  if (!res.ok && (res.status === 403 || res.status === 401)) {
-    logErrorLocally(`HTTP_${res.status}`, `${res.statusText} - ${path}`);
-  }
-
   return res as ExtendedResponse;
 };
 
@@ -135,11 +129,6 @@ export const createApiClient = (base?: string) => {
       },
       credentials: "include",
     });
-
-    // エラーレスポンスの場合、詳細情報をログに記録
-    if (!res.ok && (res.status === 403 || res.status === 401)) {
-      logErrorLocally(`HTTP_${res.status}`, `${res.statusText} - ${path}`);
-    }
 
     return res as ExtendedResponse;
   };

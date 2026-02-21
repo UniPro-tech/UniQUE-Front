@@ -5,9 +5,12 @@ import { cookies } from "next/headers";
 import { ParseJwt } from "./jwt";
 import { Session } from "@/classes/Session";
 import { ClearSessionCookie } from "./cookies";
+import { AuthenticationErrors } from "@/errors/AuthenticationErrors";
+import { AuthServerErrors } from "@/errors/AuthServerErrors";
+import { FrontendErrors } from "@/errors/FrontendErrors";
 
-interface Credentials {
-  email?: string;
+export interface Credentials {
+  username?: string;
   password?: string;
   code?: string;
   remember?: boolean;
@@ -41,14 +44,14 @@ export interface AuthenticationResponse {
 export const AuthenticationRequest = async (
   credentials: Credentials,
 ): Promise<AuthenticationResponse> => {
-  const { email, password, code } = credentials;
+  const { username, password, code } = credentials;
 
   const ipAddress = await getRealIPAddress();
   const userAgent = navigator.userAgent;
 
   const requestBody: AuthenticationRequest = {
     type: password ? AuthenticationType.Password : AuthenticationType.TOTP,
-    username: email || "",
+    username: username || "",
     password,
     code,
     ipAddress,
@@ -63,7 +66,19 @@ export const AuthenticationRequest = async (
   );
 
   if (!response.ok) {
-    throw new Error(`Authentication failed with status ${response.status}`);
+    switch (response.status) {
+      case 401:
+        const errorData = await response.json();
+        if (errorData.reason == "invalid_credentials") {
+          throw AuthenticationErrors.InvalidCredentials;
+        } else if (errorData.reason == "user_inactive") {
+          throw AuthenticationErrors.AccountLocked;
+        }
+      case 400:
+        throw FrontendErrors.InvalidInput;
+      default:
+        throw AuthServerErrors.InternalServerError;
+    }
   }
 
   const data = toCamelcase<AuthenticationResponse>(await response.json());
