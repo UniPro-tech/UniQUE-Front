@@ -1,7 +1,7 @@
 import { Metadata, Viewport } from "next";
 import BirthdateGuard from "@/components/BirthdateGuard";
 import Session from "@/types/Session";
-import { generateCSRFToken } from "@/lib/CSRF";
+import { generateCSRFToken } from "@/libs/csrf";
 
 import "./globals.css";
 

@@ -1,6 +1,6 @@
 import Drawer from "@/components/drawer";
 import Session from "@/types/Session";
-import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { RoleDTO } from "@/types/Role";
 

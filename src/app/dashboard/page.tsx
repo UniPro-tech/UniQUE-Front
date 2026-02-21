@@ -1,6 +1,5 @@
 import { Stack, Typography, Box, Button } from "@mui/material";
 import Link from "next/link";
-import { AccessDeniedAlert } from "@/components/AccessDeniedAlert";
 import AnnouncementsList from "@/components/AnnouncementsList";
 import Announcement from "@/types/Announcement";
 
@@ -16,7 +15,6 @@ export default async function DashboardPage() {
 
   return (
     <Stack>
-      <AccessDeniedAlert />
       <Typography variant="h4" gutterBottom>
         おかえりなさい！
       </Typography>
