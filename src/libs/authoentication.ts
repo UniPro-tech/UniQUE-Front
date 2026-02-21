@@ -2,6 +2,9 @@ import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { createApiClient } from "./apiClient";
 import { getRealIPAddress } from "./request";
 import { cookies } from "next/headers";
+import { ParseJwt } from "./jwt";
+import { Session } from "@/classes/Session";
+import { ClearSessionCookie } from "./cookies";
 
 interface Credentials {
   email?: string;
@@ -29,7 +32,7 @@ enum MultifactorAuthenticationType {
   TOTP = "totp",
 }
 
-interface AuthenticationResponse {
+export interface AuthenticationResponse {
   mfa_type?: MultifactorAuthenticationType[];
   require_mfa?: boolean;
   session_jwt?: string;
@@ -68,16 +71,20 @@ export const AuthenticationRequest = async (
   return data;
 };
 
-export const SetSessionCookie = async (response: AuthenticationResponse) => {
-  const { session_jwt } = response;
-  const cookieName = "session_jwt";
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // セッション終了時
-
+export const Logout = async () => {
   const cookieStore = await cookies();
-  cookieStore.set(cookieName, session_jwt || "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    expires,
-  });
+  const sessionJwt = cookieStore.get("session_jwt")?.value;
+  if (!sessionJwt) {
+    return;
+  }
+  const sessionJwtPayload = ParseJwt(sessionJwt);
+  const sub = sessionJwtPayload.sub;
+  if (typeof sub !== "string") {
+    return;
+  }
+  const sid = sub.startsWith("SID_") ? sub.slice(4) : sub;
+
+  Session.deleteById(sid);
+
+  ClearSessionCookie();
 };
