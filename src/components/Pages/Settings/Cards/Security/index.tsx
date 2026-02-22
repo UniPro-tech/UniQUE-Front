@@ -1,8 +1,8 @@
-import { generateCSRFToken } from "@/lib/CSRF";
+import { generateCSRFToken } from "@/libs/csrf";
 import type { UserDTO } from "@/types/User";
 import SecuritySettingsCardClient from "./Client";
-import Session, { type AuthSessionDTO } from "@/types/Session";
 import { unauthorized } from "next/navigation";
+import { Session } from "@/classes/Session";
 
 export default async function SecuritySettingsCard({
   user,
@@ -11,16 +11,16 @@ export default async function SecuritySettingsCard({
 }) {
   const uid = user.id!;
   const csrfToken = generateCSRFToken(uid);
-  const session = await Session.get();
+  const session = await Session.getCurrent();
   if (!session) {
     unauthorized();
   }
-  const sessions: AuthSessionDTO[] = await Session.list();
+  const sessions = (await Session.getByUserId(uid)).map((s) => s.toJson());
   return (
     <SecuritySettingsCardClient
       user={user}
       csrfToken={csrfToken}
-      currentSessionId={session.sessionId}
+      currentSessionId={session.id}
       sessions={sessions}
     />
   );

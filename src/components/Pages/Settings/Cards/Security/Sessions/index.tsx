@@ -10,12 +10,12 @@ import {
   Card,
   Box,
 } from "@mui/material";
-import { logoutSession, type ExtendedAuthSessionDTO } from "./action";
+import { logoutSession } from "./action";
 import { parseUA } from "@/lib/UserAgent";
 import { useActionState, useEffect } from "react";
 import { FormStatus } from "../../Base";
 import { enqueueSnackbar } from "notistack";
-import type { AuthSessionDTO } from "@/types/Session";
+import { SessionData } from "@/classes/Session";
 
 export default function SessionsSection({
   currentSessionId,
@@ -23,11 +23,11 @@ export default function SessionsSection({
   csrfToken,
 }: {
   currentSessionId: string;
-  sessions: AuthSessionDTO[];
+  sessions: SessionData[];
   csrfToken: string;
 }) {
   const [latestResult, action] = useActionState(logoutSession, {
-    sessions: sessions as ExtendedAuthSessionDTO[],
+    sessions: sessions as SessionData[],
     status: null as null | FormStatus,
   });
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function SessionsSection({
         >
           {displayedSessions.map((session) => {
             const ua = session.userAgent ? parseUA(session.userAgent) : null;
-            const isDeleted = session.isDeleted || false;
+            const isDeleted = session.deletedAt !== null;
             return (
               <ListItem key={session.id} disablePadding>
                 <Card
@@ -97,7 +97,9 @@ export default function SessionsSection({
                     <Stack direction="row" alignItems="center" spacing={1}>
                       <Typography variant="body1">
                         {ua
-                          ? `${ua.browser} - ${ua.os}`
+                          ? ua.browser !== "Unknown" || ua.os !== "Unknown"
+                            ? `${ua.browser} - ${ua.os}`
+                            : session.userAgent
                           : `セッション ${session.id.slice(0, 8)}`}
                       </Typography>
                       {session.id === activeSessionId && !isDeleted && (
@@ -140,7 +142,7 @@ export default function SessionsSection({
                     )}
                   </Box>
                   {!isDeleted && (
-                    <Box component="form" action={action} method="post">
+                    <Box component="form" action={action}>
                       <input type="hidden" name="csrfToken" value={csrfToken} />
                       <input
                         type="hidden"
@@ -152,6 +154,13 @@ export default function SessionsSection({
                         variant="outlined"
                         size="small"
                         color="error"
+                        disabled={session.id === activeSessionId}
+                        sx={{
+                          cursor:
+                            session.id === activeSessionId
+                              ? "not-allowed"
+                              : "pointer",
+                        }}
                       >
                         ログアウト
                       </Button>

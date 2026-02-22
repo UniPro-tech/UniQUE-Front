@@ -7,7 +7,7 @@ import React from "react";
 import PasswordSection from "./Password";
 import TOTPSection from "./TOTP";
 import SessionsSection from "./Sessions";
-import type { AuthSessionDTO } from "@/types/Session";
+import { SessionData } from "@/classes/Session";
 
 export default function SecuritySettingsCardClient({
   user,
@@ -18,7 +18,7 @@ export default function SecuritySettingsCardClient({
   user: UserDTO;
   csrfToken: string;
   currentSessionId: string;
-  sessions: AuthSessionDTO[];
+  sessions: SessionData[];
 }) {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => setOpen(true);
