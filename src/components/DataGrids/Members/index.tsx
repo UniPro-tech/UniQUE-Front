@@ -29,7 +29,7 @@ import { useRouter } from "next/navigation";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import RejectDialog from "@/components/Dialogs/Reject";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { deleteUserById } from "@/app/dashboard/members/delete-action";
+import { deleteUserById } from "@/components/DataGrids/Members/deleteAction";
 
 export default function MembersDataGrid({
   rows,

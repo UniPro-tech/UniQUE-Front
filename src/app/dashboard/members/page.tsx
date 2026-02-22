@@ -1,7 +1,7 @@
 import { getUsersList } from "@/lib/resources/Users";
 import { PermissionBitsFields } from "@/types/Permission";
 import { Link as MLink, Stack, Typography, Button } from "@mui/material";
-import MembersDataGrid from "@/components/DataGrids/Member";
+import MembersDataGrid from "@/components/DataGrids/Members";
 import { Session } from "@/classes/Session";
 
 export const metadata = {
