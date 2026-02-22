@@ -91,28 +91,32 @@ const AppBar = styled(MuiAppBar, {
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: "nowrap",
-  boxSizing: "border-box",
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        ...openedMixin(theme),
-        "& .MuiDrawer-paper": openedMixin(theme),
+})(({ theme }) => {
+  return {
+    width: drawerWidth,
+    whiteSpace: "nowrap",
+    boxSizing: "border-box",
+    variants: [
+      {
+        props: ({ open }) => open,
+        style: {
+          ...openedMixin(theme),
+          "& .MuiDrawer-paper": openedMixin(theme),
+        },
       },
-    },
-    {
-      props: ({ open }) => !open,
-      style: {
-        ...closedMixin(theme),
-        "& .MuiDrawer-paper": closedMixin(theme),
+      {
+        props: ({ open }) => !open,
+        style: {
+          ...closedMixin(theme),
+          "& .MuiDrawer-paper": closedMixin(theme),
+          "@media (max-width: 600px)": {
+            display: "none",
+          },
+        },
       },
-    },
-  ],
-}));
+    ],
+  };
+});
 
 interface NavLink {
   text: string;
@@ -210,6 +214,8 @@ export default function MiniDrawer({
           background: "#e6ecec",
           color: "#000000",
         }}
+        variant="outlined"
+        suppressHydrationWarning
       >
         <Toolbar>
           <Stack
@@ -276,7 +282,7 @@ export default function MiniDrawer({
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
-                        mr: open ? 3 : "auto",
+                        mr: open ? 1 : "auto",
                         justifyContent: "center",
                       }}
                     >
@@ -300,7 +306,7 @@ export default function MiniDrawer({
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 1, sm: 2, md: 3 },
+          p: { xs: 3, sm: 2, md: 3 },
           width: { xs: "100%", sm: "auto" },
           maxWidth: "100%",
           overflow: "auto",
