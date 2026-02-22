@@ -106,8 +106,10 @@ export class Session {
 
   static async getByUserId(userId: string): Promise<Session[]> {
     const apiClient = createApiClient(`${process.env.AUTH_API_URL}`);
-    const queryParams = new URLSearchParams({ userId });
-    const response = await apiClient.get(`/sessions?${queryParams.toString()}`);
+    const queryParams = new URLSearchParams({ user_id: userId });
+    const response = await apiClient.get(
+      `/internal/sessions?${queryParams.toString()}`,
+    );
     const resData = toCamelcase<{ data: SessionData[] }>(await response.json());
     return resData.data.map((sessionData) => Session.fromJson(sessionData));
   }
