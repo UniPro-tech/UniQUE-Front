@@ -1,8 +1,8 @@
 import { getUsersList } from "@/lib/resources/Users";
-import { hasPermission } from "@/lib/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
 import { Link as MLink, Stack, Typography, Button } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Member";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "ユーザー一覧",
@@ -11,16 +11,21 @@ export const metadata = {
 
 export default async function Page() {
   const users = await getUsersList();
+
   // establishedステータスのユーザーを除外
   const filteredUsers = users.filter((u) => u.status !== "established");
   const rows = filteredUsers.map((u) => u.convertPlain());
-  const canDelete = await hasPermission(PermissionBitsFields.USER_DELETE);
-  const canUpdate = await hasPermission(PermissionBitsFields.USER_UPDATE);
-  const canRead = await hasPermission(PermissionBitsFields.USER_READ);
+  const user = await (await Session.getCurrent())?.getUser();
+  const [canDelete, canUpdate, canRead, canCreate] = await Promise.all([
+    user?.hasPermission(PermissionBitsFields.USER_DELETE),
+    user?.hasPermission(PermissionBitsFields.USER_UPDATE),
+    user?.hasPermission(PermissionBitsFields.USER_READ),
+    user?.hasPermission(PermissionBitsFields.USER_CREATE),
+  ]);
 
   return (
     <Stack spacing={4}>
-      <Stack>
+      <Stack spacing={2}>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -31,6 +36,8 @@ export default async function Page() {
             component="a"
             href="/dashboard/members/new"
             variant="contained"
+            disabled={!canCreate}
+            sx={{ cursor: canCreate ? "pointer" : "not-allowed" }}
           >
             新規作成
           </Button>

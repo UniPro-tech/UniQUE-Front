@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import User from "@/types/User";
 import UserDetailClient from "@/components/Pages/Members/UserDetailClient";
+import { User } from "@/classes/User";
 
 export const metadata = {
   title: "ユーザー詳細",
@@ -22,6 +22,11 @@ export default async function UserDetailPage({
     notFound();
   }
 
-  const userDTO = user.convertPlain();
-  return <UserDetailClient user={userDTO} />;
+  if (!user) {
+    notFound();
+  }
+
+  const userData = user.toJson();
+  console.log("User data for detail page:", userData);
+  return <UserDetailClient user={userData} />;
 }

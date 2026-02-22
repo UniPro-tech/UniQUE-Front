@@ -1,5 +1,5 @@
-import MemberCreateForm from "@/components/Forms/MemberCreateForm";
-import { requirePermission } from "@/lib/permissions";
+import MemberCreateForm from "@/components/Pages/Members/Forms/MemberCreateForm";
+import { requirePermission } from "@/libs/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
 import { Stack, Typography, Breadcrumbs, Link } from "@mui/material";
 

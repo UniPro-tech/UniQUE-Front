@@ -17,12 +17,13 @@ import {
   createMember,
   redirectToMemberList,
   CreateMemberFormData,
-} from "@/app/dashboard/members/new/action";
+} from "@/components/Pages/Members/Forms/actions/create";
 import {
   AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
 } from "@/lib/constants/UserConstants";
 import { useRouter } from "next/navigation";
+import { UserStatus } from "@/classes/types/User";
 
 export default function MemberCreateForm() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function MemberCreateForm() {
     email: "",
     password: "",
     displayName: "",
-    status: "active",
+    status: UserStatus.ACTIVE,
     externalEmail: "",
     affiliationPeriod: "",
   });
@@ -130,12 +131,13 @@ export default function MemberCreateForm() {
           />
 
           <TextField
-            label="一時パスワード (任意)"
+            label="一時パスワード"
             fullWidth
             value={formData.password}
             onChange={(e) => handleChange("password", e.target.value)}
             type="password"
             disabled={loading}
+            required
           />
 
           <TextField
@@ -189,9 +191,8 @@ export default function MemberCreateForm() {
             helperText="ユーザーの状態を選択"
             disabled={loading}
           >
-            <MenuItem value="active">active</MenuItem>
-            <MenuItem value="established">established</MenuItem>
-            <MenuItem value="pending">pending</MenuItem>
+            <MenuItem value={UserStatus.ACTIVE}>active</MenuItem>
+            <MenuItem value={UserStatus.ESTABLISHED}>established</MenuItem>
           </TextField>
 
           <Stack direction="row" spacing={2} justifyContent="flex-end">

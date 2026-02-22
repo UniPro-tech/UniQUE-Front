@@ -11,15 +11,15 @@ import {
   ArrowBack as ArrowBackIcon,
   CalendarToday as CalendarIcon,
 } from "@mui/icons-material";
-import { UserDTO } from "@/types/User";
 import { useRouter } from "next/navigation";
 import {
   getStatusLabel,
   getAffiliationPeriodLabel,
 } from "@/lib/constants/UserConstants";
+import { UserData, UserStatus } from "@/classes/types/User";
 
 interface UserDetailClientProps {
-  user: UserDTO;
+  user: UserData;
 }
 
 export default function UserDetailClient({ user }: UserDetailClientProps) {
@@ -74,11 +74,11 @@ export default function UserDetailClient({ user }: UserDetailClientProps) {
                   label={getStatusLabel(user.status)}
                   size="small"
                   color={
-                    user.status === "active"
+                    user.status === UserStatus.ACTIVE
                       ? "success"
-                      : user.status === "suspended"
+                      : user.status === UserStatus.SUSPENDED
                         ? "error"
-                        : user.status === "archived"
+                        : user.status === UserStatus.ARCHIVED
                           ? "default"
                           : "primary"
                   }
@@ -94,6 +94,9 @@ export default function UserDetailClient({ user }: UserDetailClientProps) {
               )}
               {user.emailVerified && (
                 <Chip label="メール認証済み" size="small" color="success" />
+              )}
+              {!user.profile?.isAdult && (
+                <Chip label="U-18" size="small" color="warning" />
               )}
             </Stack>
           </Box>
