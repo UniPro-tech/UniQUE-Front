@@ -17,5 +17,9 @@ export const IsIncludedInBitmask = (
   target: bigint,
 ): boolean => {
   // targetのビットがbitmaskに含まれているかを判定する
+  if (target === 0n) {
+    // targetが0の場合は常にfalseを返す
+    return false;
+  }
   return (bitmask & target) === target;
 };
