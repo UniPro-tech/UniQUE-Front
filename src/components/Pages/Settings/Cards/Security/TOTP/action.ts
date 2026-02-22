@@ -1,40 +1,22 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/lib/CSRF";
-import { createApiClient } from "@/lib/apiClient";
-import Session from "@/types/Session";
-// use global fetch available in the runtime
+import { VerifyCSRFToken } from "@/libs/csrf";
+import { Session } from "@/classes/Session";
 
 export const generateTOTP = async (_prevState: null, formData: FormData) => {
   try {
     const csrfToken = formData.get("csrfToken") as string;
-    const isVerified = await VerifyCSRFToken(csrfToken);
+    const isVerified = VerifyCSRFToken(csrfToken);
     if (!isVerified) throw new Error("CSRF token mismatch");
 
     const password = formData.get("password") as string;
 
-    const session = await Session.get();
-    if (!session) throw new Error("session not found");
-    const userId = session.userId;
+    const session = await Session.getCurrent();
+    const user = await session!.getUser();
 
-    const authApiUrl = process.env.AUTH_API_URL || "";
-    const authClient = createApiClient(authApiUrl);
+    const totpRes = await user.setupBeginTotp(password);
 
-    const res = await authClient.post(
-      `/internal/totp/${encodeURIComponent(userId)}`,
-      {
-        password,
-        user_id: userId,
-      },
-    );
-
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(txt || "failed to generate totp");
-    }
-
-    const json = await res.json();
-    return { secret: json.secret, uri: json.uri };
+    return totpRes;
   } catch (error) {
     return { error: error instanceof Error ? error.message : String(error) };
   }
@@ -43,29 +25,18 @@ export const generateTOTP = async (_prevState: null, formData: FormData) => {
 export const verifyTOTP = async (_prevState: null, formData: FormData) => {
   try {
     const csrfToken = formData.get("csrfToken") as string;
-    const isVerified = await VerifyCSRFToken(csrfToken);
+    const isVerified = VerifyCSRFToken(csrfToken);
     if (!isVerified) throw new Error("CSRF token mismatch");
 
     const code = formData.get("code") as string;
 
-    const session = await Session.get();
-    if (!session) throw new Error("session not found");
-    const userId = session.userId;
+    const session = await Session.getCurrent();
 
-    const authApiUrl = process.env.AUTH_API_URL || "";
-    const authClient = createApiClient(authApiUrl);
+    const user = await session!.getUser();
 
-    const res = await authClient.post(
-      `/internal/totp/${encodeURIComponent(userId)}/verify`,
-      { code },
-    );
+    const result = await user.setupFinishTotp(code);
 
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(txt || "failed to verify totp");
-    }
-    const json = await res.json();
-    return { valid: json.valid };
+    return result;
   } catch (error) {
     return { error: error instanceof Error ? error.message : String(error) };
   }
@@ -74,30 +45,17 @@ export const verifyTOTP = async (_prevState: null, formData: FormData) => {
 export const disableTOTP = async (_prevState: null, formData: FormData) => {
   try {
     const csrfToken = formData.get("csrfToken") as string;
-    const isVerified = await VerifyCSRFToken(csrfToken);
+    const isVerified = VerifyCSRFToken(csrfToken);
     if (!isVerified) throw new Error("CSRF token mismatch");
 
     const password = formData.get("password") as string;
 
-    const session = await Session.get();
-    if (!session) throw new Error("session not found");
-    const userId = session.userId;
+    const session = await Session.getCurrent();
+    const user = await session!.getUser();
 
-    const authApiUrl = process.env.AUTH_API_URL || "";
-    const authClient = createApiClient(authApiUrl);
+    await user.disableTotp(password);
 
-    const res = await authClient.delete(
-      `/internal/totp/${encodeURIComponent(userId)}`,
-      { body: JSON.stringify({ password }) },
-    );
-
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(txt || "failed to disable totp");
-    }
-
-    const json = await res.json();
-    return { success: true, message: json.message };
+    return { success: true, message: "TOTPが無効化されました。" };
   } catch (error) {
     return { error: error instanceof Error ? error.message : String(error) };
   }

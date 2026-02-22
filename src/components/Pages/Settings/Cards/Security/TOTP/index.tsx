@@ -6,7 +6,6 @@ import {
   Divider,
   Button,
   TextField,
-  Card,
   Box,
   Dialog,
   DialogActions,
@@ -35,7 +34,7 @@ export default function TOTPSection({
   const [verifyResult, verifyAction] = useActionState(
     verifyTOTP,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    null as null | any,
+    null as null | { valid: boolean } | any,
   );
   const [disableResult, disableAction] = useActionState(
     disableTOTP,
@@ -49,11 +48,15 @@ export default function TOTPSection({
   const [openDisableDialog, setOpenDisableDialog] = useState(false);
   const [disablePassword, setDisablePassword] = useState("");
   const [localEnabled, setLocalEnabled] = useState(isEnabled);
+  const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
     if (genResult && genResult.error) {
       enqueueSnackbar(genResult.error, { variant: "error" });
     } else if (genResult && genResult.secret) {
+      Promise.resolve().then(() => {
+        setIsFinished(false);
+      });
       enqueueSnackbar(
         "TOTP シークレットを生成しました。コードを入力して有効化してください。",
         { variant: "success" },
@@ -71,7 +74,10 @@ export default function TOTPSection({
       enqueueSnackbar(verifyResult.error, { variant: "error" });
     } else if (verifyResult && verifyResult.valid) {
       enqueueSnackbar("二段階認証を有効化しました。", { variant: "success" });
-      Promise.resolve().then(() => setLocalEnabled(true));
+      Promise.resolve().then(() => {
+        setLocalEnabled(true);
+        setIsFinished(true);
+      });
     } else if (verifyResult && verifyResult.valid === false) {
       enqueueSnackbar("コードが無効です。再度ご確認ください。", {
         variant: "error",
@@ -129,12 +135,7 @@ export default function TOTPSection({
           >
             <DialogTitle>二段階認証のセットアップ</DialogTitle>
             <DialogContent>
-              <Box
-                component="form"
-                action={genAction}
-                method="post"
-                id="totp-gen-form"
-              >
+              <Box component="form" action={genAction} id="totp-gen-form">
                 <input type="hidden" name="csrfToken" value={csrfToken} />
                 <input type="hidden" name="user_id" value={user.id} />
                 <TextField
@@ -181,7 +182,6 @@ export default function TOTPSection({
               <Box
                 component="form"
                 action={disableAction}
-                method="post"
                 id="totp-disable-form"
               >
                 <input type="hidden" name="csrfToken" value={csrfToken} />
@@ -213,7 +213,7 @@ export default function TOTPSection({
         </>
       )}
 
-      {genResult?.secret && (
+      {genResult?.secret && isFinished && (
         <Stack spacing={2}>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             {uri ? <QRCodeCanvas value={uri} size={200} /> : null}
@@ -227,7 +227,7 @@ export default function TOTPSection({
             </Box>
           </Box>
 
-          <Box component="form" action={verifyAction} method="post">
+          <Box component="form" action={verifyAction}>
             <input type="hidden" name="csrfToken" value={csrfToken} />
             <TextField
               label="認証コード"
