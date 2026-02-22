@@ -1,8 +1,9 @@
 import { apiGet, createApiClient } from "@/libs/apiClient";
 import { ParseJwt, VerifyJwt } from "@/libs/jwt";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
-import { User, UserData } from "./User";
+import { User } from "./User";
 import { cookies } from "next/headers";
+import { UserData } from "./types/User";
 
 export interface SessionData {
   id: string;

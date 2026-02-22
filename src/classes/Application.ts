@@ -1,6 +1,7 @@
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
-import { User, UserData } from "./User";
+import { User } from "./User";
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
+import { UserData } from "./types/User";
 
 interface ApplicationData {
   id: string;
