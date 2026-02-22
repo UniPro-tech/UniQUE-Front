@@ -1,10 +1,10 @@
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
-import { UserData } from "./User";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { FrontendErrors } from "@/errors/FrontendErrors";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
 import { ProfileData } from "./Profile";
+import { UserData } from "./types/User";
 
 export interface AnnouncementData {
   id: string;
