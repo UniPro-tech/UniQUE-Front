@@ -13,29 +13,7 @@ import { IsIncludedInBitmask, MergeBitmask } from "@/libs/bitmask";
 import { ConvertPermissionBitsToText } from "@/constants/Permission";
 import { FrontendErrors } from "@/errors/FrontendErrors";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-
-export enum UserStatus {
-  ESTABLISHED = "established",
-  ACTIVE = "active",
-  SUSPENDED = "suspended",
-  ARCHIVED = "archived",
-}
-
-export interface UserData {
-  id: string;
-  customId: string;
-  email: string;
-  externalEmail: string | null;
-  readonly pendingEmail: string | null;
-  emailVerified: boolean;
-  affiliationPeriod: string | null;
-  isTotpEnabled: boolean | null;
-  status: UserStatus;
-  profile: ProfileData | Profile;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-  deletedAt: string | Date | null;
-}
+import { UserData, UserStatus } from "./types/User";
 
 export class User {
   id: string;
@@ -51,7 +29,6 @@ export class User {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-
   get isDeleted(): boolean {
     return this.deletedAt !== null;
   }
@@ -171,7 +148,7 @@ export class User {
       }
       throw new Error(`Failed to fetch user: ${response.statusText}`);
     }
-    const responseJson = await response.json();
+    const responseJson = toCamelcase<UserData>(await response.json());
     return User.fromJson(responseJson);
   }
 
@@ -185,7 +162,7 @@ export class User {
     if (!response.ok) {
       throw new Error(`Failed to update user: ${response.statusText}`);
     }
-    const responseJson = await response.json();
+    const responseJson = toCamelcase<UserData>(await response.json());
     return User.fromJson(responseJson);
   }
 
@@ -302,7 +279,7 @@ export class User {
   async hasPermission(permission: bigint): Promise<boolean> {
     const permissions = await this.getPermissions();
     const bit = permissions.permissionBits;
-    return IsIncludedInBitmask(bit, permission);
+    return IsIncludedInBitmask(permission, bit);
   }
 
   async getExternalIdentities(): Promise<ExternalIdentity[]> {

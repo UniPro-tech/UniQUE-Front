@@ -1,16 +1,29 @@
-import { apiPatch, apiPost } from "@/libs/apiClient";
-import { User, UserData } from "./User";
+import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
+import { UserData } from "./User";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { FrontendErrors } from "@/errors/FrontendErrors";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
+import { ProfileData } from "./Profile";
 
 export interface AnnouncementData {
   id: string;
   title: string;
   content: string;
   isPinned: boolean;
-  createdBy: User | UserData;
+  createdBy: Omit<
+    UserData,
+    | "email"
+    | "externalEmail"
+    | "emailVerified"
+    | "status"
+    | "createdAt"
+    | "updatedAt"
+    | "isTotpEnabled"
+  > & { profile: Omit<ProfileData, "createdAt" | "updatedAt"> };
   createdAt: string | Date;
   updatedAt: string | Date;
-  deletedAt: string | Date | null;
+  deletedAt: string | Date | null | undefined;
 }
 
 export class Announcement {
@@ -18,7 +31,16 @@ export class Announcement {
   title: string;
   content: string;
   isPinned: boolean;
-  createdBy: User;
+  createdBy: Omit<
+    UserData,
+    | "email"
+    | "externalEmail"
+    | "emailVerified"
+    | "status"
+    | "createdAt"
+    | "updatedAt"
+    | "isTotpEnabled"
+  > & { profile: Omit<ProfileData, "createdAt" | "updatedAt" | "joinedAt"> };
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -28,7 +50,7 @@ export class Announcement {
     this.title = data.title;
     this.content = data.content;
     this.isPinned = data.isPinned;
-    this.createdBy = new User(data.createdBy);
+    this.createdBy = data.createdBy;
     this.createdAt =
       data.createdAt instanceof Date
         ? data.createdAt
@@ -38,7 +60,7 @@ export class Announcement {
         ? data.updatedAt
         : new Date(data.updatedAt);
     this.deletedAt =
-      data.deletedAt === null
+      data.deletedAt === null || data.deletedAt === undefined
         ? null
         : data.deletedAt instanceof Date
           ? data.deletedAt
@@ -61,7 +83,7 @@ export class Announcement {
       title: this.title,
       content: this.content,
       isPinned: this.isPinned,
-      createdBy: this.createdBy.toJson(),
+      createdBy: this.createdBy,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
       deletedAt: this.deletedAt ? this.deletedAt.toISOString() : null,
@@ -86,7 +108,7 @@ export class Announcement {
   }
 
   static async getAll(): Promise<Announcement[]> {
-    const response = await fetch("/announcements");
+    const response = await apiGet("/announcements");
     const responseData = toCamelcase<{ data: AnnouncementData[] }>(
       await response.json(),
     );
@@ -95,15 +117,25 @@ export class Announcement {
     );
   }
 
-  static async getById(id: string): Promise<Announcement> {
-    const response = await fetch(`/announcements/${id}`);
+  static async getById(id: string): Promise<Announcement | null> {
+    const response = await apiGet(`/announcements/${id}`);
     if (!response.ok) {
-      throw new Error(`Failed to fetch announcement: ${response.statusText}`);
+      if (response.status === 404) {
+        return null;
+      }
+      switch (response.status) {
+        case 400:
+          throw FrontendErrors.InvalidInput;
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
     }
-    const responseData = toCamelcase<{ data: AnnouncementData }>(
-      await response.json(),
-    );
-    return new Announcement(responseData.data);
+    const responseData = toCamelcase<AnnouncementData>(await response.json());
+    return new Announcement({ ...responseData, id: id });
   }
 
   static async updateById(
@@ -119,20 +151,36 @@ export class Announcement {
       ...data,
     });
     if (!response.ok) {
-      throw new Error(`Failed to update announcement: ${response.statusText}`);
+      switch (response.status) {
+        case 400:
+          throw FrontendErrors.InvalidInput;
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
     }
     const responseData = toCamelcase<{ data: AnnouncementData }>(
       await response.json(),
     );
-    return new Announcement(responseData.data);
+    return new Announcement({ ...responseData.data, id: id });
   }
 
   static async deleteById(id: string): Promise<void> {
-    const response = await fetch(`/announcements/${id}`, {
-      method: "DELETE",
-    });
+    const response = await apiDelete(`/announcements/${id}`);
     if (!response.ok) {
-      throw new Error(`Failed to delete announcement: ${response.statusText}`);
+      switch (response.status) {
+        case 400:
+          throw FrontendErrors.InvalidInput;
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        default:
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
     }
   }
 

@@ -2,6 +2,7 @@ import { apiGet, createApiClient } from "@/libs/apiClient";
 import { ParseJwt, VerifyJwt } from "@/libs/jwt";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { User, UserData } from "./User";
+import { cookies } from "next/headers";
 
 export interface SessionData {
   id: string;
@@ -164,6 +165,15 @@ export class Session {
     }
     const sessionData = toCamelcase<SessionData>(await response.json());
     return Session.fromJson(sessionData);
+  }
+
+  static async getCurrent(): Promise<Session | null> {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("session_jwt")?.value;
+    if (!token) {
+      return null;
+    }
+    return await Session.getSessionFromJWT(token);
   }
 
   // ------ Instance Methods ------
