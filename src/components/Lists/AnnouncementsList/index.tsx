@@ -27,6 +27,7 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import type { UserDTO } from "@/types/User";
+import { AnnouncementData } from "@/classes/Announcement";
 
 export type AnnouncementDTO = {
   id: string;
@@ -38,7 +39,7 @@ export type AnnouncementDTO = {
 };
 
 type Props = {
-  initial?: AnnouncementDTO[];
+  initial?: AnnouncementData[];
   canUpdate?: boolean;
   canPin?: boolean;
   canDelete?: boolean;
@@ -52,7 +53,7 @@ export default function AnnouncementsList({
   canDelete = false,
   isAdmin = false,
 }: Props) {
-  const [items, setItems] = React.useState<AnnouncementDTO[]>(
+  const [items, setItems] = React.useState<AnnouncementData[]>(
     () => initial || [],
   );
   const [busy, setBusy] = React.useState<Record<string, boolean>>({});
