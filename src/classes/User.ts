@@ -328,20 +328,22 @@ export class User {
     }>(await response.json());
   }
 
-  async setupFinishTotp(code: string): Promise<void> {
+  async setupFinishTotp(code: string): Promise<SetupFinishTotpResponse> {
     const apiClient = createApiClient(`${process.env.AUTH_API_URL}`);
-    const response = await apiClient.post(`/totp/${this.id}/verify`, {
+    const response = await apiClient.post(`/internal/totp/${this.id}/verify`, {
       code,
     });
     if (!response.ok) {
       throw new Error(`Failed to verify TOTP code: ${response.statusText}`);
     }
-    this.isTotpEnabled = true;
+    const json = await response.json();
+    this.isTotpEnabled = json.valid;
+    return json;
   }
 
   async disableTotp(password: string): Promise<void> {
     const apiClient = createApiClient(`${process.env.AUTH_API_URL}`);
-    const response = await apiClient.post(`/totp/${this.id}/disable`, {
+    const response = await apiClient.post(`/internal/totp/${this.id}/disable`, {
       password,
     });
     if (!response.ok) {
@@ -353,5 +355,9 @@ export class User {
 
 interface EmailVerificationResponse {
   type: "registration" | "email_change";
+  valid: boolean;
+}
+
+interface SetupFinishTotpResponse {
   valid: boolean;
 }
