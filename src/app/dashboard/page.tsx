@@ -1,7 +1,7 @@
 import { Stack, Typography, Box, Button } from "@mui/material";
 import Link from "next/link";
 import AnnouncementsList from "@/components/AnnouncementsList";
-import Announcement from "@/types/Announcement";
+import { Announcement } from "@/classes/Announcement";
 
 export const metadata = {
   title: "ダッシュボード",
@@ -9,9 +9,7 @@ export const metadata = {
 };
 
 export default async function DashboardPage() {
-  const anns = (await Announcement.getAll({ options: { limit: 5 } })).map((a) =>
-    a.toPlainObject(),
-  );
+  const anns = (await Announcement.getAll()).map((a) => a.toJson());
 
   return (
     <Stack>
