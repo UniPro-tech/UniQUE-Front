@@ -1,4 +1,4 @@
-import AnnouncementsList from "@/components/AnnouncementsList";
+import AnnouncementsList from "@/components/Lists/AnnouncementsList";
 import { Stack, Typography, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Link from "next/link";

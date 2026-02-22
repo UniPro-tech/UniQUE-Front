@@ -1,6 +1,6 @@
 import { Stack, Typography, Box, Button } from "@mui/material";
 import Link from "next/link";
-import AnnouncementsList from "@/components/AnnouncementsList";
+import AnnouncementsList from "@/components/Lists/AnnouncementsList";
 import { Announcement } from "@/classes/Announcement";
 
 export const metadata = {
