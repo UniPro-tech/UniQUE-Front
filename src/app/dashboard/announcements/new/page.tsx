@@ -1,9 +1,7 @@
 import AnnouncementCreateForm from "@/components/Forms/AnnouncementCreateForm";
+import { PermissionBitsFields } from "@/constants/Permission";
+import { requirePermission } from "@/libs/permissions";
 import { Stack, Typography, Breadcrumbs, Link } from "@mui/material";
-import Session from "@/types/Session";
-import { hasPermission } from "@/lib/permissions";
-import { PermissionBitsFields } from "@/types/Permission";
-import { forbidden } from "next/navigation";
 
 export const metadata = {
   title: "お知らせ新規作成",
@@ -11,14 +9,7 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const session = await Session.get();
-  if (!session) return <div>ログインが必要です</div>;
-
-  const canCreate = await hasPermission(
-    PermissionBitsFields.ANNOUNCEMENT_CREATE,
-  );
-  if (!canCreate) return forbidden();
-
+  requirePermission(PermissionBitsFields.ANNOUNCEMENT_CREATE);
   return (
     <Stack spacing={3}>
       <Breadcrumbs aria-label="breadcrumb">

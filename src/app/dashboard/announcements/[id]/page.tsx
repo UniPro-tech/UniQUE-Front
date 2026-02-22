@@ -1,6 +1,5 @@
 import { Stack, Typography, Button, Box } from "@mui/material";
 import Link from "next/link";
-import Announcement from "@/types/Announcement";
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
@@ -8,6 +7,8 @@ import { hasPermission } from "@/lib/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Announcement } from "@/classes/Announcement";
+import { notFound } from "next/navigation";
 
 export const metadata = {
   title: "アナウンス詳細",
@@ -23,7 +24,13 @@ export default async function Page({
 }) {
   const { id } = await params;
   const ann = await Announcement.getById(id);
-  const a = ann.toPlainObject();
+
+  if (!ann) {
+    notFound();
+  }
+
+  const a = ann.toJson();
+
   const { success, type, error } = await searchParams;
 
   const snacks: SnackbarData[] = [];
