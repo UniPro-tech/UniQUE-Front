@@ -13,24 +13,28 @@ import {
   FormControlLabel,
   Switch,
 } from "@mui/material";
+import { useSnackbar } from "notistack";
 import { Save as SaveIcon, Cancel as CancelIcon } from "@mui/icons-material";
 import {
   updateProfile,
   UpdateProfileData,
-} from "@/app/dashboard/profile/action";
-import { ProfileDTO } from "@/types/User";
+} from "@/components/Cards/Profile/action";
+import { ProfileData } from "@/classes/Profile";
 
 interface ProfileEditFormProps {
-  profile?: ProfileDTO;
+  profile?: ProfileData;
   onCancel?: () => void;
   onSuccess?: () => void;
+  setProfile?: (data: ProfileData) => void;
 }
 
 export default function ProfileEditForm({
   profile,
   onCancel,
   onSuccess,
+  setProfile,
 }: ProfileEditFormProps) {
+  const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState<UpdateProfileData>({
     displayName: profile?.displayName || "",
     bio: profile?.bio || "",
@@ -62,12 +66,15 @@ export default function ProfileEditForm({
       const result = await updateProfile(formData);
 
       if (result.success) {
-        setSuccess(true);
-        if (onSuccess) {
-          onSuccess();
-        }
+        enqueueSnackbar(result.message || "プロフィールを更新しました", {
+          variant: "success",
+        });
+        if (setProfile) setProfile(result.profile!);
+        if (onSuccess) onSuccess();
       } else {
-        setError(result.error || "更新に失敗しました");
+        const msg = result.error || "更新に失敗しました";
+        setError(msg);
+        enqueueSnackbar(msg, { variant: "error" });
       }
     } catch (err) {
       setError("予期しないエラーが発生しました");

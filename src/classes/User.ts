@@ -3,12 +3,13 @@ import {
   apiGet,
   apiPatch,
   apiPost,
+  apiPut,
   createApiClient,
 } from "@/libs/apiClient";
 import { ExternalIdentity, ExternalIdentityData } from "./ExternalIdentity";
 import { Profile, ProfileData } from "./Profile";
 import { Role, RoleData } from "./Role";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase, toSnakecase } from "@/lib/SnakeCamlUtil";
 import { IsIncludedInBitmask, MergeBitmask } from "@/libs/bitmask";
 import { ConvertPermissionBitsToText } from "@/constants/Permission";
 import { FrontendErrors } from "@/errors/FrontendErrors";
@@ -160,6 +161,7 @@ export class User {
   ): Promise<User> {
     const response = await apiPatch(`/users/${id}`, updateData);
     if (!response.ok) {
+      console.error("Failed to update user:", await response.text());
       throw new Error(`Failed to update user: ${response.statusText}`);
     }
     const responseJson = toCamelcase<UserData>(await response.json());
@@ -235,8 +237,18 @@ export class User {
       status: this.status,
       profile: this.profile.toJson(),
     };
-    const updatedUser = await User.updateById(this.id, updateData);
-    Object.assign(this, updatedUser);
+    const updatedUser = await apiPut(
+      `/users/${this.id}`,
+      toSnakecase(updateData),
+    ).then((res) => {
+      if (!res.ok) {
+        throw new Error(`Failed to update user: ${res.statusText}`);
+      }
+      return res.json();
+    });
+    const camelCasedUser = toCamelcase<UserData>(updatedUser);
+    Object.assign(this, camelCasedUser);
+    this.profile = Profile.fromJson(camelCasedUser.profile);
   }
 
   async delete(): Promise<void> {
