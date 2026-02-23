@@ -5,21 +5,25 @@ import {
   Button,
   Card,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Stack,
   Typography,
 } from "@mui/material";
-import type { UserDTO } from "@/types/User";
-import type { ExternalIdentityDTO } from "@/types/ExternalIdentity";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import { useState, useTransition } from "react";
-import * as SocialAccounts from "@/lib/resources/SocialAccounts";
+import { ExternalIdentityData } from "@/classes/ExternalIdentity";
+import { UserData } from "@/classes/types/User";
+import { deleteAction } from "./action";
 
 /** Discord brand colour */
 const DISCORD_COLOR = "#5865F2";
 
 /** Resolve a readable name from the identity with fallbacks */
-function resolveDisplayName(identity: ExternalIdentityDTO): string {
+function resolveDisplayName(identity: ExternalIdentityData): string {
   return identity.displayName ?? identity.username ?? identity.externalUserId;
 }
 
@@ -27,13 +31,12 @@ function SocialAccountsContent({
   user,
   initialExternalIdentities,
 }: {
-  user: UserDTO;
-  initialExternalIdentities: ExternalIdentityDTO[];
+  user: UserData;
+  initialExternalIdentities: ExternalIdentityData[];
 }) {
-  const { enqueueSnackbar } = useSnackbar();
   const [isPending, startTransition] = useTransition();
   const [externalIdentities, setExternalIdentities] = useState<
-    ExternalIdentityDTO[]
+    ExternalIdentityData[]
   >(initialExternalIdentities);
 
   // Discordの外部アイデンティティを取得
@@ -42,29 +45,14 @@ function SocialAccountsContent({
   );
   const hasDiscordIdentity = discordIdentities.length > 0;
 
-  const handleUnlink = async (identityId: string, provider: string) => {
-    if (!confirm(`${provider}アカウントの連携を解除してもよろしいですか?`)) {
-      return;
-    }
+  const [isUnlinkDialogOpen, setIsUnlinkDialogOpen] = useState(false);
+  const [unlinkingIdentityId, setUnlinkingIdentityId] = useState("");
+  const [unlinkingProvider, setUnlinkingProvider] = useState("");
 
-    startTransition(async () => {
-      try {
-        await SocialAccounts.unlink(user.id, identityId);
-        setExternalIdentities((prev) =>
-          prev.filter((identity) => identity.id !== identityId),
-        );
-        enqueueSnackbar(`${provider}アカウントの連携を解除しました`, {
-          variant: "success",
-        });
-        // ページをリロードして最新の状態を取得
-        window.location.reload();
-      } catch (error) {
-        console.error("Failed to unlink account:", error);
-        enqueueSnackbar(`${provider}アカウントの連携解除に失敗しました`, {
-          variant: "error",
-        });
-      }
-    });
+  const handleUnlink = async (identityId: string, provider: string) => {
+    setUnlinkingIdentityId(identityId);
+    setUnlinkingProvider(provider);
+    setIsUnlinkDialogOpen(true);
   };
 
   return (
@@ -189,6 +177,15 @@ function SocialAccountsContent({
           </Button>
         </Stack>
       )}
+      <UnlinkDialog
+        userId={user.id}
+        identityId={unlinkingIdentityId} // This will be set when opening the dialog
+        provider={unlinkingProvider} // This will be set when opening the dialog
+        open={isUnlinkDialogOpen} // This will be controlled by state
+        onClose={() => setIsUnlinkDialogOpen(false)} // This will be implemented to handle dialog close
+        startTransition={startTransition}
+        setExternalIdentities={setExternalIdentities}
+      />
     </Card>
   );
 }
@@ -197,8 +194,8 @@ export default function SocialAccountsCardClient({
   user,
   externalIdentities,
 }: {
-  user: UserDTO;
-  externalIdentities: ExternalIdentityDTO[];
+  user: UserData;
+  externalIdentities: ExternalIdentityData[];
 }) {
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
@@ -207,5 +204,65 @@ export default function SocialAccountsCardClient({
         initialExternalIdentities={externalIdentities}
       />
     </SnackbarProvider>
+  );
+}
+
+function UnlinkDialog({
+  userId,
+  identityId,
+  open,
+  onClose,
+  provider,
+  startTransition,
+  setExternalIdentities,
+}: {
+  userId: string;
+  identityId: string;
+  open: boolean;
+  onClose: (confirmed: boolean) => void;
+  provider: string;
+  startTransition: (callback: () => void) => void;
+  setExternalIdentities: React.Dispatch<
+    React.SetStateAction<ExternalIdentityData[]>
+  >;
+}) {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleUnlink = async () => {
+    startTransition(async () => {
+      try {
+        await deleteAction(userId, identityId);
+        setExternalIdentities((prev) =>
+          prev.filter((identity) => identity.id !== identityId),
+        );
+        enqueueSnackbar(`${provider}アカウントの連携を解除しました`, {
+          variant: "success",
+        });
+        onClose(true);
+      } catch (error) {
+        console.error("Failed to unlink account:", error);
+        enqueueSnackbar(`${provider}アカウントの連携解除に失敗しました`, {
+          variant: "error",
+        });
+      }
+    });
+  };
+  return (
+    <Dialog open={open} onClose={() => onClose(false)}>
+      <DialogTitle>{`${provider}アカウントの連携を解除しますか?`}</DialogTitle>
+      <DialogContent>
+        <Typography variant="body2">
+          {`${provider}アカウントの連携を解除してもよろしいですか?`}
+        </Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => onClose(false)} color="primary">
+          キャンセル
+        </Button>
+        <Button onClick={handleUnlink} color="error" variant="contained">
+          連携を解除
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
