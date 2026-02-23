@@ -16,7 +16,7 @@ import {
 import { Save as SaveIcon, Cancel as CancelIcon } from "@mui/icons-material";
 import { ContentCopy as ContentCopyIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { createApplication } from "@/app/dashboard/applications/new/action";
+import { createApplication } from "./action";
 
 interface ApplicationCreateFormProps {
   onCancel?: () => void;
