@@ -1,6 +1,6 @@
 import ApplicationEditForm from "@/components/Forms/ApplicationEditForm";
 import RedirectUris from "@/components/Pages/Applications/RedirectUris";
-import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import { Application } from "@/types/Application";
 import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
 import { notFound } from "next/navigation";

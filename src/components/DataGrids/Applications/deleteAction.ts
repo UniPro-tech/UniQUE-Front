@@ -1,12 +1,12 @@
 "use server";
 
-import { Application } from "@/types/Application";
+import { Application } from "@/classes/Application";
 
 export async function deleteApplicationById(
   appId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const app = await Application.getApplicationById(appId);
+    const app = await Application.getById(appId);
     await app.delete();
     return { success: true };
   } catch (err) {

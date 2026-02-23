@@ -13,19 +13,19 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { deleteApplicationById } from "@/app/dashboard/applications/delete-action";
-import type { ApplicationWithOwner } from "@/types/Application";
 import { redirect, RedirectType } from "next/navigation";
 import { Box, Paper, Link as MuiLink } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { ApplicationData } from "@/classes/Application";
+import { deleteApplicationById } from "./deleteAction";
 
 export default function ApplicationsDataGridClient({
   rows,
 }: {
-  rows: ApplicationWithOwner[];
+  rows: ApplicationData[];
 }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<ApplicationWithOwner[]>(
+  const [localRows, setLocalRows] = React.useState<ApplicationData[]>(
     () => rows,
   );
 
@@ -174,10 +174,11 @@ export default function ApplicationsDataGridClient({
         width: 200,
         flex: 0.8,
         renderCell: (params) => {
-          const displayName = params.row.ownerDisplayName;
-          const customId = params.row.ownerCustomId;
+          const displayName = (params.row as ApplicationData).owner?.profile
+            .displayName;
+          const customId = (params.row as ApplicationData).owner?.customId;
           if (!displayName && !customId) return "不明";
-          return `${displayName} (${customId})`;
+          return `${displayName} (@${customId})`;
         },
       },
     ];

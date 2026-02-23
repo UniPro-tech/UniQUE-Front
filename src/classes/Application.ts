@@ -3,10 +3,10 @@ import { User } from "./User";
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
 import { UserData } from "./types/User";
 
-interface ApplicationData {
+export interface ApplicationData {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   websiteUrl: string | null;
   privacyPolicyUrl: string | null;
   userId?: string;
@@ -20,7 +20,7 @@ interface ApplicationData {
 export class Application {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   websiteUrl: string | null;
   privacyPolicyUrl: string | null;
   private ownerId: string;
@@ -67,7 +67,8 @@ export class Application {
   }
 
   // This method converts the Application instance back to a plain object that can be easily serialized to JSON.
-  toJson(): ApplicationData {
+  async toJson(): Promise<ApplicationData> {
+    const owner = await this.getOwner().then((user) => user.toJson());
     return {
       id: this.id,
       name: this.name,
@@ -75,6 +76,7 @@ export class Application {
       websiteUrl: this.websiteUrl,
       privacyPolicyUrl: this.privacyPolicyUrl,
       userId: this.ownerId,
+      owner,
       clientSecret: this.clientSecret,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
@@ -90,6 +92,9 @@ export class Application {
       "id" | "createdAt" | "updatedAt" | "deletedAt"
     >,
   ): Promise<Application> {
+    if (!applicationData.userId && !applicationData.owner) {
+      throw new Error("Either userId or owner must be provided");
+    }
     const response = await apiPost("/applications", applicationData);
 
     if (!response.ok) {
