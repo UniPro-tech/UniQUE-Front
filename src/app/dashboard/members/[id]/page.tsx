@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import UserDetailClient from "@/components/Pages/Members/UserDetailClient";
+import Profile from "@/components/Cards/Profile";
 import { User } from "@/classes/User";
 
 export const metadata = {
@@ -27,6 +27,5 @@ export default async function UserDetailPage({
   }
 
   const userData = user.toJson();
-  console.log("User data for detail page:", userData);
-  return <UserDetailClient user={userData} />;
+  return <Profile user={userData} variant="detail" showTimestamps />;
 }
