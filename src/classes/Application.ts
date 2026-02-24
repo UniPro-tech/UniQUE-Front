@@ -2,6 +2,7 @@ import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { User } from "./User";
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
 import { UserData } from "./types/User";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 
 export interface ApplicationData {
   id: string;
@@ -109,6 +110,9 @@ export class Application {
     const response = await apiGet(`/applications/${id}`);
 
     if (!response.ok) {
+      if (response.status === 404) {
+        throw ResourceApiErrors.ResourceNotFound;
+      }
       throw new Error(`Failed to fetch application: ${response.statusText}`);
     }
 
@@ -190,17 +194,17 @@ export class Application {
 
   async getRedirectUris(): Promise<string[]> {
     const res = await apiGet(`/applications/${this.id}/redirect_uris`);
-    const data = toCamelcase<
-      [
+    const data = toCamelcase<{
+      data: [
         {
           applicationId: string;
           uri: string;
           createdAt: string;
           updatedAt: string;
         },
-      ]
-    >(res);
-    return data.map((item) => item.uri);
+      ];
+    }>(await res.json());
+    return data.data.map((item) => item.uri);
   }
 
   async addRedirectUri(uri: string): Promise<void> {
@@ -219,6 +223,12 @@ export class Application {
     );
 
     if (!response.ok) {
+      console.log("Failed to remove redirect URI:", {
+        status: response.status,
+        statusText: response.statusText,
+        response: await response.text(),
+        uri,
+      });
       throw new Error(`Failed to remove redirect URI: ${response.statusText}`);
     }
   }

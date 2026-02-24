@@ -19,10 +19,11 @@ import {
   Save as SaveIcon,
   ContentCopy as ContentCopyIcon,
 } from "@mui/icons-material";
-import type { PlainApplication } from "@/types/Application";
+import { changeAction } from "./action";
+import { ApplicationData } from "@/classes/Application";
 
 interface ApplicationEditFormProps {
-  application: PlainApplication;
+  application: ApplicationData;
   owner?: {
     displayName: string;
     customId: string;
@@ -39,7 +40,6 @@ interface UpdateApplicationFormData {
 
 export default function ApplicationEditForm({
   application,
-  owner,
 }: ApplicationEditFormProps) {
   const generateClientSecret = () => {
     // ランダムな64文字の英数字文字列を生成
@@ -107,19 +107,10 @@ export default function ApplicationEditForm({
     (async () => {
       setRegenerating(true);
       try {
-        const res = await fetch(
-          `/api/applications/${encodeURIComponent(application.id)}`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ clientSecret: newSecret }),
-          },
-        );
-        const data = await res.json().catch(() => null);
-        if (!res.ok || (data && data.ok === false)) {
-          const message = data?.error ?? "シークレットの更新に失敗しました";
-          throw new Error(message);
-        }
+        await changeAction({
+          id: application.id,
+          clientSecret: newSecret,
+        });
         setSecretSaved(true);
       } catch (err) {
         setError(
@@ -149,6 +140,7 @@ export default function ApplicationEditForm({
 
     try {
       const payload: Record<string, unknown> = {
+        id: application.id,
         name: formData.name,
         description: formData.description,
         websiteUrl: formData.websiteUrl,
@@ -158,20 +150,7 @@ export default function ApplicationEditForm({
         payload.clientSecret = clientSecret;
       }
 
-      const res = await fetch(
-        `/api/applications/${encodeURIComponent(application.id)}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        },
-      );
-
-      const data = await res.json().catch(() => null);
-      if (!res.ok || (data && data.ok === false)) {
-        const message = data?.error ?? "更新に失敗しました";
-        throw new Error(message);
-      }
+      await changeAction(payload);
 
       setSuccess(true);
       // 保存後はシークレットをリセット
@@ -247,7 +226,9 @@ export default function ApplicationEditForm({
                   mt: 0.5,
                 }}
               >
-                {owner ? `${owner.displayName} (@${owner.customId})` : "不明"}
+                {application.owner
+                  ? `${application.owner.profile.displayName} (@${application.owner.customId})`
+                  : "不明"}
               </Typography>
             </Paper>
           </Stack>

@@ -1,5 +1,5 @@
 import { Session } from "@/classes/Session";
-import ApplicationCreateForm from "@/components/Forms/ApplicationCreateForm";
+import ApplicationCreateForm from "@/components/Pages/Applications/Forms/ApplicationCreateForm";
 import { Stack, Typography, Breadcrumbs, Link } from "@mui/material";
 
 export const metadata = {

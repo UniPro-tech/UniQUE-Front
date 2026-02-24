@@ -1,7 +1,7 @@
-import ApplicationEditForm from "@/components/Forms/ApplicationEditForm";
-import RedirectUris from "@/components/Pages/Applications/RedirectUris";
+import { Application } from "@/classes/Application";
+import ApplicationEditForm from "@/components/Pages/Applications/Forms/ApplicationEditForm";
+import RedirectUris from "@/components/Pages/Applications/Forms/RedirectUris";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { Application } from "@/types/Application";
 import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
 import { notFound } from "next/navigation";
 
@@ -12,7 +12,7 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   try {
-    const app = await Application.getApplicationById(id);
+    const app = await Application.getById(id);
     return {
       title: `${app.name} - アプリケーション編集`,
       description: `${app.name}の詳細設定を行います`,
@@ -32,12 +32,9 @@ export default async function Page({
 }) {
   const { id } = await params;
   let application;
-  let owner:
-    | { displayName: string; customId: string; email: string }
-    | undefined;
 
   try {
-    application = await Application.getApplicationById(id);
+    application = await Application.getById(id);
   } catch (error) {
     if (error == ResourceApiErrors.ResourceNotFound) {
       notFound();
@@ -46,20 +43,6 @@ export default async function Page({
 
   if (!application) {
     notFound();
-  }
-
-  // オーナー情報を取得
-  try {
-    const owners = await application.getOwners();
-    if (owners.length > 0) {
-      owner = {
-        displayName: owners[0].profile?.displayName ?? owners[0].email ?? "",
-        customId: owners[0].customId ?? "",
-        email: owners[0].email ?? "",
-      };
-    }
-  } catch (error) {
-    console.error("Failed to fetch owner:", error);
   }
 
   return (
@@ -80,11 +63,8 @@ export default async function Page({
         </Typography>
       </Stack>
 
-      <ApplicationEditForm
-        application={application.toPlainObject()}
-        owner={owner}
-      />
-      <RedirectUris applicationId={application.id} />
+      <ApplicationEditForm application={await application.toJson()} />
+      <RedirectUris application={application} />
     </Stack>
   );
 }
