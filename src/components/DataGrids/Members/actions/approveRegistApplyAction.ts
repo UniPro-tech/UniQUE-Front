@@ -3,6 +3,7 @@ import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { getUserById, saveUser } from "@/lib/resources/Users";
 import { list as listExternalIdentities } from "@/lib/resources/SocialAccounts";
 import { sendDiscordDM, assignDiscordRole } from "@/lib/discord";
+import { User } from "@/classes/User";
 
 export const approveRegistApplyAction = async (
   _prevState: FormStatus | null,
@@ -96,7 +97,7 @@ export const rejectRegistApplyAction = async (
   }
 
   try {
-    const user = await getUserById(userId);
+    const user = await User.getById(userId);
     if (!user) {
       return { status: "error", message: "該当するユーザーが見つかりません。" };
     }

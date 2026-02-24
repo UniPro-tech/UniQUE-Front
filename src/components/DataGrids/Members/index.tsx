@@ -20,16 +20,16 @@ import { jaJP } from "@mui/x-data-grid/locales";
 import type { UserDTO } from "@/types/User";
 import { enqueueSnackbar } from "notistack";
 import { saveUser } from "@/lib/resources/Users";
-import ApproveRegistApplyDialog from "@/components/Dialogs/ApproveRegistApply";
+import ApproveRegistApplyDialog from "@/components/DataGrids/Members/ApproveDialog";
 import {
   USER_STATUS_OPTIONS,
   AFFILIATION_PERIOD_OPTIONS,
 } from "@/lib/constants/UserConstants";
 import { useRouter } from "next/navigation";
 import DeleteDialog from "@/components/Dialogs/Delete";
-import RejectDialog from "@/components/Dialogs/Reject";
+import RejectDialog from "@/components/DataGrids/Members/RejectDialog";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { deleteUserById } from "@/components/DataGrids/Members/deleteAction";
+import { deleteUserById } from "@/components/DataGrids/Members/actions/deleteAction";
 
 export default function MembersDataGrid({
   rows,
@@ -43,10 +43,6 @@ export default function MembersDataGrid({
   canDelete?: boolean;
   canUpdate?: boolean;
   canRead?: boolean;
-  rejectAction?: (
-    _prevState: FormStatus | null,
-    formData: FormData | null,
-  ) => FormStatus | null | Promise<FormStatus | null>;
 }) {
   const apiRef = useGridApiRef();
   const router = useRouter();

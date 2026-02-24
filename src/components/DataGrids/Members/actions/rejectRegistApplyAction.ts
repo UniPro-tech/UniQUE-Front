@@ -1,6 +1,6 @@
 "use server";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { createApiClient } from "@/lib/apiClient";
+import { createApiClient } from "@/libs/apiClient";
 
 export const rejectRegistApplyAction = async (
   _prevState: FormStatus | null,
