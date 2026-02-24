@@ -6,7 +6,11 @@ import {
   apiPut,
   createApiClient,
 } from "@/libs/apiClient";
-import { ExternalIdentity, ExternalIdentityData } from "./ExternalIdentity";
+import {
+  ExternalIdentity,
+  ExternalIdentityCreateData,
+  ExternalIdentityData,
+} from "./ExternalIdentity";
 import { Profile, ProfileData } from "./Profile";
 import { Role, RoleData } from "./Role";
 import { toCamelcase, toSnakecase } from "@/lib/SnakeCamlUtil";
@@ -301,7 +305,7 @@ export class User {
 
   async addExternalIdentity(
     data: Omit<
-      ExternalIdentityData,
+      ExternalIdentityCreateData,
       "id" | "userId" | "createdAt" | "updatedAt"
     >,
     registrationCode?: string,
