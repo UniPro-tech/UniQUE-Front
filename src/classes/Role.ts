@@ -15,7 +15,7 @@ export interface RoleData {
   name: string;
   customId: string;
   description: string;
-  permissionBits: number;
+  permissionBitmask: number;
   isDefault: boolean;
   createdAt: string | Date;
   updatedAt: string | Date;
@@ -27,7 +27,7 @@ export class Role {
   name: string;
   customId: string;
   description: string;
-  permissionBits: bigint;
+  permissionBitmask: bigint;
   isDefault: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -46,7 +46,7 @@ export class Role {
     this.name = data.name;
     this.customId = data.customId;
     this.description = data.description;
-    this.permissionBits = BigInt(data.permissionBits);
+    this.permissionBitmask = BigInt(data.permissionBitmask);
     this.isDefault = data.isDefault;
     this.createdAt =
       data.createdAt instanceof Date
@@ -75,7 +75,7 @@ export class Role {
       name: this.name,
       customId: this.customId,
       description: this.description,
-      permissionBits: Number(this.permissionBits),
+      permissionBitmask: Number(this.permissionBitmask),
       isDefault: this.isDefault,
       createdAt:
         this.createdAt instanceof Date
@@ -181,10 +181,10 @@ export class Role {
       name: roleData?.name ?? this.name,
       customId: roleData?.customId ?? this.customId,
       description: roleData?.description ?? this.description,
-      permissionBits:
-        roleData?.permissionBits !== undefined
-          ? Number(roleData.permissionBits)
-          : Number(this.permissionBits),
+      permissionBitmask:
+        roleData?.permissionBitmask !== undefined
+          ? Number(roleData.permissionBitmask)
+          : Number(this.permissionBitmask),
       isDefault: roleData?.isDefault ?? this.isDefault,
     });
     Object.assign(this, updatedRole);

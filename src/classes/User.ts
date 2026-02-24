@@ -272,11 +272,11 @@ export class User {
     permissionBits: bigint;
   }> {
     const roles = await this.getRoles();
-    const permissionBitsArray = roles.map((role) => role.permissionBits);
+    const permissionBitsArray = roles.map((role) => role.permissionBitmask);
     const mergedPermissionBits = MergeBitmask(permissionBitsArray);
     const permissionText: string[] = [];
     roles.forEach((role) => {
-      ConvertPermissionBitsToText(role.permissionBits).forEach((text) => {
+      ConvertPermissionBitsToText(role.permissionBitmask).forEach((text) => {
         if (!permissionText.includes(text)) {
           permissionText.push(text);
         }
