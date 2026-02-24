@@ -1,7 +1,7 @@
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { createApiClient } from "./apiClient";
 import { getRealIPAddress } from "./request";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { ParseJwt } from "./jwt";
 import { Session } from "@/classes/Session";
 import { ClearSessionCookie } from "./cookies";
@@ -47,7 +47,7 @@ export const AuthenticationRequest = async (
   const { username, password, code } = credentials;
 
   const ipAddress = await getRealIPAddress();
-  const userAgent = navigator.userAgent;
+  const userAgent = (await headers()).get("user-agent") || "Unknown";
 
   const requestBody: AuthenticationRequest = {
     type: password ? AuthenticationType.Password : AuthenticationType.TOTP,
