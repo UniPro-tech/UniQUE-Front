@@ -9,7 +9,6 @@ import {
 import {
   ExternalIdentity,
   ExternalIdentityCreateData,
-  ExternalIdentityData,
 } from "./ExternalIdentity";
 import { Profile, ProfileData } from "./Profile";
 import { Role, RoleData } from "./Role";
@@ -308,27 +307,10 @@ export class User {
       ExternalIdentityCreateData,
       "id" | "userId" | "createdAt" | "updatedAt"
     >,
-    registrationCode?: string,
   ): Promise<ExternalIdentity> {
-    if (!registrationCode) {
-      const externalIdentity = await ExternalIdentity.create(this.id, {
-        ...data,
-      });
-      return externalIdentity;
-    } else {
-      // API を呼び出して新しい外部IDを作成する実装例
-      const response = await apiPost(
-        `/internal/users/email_verify/discord_link`,
-        { ...data, code: registrationCode },
-      );
-      if (!response.ok) {
-        throw new Error(
-          `Failed to create external identity: ${response.statusText}`,
-        );
-      }
-      const responseJson = await response.json();
-      return ExternalIdentity.fromJson(responseJson);
-    }
+    return await ExternalIdentity.create(this.id, {
+      ...data,
+    });
   }
 
   async setupBeginTotp(
@@ -367,6 +349,20 @@ export class User {
     }
     this.isTotpEnabled = false;
   }
+
+  /**
+   * ユーザー登録申請を却下する
+   */
+  async reject(): Promise<void> {
+    const response = await apiPost(`/users/${this.id}/reject`);
+    if (!response.ok) {
+      throw new Error(`Failed to reject user: ${response.statusText}`);
+    }
+  }
+
+  /**
+   * ユーザー登録申請を承認する
+   */
 }
 
 interface EmailVerificationResponse {

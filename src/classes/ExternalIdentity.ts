@@ -1,3 +1,4 @@
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import { toCamelcase } from "@/lib/SnakeCamlUtil";
 import { apiDelete, apiGet, apiPost } from "@/libs/apiClient";
 
@@ -8,7 +9,7 @@ export interface ExternalIdentityData {
   avatarUrl: string;
   email?: string;
   externalUserId: string;
-  idTokenClaims: unknown;
+  idTokenClaims: unknown | null;
   provider: string;
   providerData: unknown;
   userId: string;
@@ -19,7 +20,7 @@ export interface ExternalIdentityData {
 export interface ExternalIdentityCreateData {
   accessToken: string;
   externalUserId: string;
-  idToken: string;
+  idToken?: string | null;
   provider: string;
   refreshToken: string;
   tokenExpiresAt: string;
@@ -32,7 +33,7 @@ export class ExternalIdentity {
   avatarUrl: string;
   email?: string;
   externalUserId: string;
-  idTokenClaims: unknown;
+  idTokenClaims: unknown | null;
   provider: string;
   providerData: unknown;
   readonly userId: string;
@@ -105,8 +106,42 @@ export class ExternalIdentity {
       data,
     );
     if (!response.ok) {
+      if (response.status === 409) {
+        throw ResourceApiErrors.ResourceAlreadyExists;
+      }
       throw new Error(
         `Failed to create external identity: ${response.statusText}`,
+      );
+    }
+    const responseJson = toCamelcase<ExternalIdentityData>(
+      await response.json(),
+    );
+    return ExternalIdentity.fromJson(responseJson);
+  }
+
+  static async createByEmailVerificationCode(
+    emailVerifyCode: string,
+    data: ExternalIdentityCreateData,
+  ): Promise<ExternalIdentity> {
+    if (data.provider !== "discord") {
+      throw new Error("Unsupported provider for email verification linking");
+    }
+    const response = await apiPost(
+      `/internal/users/email_verify/discord_link`,
+      {
+        code: emailVerifyCode,
+        external_user_id: data.externalUserId,
+        access_token: data.accessToken,
+        refresh_token: data.refreshToken,
+        token_expires_at: data.tokenExpiresAt,
+      },
+    );
+    if (!response.ok) {
+      if (response.status === 409) {
+        throw ResourceApiErrors.ResourceAlreadyExists;
+      }
+      throw new Error(
+        `Failed to link external identity via email verification: ${response.statusText}`,
       );
     }
     const responseJson = toCamelcase<ExternalIdentityData>(
