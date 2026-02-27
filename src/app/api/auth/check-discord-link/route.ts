@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import Session from "@/types/Session";
-import * as SocialAccounts from "@/lib/resources/SocialAccounts";
+import { User } from "@/classes/User";
+import { Session } from "@/classes/Session";
 
 /**
  * Discord連携状態をチェックするエンドポイント
@@ -9,7 +9,7 @@ import * as SocialAccounts from "@/lib/resources/SocialAccounts";
 export const GET = async (_request: NextRequest) => {
   try {
     // セッションからユーザーIDを取得
-    const session = await Session.get();
+    const session = await Session.getCurrent();
     if (!session) {
       return NextResponse.json(
         { linked: false, hasSession: false },
@@ -18,7 +18,9 @@ export const GET = async (_request: NextRequest) => {
     }
 
     // ユーザーの外部アイデンティティを取得
-    const externalIdentities = await SocialAccounts.list(session.userId);
+    const externalIdentities = await User.getById(session.userId).then(
+      async (user) => (user ? await user.getExternalIdentities() : []),
+    );
 
     // Discord連携があるかチェック
     const hasDiscord = externalIdentities.some(
