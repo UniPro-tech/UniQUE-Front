@@ -131,6 +131,8 @@ export class Announcement {
         case 403:
           throw AuthorizationErrors.AccessDenied;
         default:
+          const data = await response.json();
+          console.log("API Error:", data);
           throw ResourceApiErrors.ApiServerInternalError;
       }
     }

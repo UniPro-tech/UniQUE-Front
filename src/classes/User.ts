@@ -137,6 +137,7 @@ export class User {
         case 409:
           throw ResourceApiErrors.ResourceAlreadyExists;
         default:
+          console.log("Failed to create user:", await response.text());
           throw ResourceApiErrors.ApiServerInternalError;
       }
     }
