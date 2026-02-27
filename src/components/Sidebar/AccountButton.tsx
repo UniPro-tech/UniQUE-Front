@@ -30,7 +30,7 @@ export default function AccountMenu({ user }: { user: UserData | null }) {
 
   return (
     <React.Fragment>
-      <Tooltip title="Account settings">
+      <Tooltip title="アカウントメニュー">
         <IconButton
           onClick={handleClick}
           size="small"
