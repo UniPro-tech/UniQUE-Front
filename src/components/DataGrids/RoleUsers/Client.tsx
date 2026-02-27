@@ -18,18 +18,19 @@ import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import AssignUserToRoleDialog from "@/components/Dialogs/AssignUserToRole";
 import type { UserDTO } from "@/types/User";
-import { type PlainRole } from "@/types/Role";
 import { unassignUserFromRole } from "@/app/dashboard/roles/[id]/assign-action";
+import { RoleData } from "@/classes/Role";
+import { UserData } from "@/classes/types/User";
 
 export default function RoleUsersDataGridClient({
   role,
   rows,
 }: {
-  role: PlainRole;
-  rows: UserDTO[];
+  role: RoleData;
+  rows: UserData[];
 }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<UserDTO[]>(() => rows);
+  const [localRows, setLocalRows] = React.useState<UserData[]>(() => rows);
   const [assignDialogOpen, setAssignDialogOpen] = React.useState(false);
 
   React.useEffect(() => {

@@ -21,11 +21,11 @@ import {
   UpdateRoleFormData,
 } from "@/app/dashboard/roles/[id]/action";
 import { PermissionBitsFields, PermissionTexts } from "@/types/Permission";
-import type { PlainRole } from "@/types/Role";
 import { PermissionGroups } from "./PermissionGroups";
+import { RoleData } from "@/classes/Role";
 
 interface RoleEditFormProps {
-  role: PlainRole;
+  role: RoleData;
 }
 
 export default function RoleEditForm({ role }: RoleEditFormProps) {
@@ -33,7 +33,7 @@ export default function RoleEditForm({ role }: RoleEditFormProps) {
     customId: role.customId || "",
     name: role.name || "",
     description: role.description || "",
-    permissionBitmask: role.permissionBitmask || 0n,
+    permissionBitmask: BigInt(role.permissionBitmask) || 0n,
     isDefault: role.isDefault || false,
   });
 
