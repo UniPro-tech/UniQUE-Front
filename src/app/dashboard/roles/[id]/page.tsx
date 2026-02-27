@@ -1,7 +1,7 @@
 import RoleUsersDataGrid from "@/components/DataGrids/RoleUsers";
 import RoleEditForm from "@/components/Forms/RoleEditForm";
-import RoleBulkAssignButton from "@/components/RoleBulkAssignButton";
-import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
+import RoleBulkAssignButton from "@/components/Pages/Roles/RoleBulkAssignButton";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import { Role } from "@/types/Role";
 import { Breadcrumbs, Link, Stack, Typography, Box } from "@mui/material";
 import { notFound } from "next/navigation";

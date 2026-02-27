@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Button,
   CircularProgress,
@@ -13,6 +13,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { bulkAssignUsersToRole } from "./action";
 
 interface Props {
   roleId: string;
@@ -31,26 +32,16 @@ export default function RoleBulkAssignButton({ roleId }: Props) {
     setOpen(false);
     setLoading(true);
     try {
-      const res = await fetch(`/api/roles/${roleId}/assign_all`, {
-        method: "POST",
-      });
-      if (!res.ok) {
-        let msg = `一括付与に失敗しました: ${res.status} `;
-        const contentType = res.headers.get("content-type") || "";
-        if (contentType.includes("application/json")) {
-          const json = await res.json();
-          msg += json.error || json.detail || JSON.stringify(json);
-        } else {
-          msg += await res.text();
-        }
+      const res = await bulkAssignUsersToRole({ roleId });
+      if (res.error) {
+        const msg = `一括付与に失敗しました: ${res.error} `;
         setSnack({
           msg,
           severity: "error",
         });
       } else {
-        const json = await res.json();
         setSnack({
-          msg: `付与完了（割当数: ${json.assigned ?? "?"}）`,
+          msg: `一括付与が完了しました。`,
           severity: "success",
         });
         router.refresh();
