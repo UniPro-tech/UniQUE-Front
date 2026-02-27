@@ -1,4 +1,4 @@
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { createApiClient } from "@/libs/apiClient";
 import { Application } from "./Application";
 

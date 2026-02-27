@@ -1,4 +1,4 @@
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { User } from "./User";
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
 import { UserData } from "./types/User";

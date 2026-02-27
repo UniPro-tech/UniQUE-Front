@@ -1,5 +1,5 @@
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { apiDelete, apiGet, apiPost } from "@/libs/apiClient";
 
 export interface ExternalIdentityData {

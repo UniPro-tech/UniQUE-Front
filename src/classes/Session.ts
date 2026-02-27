@@ -1,6 +1,6 @@
 import { apiGet, createApiClient } from "@/libs/apiClient";
 import { ParseJwt, VerifyJwt } from "@/libs/jwt";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { User } from "./User";
 import { cookies } from "next/headers";
 import { UserData } from "./types/User";

@@ -12,7 +12,7 @@ import {
 } from "./ExternalIdentity";
 import { Profile, ProfileData } from "./Profile";
 import { Role, RoleData } from "./Role";
-import { toCamelcase, toSnakecase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase, toSnakecase } from "@/libs/snakeCamelUtil";
 import { IsIncludedInBitmask, MergeBitmask } from "@/libs/bitmask";
 import { ConvertPermissionBitsToText } from "@/constants/Permission";
 import { FrontendErrors } from "@/errors/FrontendErrors";
@@ -184,7 +184,10 @@ export class User {
       throw new Error(`Failed to fetch users: ${response.statusText}`);
     }
     const responseJson = await response.json();
-    return responseJson.map((userData: UserData) => User.fromJson(userData));
+    const camelCasedResponse = toCamelcase<{ data: UserData[] }>(responseJson);
+    return camelCasedResponse.data.map((userData: UserData) =>
+      User.fromJson(userData),
+    );
   }
 
   static async passwordResetRequest(email: string): Promise<void> {

@@ -1,5 +1,5 @@
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { FrontendErrors } from "@/errors/FrontendErrors";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import { AuthorizationErrors } from "@/errors/AuthorizationErrors";

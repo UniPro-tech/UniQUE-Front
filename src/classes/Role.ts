@@ -8,7 +8,7 @@ import {
   apiPut,
   stringJsonParseSafe,
 } from "@/libs/apiClient";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 
 export interface RoleData {
   id: string;
