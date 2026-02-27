@@ -28,8 +28,8 @@ import { Stack } from "@mui/material";
 import { PermissionBitsFields } from "@/types/Permission";
 import Image from "next/image";
 import Link from "next/link";
-import type { SessionPlain } from "@/types/Session";
-import type { RoleDTO } from "@/types/Role";
+import { RoleData } from "@/classes/Role";
+import { UserData } from "@/classes/types/User";
 
 const drawerWidth = 240;
 
@@ -125,12 +125,12 @@ interface NavLink {
 }
 
 export default function MiniDrawer({
-  session,
+  user,
   userRoles,
   children,
 }: {
-  session: SessionPlain | null;
-  userRoles?: RoleDTO[];
+  user: UserData | null;
+  userRoles?: RoleData[];
   children: React.ReactNode;
 }) {
   /**
@@ -140,7 +140,7 @@ export default function MiniDrawer({
   const hasPermission = (requiredFlag: bigint): boolean => {
     return (
       userRoles?.some(
-        (role) => (role.permissionBitmask & requiredFlag) !== 0n,
+        (role) => (BigInt(role.permissionBitmask) & requiredFlag) !== 0n,
       ) ?? false
     );
   };
@@ -247,7 +247,7 @@ export default function MiniDrawer({
             </Link>
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
-          <AccountButton session={session} />
+          <AccountButton user={user} />
         </Toolbar>
         <DiscordLinkAlert />
       </AppBar>
