@@ -17,19 +17,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, darken } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
-import type { UserDTO } from "@/types/User";
 import { enqueueSnackbar } from "notistack";
-import { saveUser } from "@/lib/resources/Users";
 import ApproveRegistApplyDialog from "@/components/DataGrids/Members/ApproveDialog";
 import {
   USER_STATUS_OPTIONS,
   AFFILIATION_PERIOD_OPTIONS,
-} from "@/lib/constants/UserConstants";
+} from "@/constants/UserConstants";
 import { useRouter } from "next/navigation";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import RejectDialog from "@/components/DataGrids/Members/RejectDialog";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { deleteUserById } from "@/components/DataGrids/Members/actions/deleteAction";
+import { UserData, UserStatus } from "@/classes/types/User";
+import { ProfileData } from "@/classes/Profile";
+import { updateUserById } from "./actions/updateAction";
 
 export default function MembersDataGrid({
   rows,
@@ -38,7 +39,7 @@ export default function MembersDataGrid({
   canUpdate = false,
   canRead = false,
 }: {
-  rows: UserDTO[];
+  rows: UserData[];
   beforeJoined?: boolean;
   canDelete?: boolean;
   canUpdate?: boolean;
@@ -68,17 +69,17 @@ export default function MembersDataGrid({
       })),
     [],
   );
-  const [localRows, setLocalRows] = React.useState<UserDTO[]>(rows);
+  const [localRows, setLocalRows] = React.useState<UserData[]>(rows);
   React.useEffect(() => {
     setLocalRows(rows);
   }, [rows]);
 
   const [approveDialogOpen, setApproveDialogOpen] = React.useState(false);
-  const [approvedUser, setApprovedUser] = React.useState<UserDTO | null>(null);
+  const [approvedUser, setApprovedUser] = React.useState<UserData | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deletedUserId, setDeletedUserId] = React.useState<null | string>(null);
   const [rejectDialogOpen, setRejectDialogOpen] = React.useState(false);
-  const [rejectUser, setRejectUser] = React.useState<UserDTO | null>(null);
+  const [rejectUser, setRejectUser] = React.useState<UserData | null>(null);
   const unsavedChangesRef = React.useRef<{
     unsavedRows: Record<GridRowId, GridValidRowModel>;
     rowsBeforeChange: Record<GridRowId, GridValidRowModel>;
@@ -88,7 +89,7 @@ export default function MembersDataGrid({
   });
 
   /** 行データが完全な情報を持つかチェック (email, statusなどが含まれている) */
-  const hasFullData = React.useCallback((row: UserDTO): boolean => {
+  const hasFullData = React.useCallback((row: UserData): boolean => {
     return row.email !== undefined && row.status !== undefined;
   }, []);
 
@@ -194,7 +195,7 @@ export default function MembersDataGrid({
         field: "displayName",
         headerName: "表示名",
         width: 150,
-        valueGetter: (_value: unknown, row: UserDTO) =>
+        valueGetter: (_value: unknown, row: UserData) =>
           row.profile?.displayName || row.customId || "",
       },
       {
@@ -254,10 +255,11 @@ export default function MembersDataGrid({
         headerName: "参加日時",
         width: 150,
         type: "dateTime",
-        valueGetter: (_value: unknown, row: UserDTO) => {
+        valueGetter: (_value: unknown, row: UserData) => {
           const d = row.profile?.joinedAt;
           return d ? new Date(d) : null;
         },
+        editable: true,
       },
       {
         field: "createdAt",
@@ -360,18 +362,17 @@ export default function MembersDataGrid({
             );
           }
 
-          const payload: Partial<UserDTO> & { id: string } = {
-            id: String(row.id),
+          const payload: Partial<
+            Omit<UserData, "id" | "createdAt" | "updatedAt" | "deletedAt">
+          > = {
             customId: row.customId as string | undefined,
             email: row.email as string | undefined,
             externalEmail: row.externalEmail as string | undefined,
             affiliationPeriod: row.affiliationPeriod as string | undefined,
-            status: row.status as string | undefined,
-            profile:
-              (row.profile as unknown as UserDTO["profile"]) ?? undefined,
+            status: row.status as UserStatus | undefined,
+            profile: (row.profile as unknown as ProfileData) ?? undefined,
           };
-          const saved = await saveUser(payload);
-          const savedPlain = saved;
+          const savedPlain = await updateUserById(row.id, payload);
           apiRef.current?.updateRows([savedPlain]);
           setLocalRows((prev) =>
             prev.map((r) =>
