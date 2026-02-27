@@ -1,10 +1,10 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/lib/CSRF";
+import { VerifyCSRFToken } from "@/libs/csrf";
 import { FormStatus } from "../../Base";
-import { FormRequestErrors } from "@/types/Errors/FormRequestErrors";
-import Session from "@/types/Session";
-import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
+import { FormRequestErrors } from "@/errors/FormRequestErrors";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
+import { Session } from "@/classes/Session";
 
 export const updateSettings = async (
   _prevState: null | FormStatus,
@@ -27,14 +27,14 @@ export const updateSettings = async (
       } as FormStatus;
     }
 
-    const session = await Session.get();
-    const user = session!.user;
-    await user.passwordChange(currentPassword, newPassword);
+    const session = await Session.getCurrent();
+    const user = await session!.getUser();
+    await user.changePassword(currentPassword, newPassword);
 
     // 必要に応じて結果を返す
     return {
       status: "success",
-      message: "アカウントが更新されました。",
+      message: "パスワードが更新されました。",
     } as FormStatus;
   } catch (error) {
     switch (error) {

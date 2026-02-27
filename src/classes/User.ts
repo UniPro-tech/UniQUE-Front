@@ -18,6 +18,7 @@ import { ConvertPermissionBitsToText } from "@/constants/Permission";
 import { FrontendErrors } from "@/errors/FrontendErrors";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import { UserData, UserStatus } from "./types/User";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
 
 export class User {
   id: string;
@@ -354,19 +355,48 @@ export class User {
     this.isTotpEnabled = false;
   }
 
+  async changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const response = await apiPut(`/users/${this.id}/password/change`, {
+      currentPassword,
+      newPassword,
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to change password: ${response.statusText}`);
+    }
+  }
+
   /**
    * ユーザー登録申請を却下する
    */
   async reject(): Promise<void> {
     const response = await apiPost(`/users/${this.id}/reject`);
     if (!response.ok) {
-      throw new Error(`Failed to reject user: ${response.statusText}`);
+      switch (response.status) {
+        case 400:
+          throw FrontendErrors.InvalidInput;
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
+          console.log(
+            "Failed to reject user registration:",
+            await response.text(),
+          );
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
     }
   }
 
   /**
    * ユーザー登録申請を承認する
    */
+  // TODO: Impliment
 }
 
 interface EmailVerificationResponse {
