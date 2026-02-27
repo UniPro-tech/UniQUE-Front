@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAllCookies } from "./cookies";
-import { toSnakecase } from "../lib/SnakeCamlUtil";
+import { toSnakecase } from "./snakeCamelUtil";
 
 const BASE = process.env.RESOURCE_API_URL || "";
 const CLIENT_BASE = process.env.NEXT_PUBLIC_RESOURCE_API_URL || "";

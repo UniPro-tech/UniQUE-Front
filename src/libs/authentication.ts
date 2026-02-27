@@ -1,4 +1,4 @@
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { createApiClient } from "./apiClient";
 import { getRealIPAddress } from "./request";
 import { cookies, headers } from "next/headers";
