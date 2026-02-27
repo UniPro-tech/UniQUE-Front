@@ -55,7 +55,7 @@ export default function TOTPSection({
       enqueueSnackbar(genResult.error, { variant: "error" });
     } else if (genResult && genResult.secret) {
       Promise.resolve().then(() => {
-        setIsFinished(false);
+        setIsFinished(true);
       });
       enqueueSnackbar(
         "TOTP シークレットを生成しました。コードを入力して有効化してください。",
@@ -76,7 +76,7 @@ export default function TOTPSection({
       enqueueSnackbar("二段階認証を有効化しました。", { variant: "success" });
       Promise.resolve().then(() => {
         setLocalEnabled(true);
-        setIsFinished(true);
+        setIsFinished(false);
       });
     } else if (verifyResult && verifyResult.valid === false) {
       enqueueSnackbar("コードが無効です。再度ご確認ください。", {

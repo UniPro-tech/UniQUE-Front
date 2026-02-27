@@ -6,12 +6,14 @@ import { SetSessionCookie } from "@/libs/cookies";
 
 export const submitSignIn = async (formData: FormData) => {
   const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
+  const password = formData.get("password") as string | undefined;
   const remember = formData.get("remember") === "on";
+  const code = formData.get("code") as string | undefined;
 
   const credentials: Credentials = {
     username,
     password,
+    code,
     remember,
   };
 
