@@ -1,16 +1,14 @@
 "use server";
 
 import { Announcement } from "@/classes/Announcement";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 
-export const deleteAnnouncement = async (formData: FormData) => {
-  const announcementId = formData.get("announcementId") as string;
-
-  const announce = await Announcement.getById(announcementId);
+export const deleteAnnouncement = async (id: string) => {
+  const announce = await Announcement.getById(id);
 
   if (!announce) {
-    return { success: false, message: "お知らせが見つかりません" };
+    throw ResourceApiErrors.ResourceNotFound;
   }
 
   await announce.delete();
-  return { success: true, message: "削除しました" };
 };

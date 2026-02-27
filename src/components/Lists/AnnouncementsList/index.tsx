@@ -28,6 +28,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import type { UserDTO } from "@/types/User";
 import { AnnouncementData } from "@/classes/Announcement";
+import { pinAnnouncement } from "./actions/pin";
+import { deleteAnnouncement } from "./actions/delete";
 
 export type AnnouncementDTO = {
   id: string;
@@ -125,11 +127,7 @@ export default function AnnouncementsList({
     if (!id) return;
     setBusy((s) => ({ ...s, [id]: true }));
     try {
-      const res = await fetch(`/api/announcements/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("failed to delete");
+      await deleteAnnouncement(id);
       setItems((prev) => prev.filter((p) => p.id !== id));
       setSnackbar({ open: true, message: "削除しました", severity: "success" });
     } catch (err) {
@@ -148,16 +146,9 @@ export default function AnnouncementsList({
   const handlePin = async (id: string, pin: boolean) => {
     setBusy((s) => ({ ...s, [id]: true }));
     try {
-      const res = await fetch(`/api/announcements/${id}/pin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ pin }),
-      });
-      if (!res.ok) throw new Error("failed to pin");
-      const json = await res.json();
+      await pinAnnouncement(id, pin);
       setItems((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, isPinned: json.is_pinned } : p)),
+        prev.map((p) => (p.id === id ? { ...p, isPinned: pin } : p)),
       );
       setSnackbar({
         open: true,
@@ -376,6 +367,7 @@ export default function AnnouncementsList({
         <Alert
           severity={snackbar.severity}
           onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          variant="filled"
         >
           {snackbar.message}
         </Alert>

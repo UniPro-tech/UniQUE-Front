@@ -156,6 +156,8 @@ export class Announcement {
           throw FrontendErrors.InvalidInput;
         case 401:
           throw AuthorizationErrors.Unauthorized;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
         case 403:
           throw AuthorizationErrors.AccessDenied;
         default:

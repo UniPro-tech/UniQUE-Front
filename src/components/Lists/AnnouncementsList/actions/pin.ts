@@ -1,16 +1,18 @@
 "use server";
 
 import { Announcement } from "@/classes/Announcement";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 
-export const pinAnnouncement = async (formData: FormData) => {
-  const announcementId = formData.get("announcementId") as string;
-
-  const announce = await Announcement.getById(announcementId);
+export const pinAnnouncement = async (id: string, toPin: boolean) => {
+  const announce = await Announcement.getById(id);
 
   if (!announce) {
-    return { success: false, message: "お知らせが見つかりません" };
+    throw ResourceApiErrors.ResourceNotFound;
   }
 
-  await announce.pin();
-  return { success: true, message: "ピン留めしました" };
+  if (toPin) {
+    await announce.pin();
+  } else {
+    await announce.unpin();
+  }
 };
