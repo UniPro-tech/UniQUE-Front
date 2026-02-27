@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-
 export const parseUA = (userAgent: string) => {
   // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
   const ua = userAgent.toLowerCase();
@@ -32,6 +30,7 @@ export const parseUA = (userAgent: string) => {
 };
 
 export const getRealIPAddress = async (): Promise<string> => {
+  const { headers } = await import("next/headers");
   const headersList = await headers();
 
   // CloudflareのCF-Connecting-IPヘッダーを優先

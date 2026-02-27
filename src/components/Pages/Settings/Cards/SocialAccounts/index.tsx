@@ -1,11 +1,11 @@
 import SocialAccountsCardClietnt from "./Client";
-import { User } from "@/classes/User";
 import { ExternalIdentity } from "@/classes/ExternalIdentity";
+import { UserData } from "@/classes/types/User";
 
 export default async function SocialAccountsSettingsCard({
   user,
 }: {
-  user: User;
+  user: UserData;
 }) {
   // 外部アイデンティティのリストを取得
   const externalIdentities = (await ExternalIdentity.getByUserId(user.id)).map(

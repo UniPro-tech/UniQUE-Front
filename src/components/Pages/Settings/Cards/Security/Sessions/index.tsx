@@ -11,11 +11,11 @@ import {
   Box,
 } from "@mui/material";
 import { logoutSession } from "./action";
-import { parseUA } from "@/lib/UserAgent";
 import { useActionState, useEffect } from "react";
 import { FormStatus } from "../../Base";
 import { enqueueSnackbar } from "notistack";
 import { SessionData } from "@/classes/Session";
+import { parseUA } from "@/libs/request";
 
 export default function SessionsSection({
   currentSessionId,
