@@ -78,28 +78,6 @@ export default function ApproveRegistApplyDialog({
               メールアドレスはtemp_を削除し、(所属期).xxxxx@uniproject.jpの形式としてください。
             </FormHelperText>
             <TextField
-              select
-              label="所属期 (任意)"
-              fullWidth
-              helperText="所属期を選択（任意）"
-              name="period"
-            >
-              {AFFILIATION_PERIOD_OPTIONS.map((opt) => {
-                const info = getAffiliationPeriodInfo(opt.value);
-                return (
-                  <MenuItem key={opt.value} value={opt.value}>
-                    <Typography>{opt.value}期</Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ ml: 1, color: "text.secondary" }}
-                    >
-                      ({info.year}年度 {info.label})
-                    </Typography>
-                  </MenuItem>
-                );
-              })}
-            </TextField>
-            <TextField
               label="メールボックスのパスワード"
               type="password"
               name="mailboxPassword"
