@@ -21,7 +21,7 @@ import {
 import {
   AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
-} from "@/lib/constants/UserConstants";
+} from "@/constants/UserConstants";
 import { useRouter } from "next/navigation";
 import { UserStatus } from "@/classes/types/User";
 
