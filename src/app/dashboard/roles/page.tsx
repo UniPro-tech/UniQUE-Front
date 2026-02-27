@@ -2,10 +2,10 @@ import RolesDataGrid from "@/components/DataGrids/Roles";
 import { Stack, Typography, Button, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Link from "next/link";
-import { requirePermission } from "@/lib/permissions";
+import { requirePermission } from "@/libs/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
-import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
-import { redirect } from "next/navigation";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
+import { forbidden } from "next/navigation";
 
 export const metadata = {
   title: "ロール一覧",
@@ -17,7 +17,7 @@ export default async function Page() {
     await requirePermission(PermissionBitsFields.ROLE_MANAGE);
   } catch (err) {
     if (err === AuthorizationErrors.AccessDenied) {
-      redirect("/dashboard?error=access_denied");
+      forbidden();
     }
     throw err;
   }
