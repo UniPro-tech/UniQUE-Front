@@ -3,12 +3,12 @@ import Link from "next/link";
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import { hasPermission } from "@/lib/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Announcement } from "@/classes/Announcement";
 import { notFound } from "next/navigation";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "アナウンス詳細",
@@ -48,7 +48,10 @@ export default async function Page({
     snacks.push({ message: `エラー: ${error}`, variant: "error" });
   }
 
-  const canEdit = await hasPermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE);
+  const user = await (await Session.getCurrent())?.getUser();
+  const canEdit = await user?.hasPermission(
+    PermissionBitsFields.ANNOUNCEMENT_UPDATE,
+  );
 
   return (
     <Stack spacing={3}>
