@@ -25,7 +25,7 @@ import AppsIcon from "@mui/icons-material/Apps";
 import AccountButton from "./Sidebar/AccountButton";
 import DiscordLinkAlert from "./DiscordLinkAlert";
 import { Stack } from "@mui/material";
-import { PermissionBitsFields } from "@/types/Permission";
+import { PermissionBitsFields } from "@/constants/Permission";
 import Image from "next/image";
 import Link from "next/link";
 import { RoleData } from "@/classes/Role";

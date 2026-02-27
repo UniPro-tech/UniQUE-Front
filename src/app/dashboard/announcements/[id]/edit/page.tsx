@@ -1,6 +1,6 @@
 import AnnouncementEditForm from "@/components/Forms/AnnouncementEditForm";
 import { Stack, Typography } from "@mui/material";
-import { PermissionBitsFields } from "@/types/Permission";
+import { PermissionBitsFields } from "@/constants/Permission";
 import { notFound } from "next/navigation";
 import { Announcement } from "@/classes/Announcement";
 import { requirePermission } from "@/libs/permissions";

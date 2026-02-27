@@ -1,6 +1,6 @@
 import MemberCreateForm from "@/components/Pages/Members/Forms/MemberCreateForm";
 import { requirePermission } from "@/libs/permissions";
-import { PermissionBitsFields } from "@/types/Permission";
+import { PermissionBitsFields } from "@/constants/Permission";
 import { Stack, Typography, Breadcrumbs, Link } from "@mui/material";
 
 export const metadata = {

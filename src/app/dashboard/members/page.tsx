@@ -1,4 +1,4 @@
-import { PermissionBitsFields } from "@/types/Permission";
+import { PermissionBitsFields } from "@/constants/Permission";
 import { Link as MLink, Stack, Typography, Button } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Members";
 import { Session } from "@/classes/Session";

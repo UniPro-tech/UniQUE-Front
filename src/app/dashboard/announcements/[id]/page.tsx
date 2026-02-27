@@ -3,7 +3,7 @@ import Link from "next/link";
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import { PermissionBitsFields } from "@/types/Permission";
+import { PermissionBitsFields } from "@/constants/Permission";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Announcement } from "@/classes/Announcement";

@@ -3,7 +3,7 @@ import { Stack, Typography, Button, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Link from "next/link";
 import { requirePermission } from "@/libs/permissions";
-import { PermissionBitsFields } from "@/types/Permission";
+import { PermissionBitsFields } from "@/constants/Permission";
 import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
 import { forbidden } from "next/navigation";
 
