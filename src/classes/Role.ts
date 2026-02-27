@@ -120,13 +120,7 @@ export class Role {
     }
     const responseData = await response.text().then((text) => {
       try {
-        return toCamelcase<RoleData>(
-          stringJsonParseSafe(text)
-            .then((json: never) => json)
-            .catch(() => {
-              throw new Error(`Failed to parse role data: ${text}`);
-            }),
-        );
+        return toCamelcase<RoleData>(stringJsonParseSafe(text));
       } catch (error) {
         throw new Error(`Failed to parse role data: ${text} - ${error}`);
       }
