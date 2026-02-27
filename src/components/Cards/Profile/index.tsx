@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import {
   getStatusLabel,
   getAffiliationPeriodLabel,
-} from "@/lib/constants/UserConstants";
+} from "@/constants/UserConstants";
 import { UserData, UserStatus } from "@/classes/types/User";
 import { useState } from "react";
 import ProfileEditForm from "@/components/Forms/ProfileEditForm";
