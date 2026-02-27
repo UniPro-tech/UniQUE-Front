@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { Save as SaveIcon, Cancel as CancelIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { updateAnnouncement } from "./action";
 
 type Props = {
   id: string;
@@ -37,20 +38,12 @@ export default function AnnouncementEditForm({ id, initial }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/announcements/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          title: formData.title,
-          content: formData.content,
-          is_pinned: formData.isPinned,
-        }),
+      await updateAnnouncement({
+        id,
+        title: formData.title,
+        content: formData.content,
+        isPinned: formData.isPinned,
       });
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(txt || "更新に失敗しました");
-      }
       setSnackOpen(true);
       setTimeout(() => router.push(`/dashboard/announcements/${id}`), 800);
     } catch (err) {
@@ -139,7 +132,11 @@ export default function AnnouncementEditForm({ id, initial }: Props) {
         autoHideDuration={3000}
         onClose={() => setSnackOpen(false)}
       >
-        <Alert severity="success" onClose={() => setSnackOpen(false)}>
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => setSnackOpen(false)}
+        >
           更新しました
         </Alert>
       </Snackbar>
