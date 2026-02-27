@@ -26,9 +26,9 @@ import {
   CreateRoleFormData,
   redirectToRoleList,
 } from "@/app/dashboard/roles/new/action";
-import { PermissionBitsFields, PermissionTexts } from "@/types/Permission";
 import { useRouter } from "next/navigation";
 import { PermissionGroups } from "./PermissionGroups";
+import { PermissionBitsFields, PermissionTexts } from "@/constants/Permission";
 
 interface RoleCreateFormProps {
   onCancel?: () => void;

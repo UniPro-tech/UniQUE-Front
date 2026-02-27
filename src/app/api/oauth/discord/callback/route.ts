@@ -1,6 +1,4 @@
 import { NextRequest } from "next/server";
-// backend handles guild invitation and role assignment
-import { sanitizeForLog } from "@/lib/logSanitize";
 import { Session } from "@/classes/Session";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import { ExternalIdentity } from "@/classes/ExternalIdentity";
@@ -29,12 +27,12 @@ export const GET = async (request: NextRequest) => {
       emailVerifyCode = stateObj.code;
     }
   } catch (e) {
-    console.error("Failed to parse state:", sanitizeForLog(e));
+    console.error("Failed to parse state:", e);
   }
 
   // エラーチェック
   if (error) {
-    console.error("Discord OAuth error:", sanitizeForLog(error));
+    console.error("Discord OAuth error:", error);
     let redirectPath: string;
     if (from === "email_verify" && emailVerifyCode) {
       redirectPath = `/email-verify?code=${encodeURIComponent(emailVerifyCode)}&discord_error=true`;
@@ -95,10 +93,7 @@ export const GET = async (request: NextRequest) => {
 
     if (!tokenResponse.ok) {
       const tokenErr = await tokenResponse.text().catch(() => null);
-      console.error(
-        "Failed to get Discord access token:",
-        sanitizeForLog(tokenErr),
-      );
+      console.error("Failed to get Discord access token:", tokenErr);
       let redirectPath: string;
       if (from === "email_verify" && emailVerifyCode) {
         redirectPath = `/email-verify?code=${encodeURIComponent(emailVerifyCode)}&discord_error=true`;
@@ -130,10 +125,7 @@ export const GET = async (request: NextRequest) => {
 
     if (!userResponse.ok) {
       const userErr = await userResponse.text().catch(() => null);
-      console.error(
-        "Failed to get Discord user info:",
-        sanitizeForLog(userErr),
-      );
+      console.error("Failed to get Discord user info:", userErr);
       let redirectPath: string;
       if (from === "email_verify" && emailVerifyCode) {
         redirectPath = `/email-verify?code=${encodeURIComponent(emailVerifyCode)}&discord_error=true`;
@@ -146,7 +138,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     const discordUser = await userResponse.json();
-    const discordUserId = sanitizeForLog(discordUser.id, 64);
+    const discordUserId = discordUser.id;
 
     // 3. 外部アイデンティティをAPIに登録
     const expiresAt = new Date(Date.now() + expires_in * 1000).toISOString();
@@ -226,7 +218,7 @@ export const GET = async (request: NextRequest) => {
       ),
     );
   } catch (error) {
-    console.error("Discord OAuth callback error:", sanitizeForLog(error));
+    console.error("Discord OAuth callback error:", error);
     let redirectPath: string;
     if (from === "email_verify" && emailVerifyCode) {
       redirectPath = `/email-verify?code=${encodeURIComponent(emailVerifyCode)}&discord_error=true`;

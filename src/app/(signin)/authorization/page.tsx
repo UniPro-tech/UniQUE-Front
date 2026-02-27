@@ -1,12 +1,12 @@
 import TemporarySnackProvider, {
   SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import ConsentCard from "@/components/mui-template/signup-side/components/ConsentCard";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { createApiClient } from "@/libs/apiClient";
-import Session from "@/types/Session";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
+import { Session } from "@/classes/Session";
+import ConsentCard from "@/components/Pages/Authorization/ConsentCard";
 
 export default async function Page({
   searchParams,
@@ -18,9 +18,19 @@ export default async function Page({
 }) {
   const params = await searchParams;
   const { auth_request_id, error } = params;
+  const session = await Session.getCurrent();
 
-  const session = await (await Session.get())?.convertPlain();
   if (!session) {
+    const query = new URLSearchParams(params as Record<string, string>);
+    const recirectpath = `/authorization?${query.toString()}`;
+    redirect(
+      `/signin?redirect=${encodeURIComponent(recirectpath)}`,
+      RedirectType.replace,
+    );
+  }
+
+  const sessionJson = session.toJson();
+  if (!sessionJson) {
     const query = new URLSearchParams(params as Record<string, string>);
     const recirectpath = `/authorization?${query.toString()}`;
     redirect(
@@ -120,7 +130,7 @@ export default async function Page({
   const consentedQuery = new URLSearchParams();
   try {
     const query = new URLSearchParams();
-    query.append("user_id", session.user.id);
+    query.append("user_id", sessionJson.userId);
     query.append("application_id", authReqData.client_id);
     query.append("scope", authReqData.scope);
     const consentsRes = await authClient.get(
@@ -137,7 +147,7 @@ export default async function Page({
       if (hasConsent && authReqData.prompt == "none") {
         // 同意済みであればconsentedにする
         const query = new URLSearchParams();
-        query.append("user_id", session.user.id);
+        query.append("user_id", sessionJson.userId);
         query.append("application_id", authReqData.client_id);
         query.append("scope", authReqData.scope);
         const consentRes = await authClient.post(
@@ -167,7 +177,7 @@ export default async function Page({
       <TemporarySnackProvider snacks={snacks} />
       <ConsentCard
         app={toCamelcase(app)}
-        user={session.user}
+        user={await session.getUser()}
         scope={authReqData.scope}
         jwt={jwtToken}
         redirect_uri={authReqData.redirect_uri}
