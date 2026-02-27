@@ -4,12 +4,13 @@ import { Session } from "@/classes/Session";
 import type { UserData } from "@/classes/types/User";
 import { VerifyCSRFToken } from "@/libs/csrf";
 import type { FormStatus } from "../Base";
+import { User } from "@/classes/User";
 
 export const resendEmailVerificationAction = async (
-  _userId: string,
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    //await _resendEmailVerification(userId);
+    await User.resendVerificationEmail(userId);
     return { success: true };
   } catch (error) {
     const message =
