@@ -7,13 +7,13 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
-import type { UserDTO } from "@/types/User";
-import { rejectRegistApplyAction } from "./actions/approveRegistApplyAction";
+import { UserData } from "@/classes/types/User";
+import { rejectRegistApplyAction } from "./actions/rejectRegistApplyAction";
 
 interface ApproveRegistApplyProps {
   open: boolean;
   handleClose: () => void;
-  user: UserDTO | null;
+  user: UserData | null;
 }
 
 export default function RejectDialog({
@@ -30,7 +30,7 @@ export default function RejectDialog({
       enqueueSnackbar(state.message, { variant: state.status });
       handleClose();
     }
-  }, [state]);
+  }, [handleClose, state]);
 
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}>

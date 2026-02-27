@@ -1,6 +1,6 @@
 "use server";
+import { User } from "@/classes/User";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { createApiClient } from "@/libs/apiClient";
 
 export const rejectRegistApplyAction = async (
   _prevState: FormStatus | null,
@@ -15,13 +15,11 @@ export const rejectRegistApplyAction = async (
   }
 
   try {
-    const api = createApiClient();
-    const res = await api.post(`/users/${encodeURIComponent(userId)}/reject`);
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("rejectRegistApplyAction failed:", res.status, text);
-      return { status: "error", message: `却下に失敗しました: ${res.status}` };
+    const user = await User.getById(userId);
+    if (!user) {
+      return { status: "error", message: "ユーザーが見つかりませんでした" };
     }
+    await user.reject();
     return { status: "success", message: "申請を却下しました" };
   } catch (err) {
     console.error("rejectRegistApplyAction error:", err);

@@ -7,15 +7,19 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
-import type { UserDTO } from "@/types/User";
-import { FormHelperText, TextField } from "@mui/material";
-import { approveRegistApplyAction } from "./actions/approveRegistApplyAction";
-import PeriodSelectorOptions from "@/lib/PeriodSelectorOptions";
+import { FormHelperText, MenuItem, TextField, Typography } from "@mui/material";
+import PeriodSelectorOptions from "@/components/PeriodSelectorOptions";
+import { UserData } from "@/classes/types/User";
+import { approveAction } from "./actions/approveAction";
+import {
+  AFFILIATION_PERIOD_OPTIONS,
+  getAffiliationPeriodInfo,
+} from "@/constants/UserConstants";
 
 interface ApproveRegistApplyProps {
   open: boolean;
   handleClose: () => void;
-  user: UserDTO | null;
+  user: UserData | null;
 }
 
 export default function ApproveRegistApplyDialog({
@@ -24,7 +28,7 @@ export default function ApproveRegistApplyDialog({
   user,
 }: ApproveRegistApplyProps) {
   const [state, action, isPending] = React.useActionState(
-    approveRegistApplyAction,
+    approveAction,
     null as null | FormStatus,
   );
   React.useEffect(() => {
@@ -32,7 +36,7 @@ export default function ApproveRegistApplyDialog({
       enqueueSnackbar(state.message, { variant: state.status });
       handleClose();
     }
-  }, [state]);
+  }, [handleClose, state]);
 
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
@@ -73,6 +77,28 @@ export default function ApproveRegistApplyDialog({
             <FormHelperText>
               メールアドレスはtemp_を削除し、(所属期).xxxxx@uniproject.jpの形式としてください。
             </FormHelperText>
+            <TextField
+              select
+              label="所属期 (任意)"
+              fullWidth
+              helperText="所属期を選択（任意）"
+              name="period"
+            >
+              {AFFILIATION_PERIOD_OPTIONS.map((opt) => {
+                const info = getAffiliationPeriodInfo(opt.value);
+                return (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    <Typography>{opt.value}期</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ ml: 1, color: "text.secondary" }}
+                    >
+                      ({info.year}年度 {info.label})
+                    </Typography>
+                  </MenuItem>
+                );
+              })}
+            </TextField>
             <TextField
               label="メールボックスのパスワード"
               type="password"

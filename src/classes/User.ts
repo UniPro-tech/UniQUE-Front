@@ -396,7 +396,46 @@ export class User {
   /**
    * ユーザー登録申請を承認する
    */
-  // TODO: Impliment
+  async approve({
+    affiliationPeriod,
+    email,
+    sakuraEmailPassword,
+    joinedAt,
+  }: {
+    affiliationPeriod: string;
+    email: string;
+    sakuraEmailPassword: string;
+    joinedAt?: Date;
+  }): Promise<void> {
+    const response = await apiPost(`/users/${this.id}/approve`, {
+      affiliationPeriod: affiliationPeriod,
+      email,
+      sakuraEmailPassword,
+      joinedAt: joinedAt ? joinedAt.toISOString() : new Date().toISOString(),
+    });
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw FrontendErrors.InvalidInput;
+        case 401:
+          throw AuthorizationErrors.Unauthorized;
+        case 403:
+          throw AuthorizationErrors.AccessDenied;
+        case 404:
+          throw ResourceApiErrors.ResourceNotFound;
+        default:
+          console.log(
+            "Failed to approve user registration:",
+            await response.text(),
+          );
+          throw ResourceApiErrors.ApiServerInternalError;
+      }
+    }
+    this.status = UserStatus.ACTIVE;
+    this.affiliationPeriod = affiliationPeriod;
+    this.email = email;
+    this.profile.joinedAt = joinedAt ? joinedAt : new Date();
+  }
 }
 
 interface EmailVerificationResponse {
