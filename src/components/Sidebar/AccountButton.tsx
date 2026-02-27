@@ -11,15 +11,11 @@ import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Box } from "@mui/material";
-import type { SessionPlain } from "@/types/Session";
 import { logoutAction } from "./action";
 import { useRouter } from "next/navigation";
+import { UserData } from "@/classes/types/User";
 
-export default function AccountMenu({
-  session,
-}: {
-  session: SessionPlain | null;
-}) {
+export default function AccountMenu({ user }: { user: UserData | null }) {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -30,8 +26,7 @@ export default function AccountMenu({
     setAnchorEl(null);
   };
 
-  const displayName =
-    session?.user?.profile?.displayName || session?.user?.customId || "";
+  const displayName = user?.profile?.displayName || user?.customId || "";
 
   return (
     <React.Fragment>
@@ -108,7 +103,7 @@ export default function AccountMenu({
           </ListItemIcon>
           個人設定
         </MenuItem>
-        <Box component="form" action={logoutAction} method="POST">
+        <Box component="form" action={logoutAction}>
           <MenuItem component="button" type="submit" onClick={handleClose}>
             <ListItemIcon>
               <LogoutIcon fontSize="small" />
