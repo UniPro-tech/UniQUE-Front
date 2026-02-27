@@ -103,19 +103,12 @@ export class Role {
       permissionBitmask: bigint;
     },
   ): Promise<Role> {
-    const response = await fetch(`${process.env.RESOURCE_API_URL}/roles`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(roleData),
-    });
-
+    const response = await apiPost("/roles", roleData);
     if (!response.ok) {
       throw new Error(`Failed to create role: ${response.statusText}`);
     }
 
-    const responseData = await response.json();
+    const responseData = toCamelcase<RoleData>(await response.json());
     return Role.fromJson(responseData);
   }
 
