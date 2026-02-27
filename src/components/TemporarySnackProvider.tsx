@@ -2,7 +2,7 @@
 
 import { SnackbarProvider, VariantType, useSnackbar } from "notistack";
 import { useEffect } from "react";
-import { replacePath } from "@/lib/replacePathAction";
+import { replacePath } from "@/libs/replacePathAction";
 import { usePathname } from "next/navigation";
 
 export interface SnackbarData {
