@@ -1,6 +1,6 @@
 "use server";
 
-import { Role, CreateRoleRequest } from "@/types/Role";
+import { Role } from "@/classes/Role";
 import { redirect } from "next/navigation";
 
 export interface CreateRoleFormData {
@@ -16,16 +16,17 @@ export async function createRole(
   data: CreateRoleFormData,
 ): Promise<{ success: boolean; error?: string; roleId?: string }> {
   try {
-    const request: CreateRoleRequest = {
-      custom_id: data.customId,
+    const role = await Role.create({
+      customId: data.customId,
       name: data.name,
-      description: data.description || undefined,
-      permission_bitmask: data.permissionBitmask,
-      is_default: data.isDefault,
-      assign_to_existing: data.assignExisting,
-    };
+      description: data.description || "",
+      permissionBitmask: data.permissionBitmask || 0n,
+      isDefault: data.isDefault || false,
+    });
 
-    const role = await Role.create(request);
+    if (data.assignExisting) {
+      await role.asignAllUsers();
+    }
 
     return { success: true, roleId: role.id };
   } catch (error) {

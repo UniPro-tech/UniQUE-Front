@@ -41,7 +41,11 @@ export class Role {
     return [];
   }
 
-  constructor(data: RoleData) {
+  constructor(
+    data: Omit<RoleData, "permissionBitmask"> & {
+      permissionBitmask: bigint | number;
+    },
+  ) {
     this.id = data.id;
     this.name = data.name;
     this.customId = data.customId;
@@ -92,7 +96,12 @@ export class Role {
   // ------ Static Methods ------
 
   static async create(
-    roleData: Omit<RoleData, "id" | "createdAt" | "updatedAt" | "deletedAt">,
+    roleData: Omit<
+      RoleData,
+      "id" | "createdAt" | "updatedAt" | "deletedAt" | "permissionBitmask"
+    > & {
+      permissionBitmask: bigint;
+    },
   ): Promise<Role> {
     const response = await fetch(`${process.env.RESOURCE_API_URL}/roles`, {
       method: "POST",
@@ -108,6 +117,17 @@ export class Role {
 
     const responseData = await response.json();
     return Role.fromJson(responseData);
+  }
+
+  static async getAll(): Promise<Role[]> {
+    const response = await apiGet("/roles");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch roles: ${response.statusText}`);
+    }
+    const responseJson = toCamelcase<{ data: RoleData[] }>(
+      await response.json(),
+    );
+    return responseJson.data.map((roleData) => Role.fromJson(roleData));
   }
 
   static async getById(id: string): Promise<Role | null> {

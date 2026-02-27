@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { PlainRole, Role } from "@/types/Role";
 import {
   Grid,
   FormControlLabel,
@@ -10,13 +9,14 @@ import {
   Stack,
   Button,
 } from "@mui/material";
-import { PermissionBitsFields, PermissionTexts } from "@/types/Permission";
+import { Role, RoleData } from "@/classes/Role";
+import { PermissionBitsFields, PermissionTexts } from "@/constants/Permission";
 
 export default function PermissionsPanelClient({
   role,
   permissionBitmask,
 }: {
-  role: PlainRole;
+  role: RoleData;
   permissionBitmask: bigint;
 }) {
   const [bits, setBits] = useState<bigint>(permissionBitmask ?? 0n);

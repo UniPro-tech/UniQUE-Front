@@ -11,19 +11,17 @@ import React from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
-import type { PlainRole } from "@/types/Role";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import { deleteRole } from "@/app/dashboard/roles/[id]/action";
 import { redirect, RedirectType } from "next/navigation";
 import { Box, Paper } from "@mui/material";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { RoleData } from "@/classes/Role";
 
-export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
+export default function RolesDataGridClient({ rows }: { rows: RoleData[] }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<PlainRole[]>(() => rows);
-  const [undeletedRole, setUndeletedRole] = React.useState<string | null>(
-    null,
-  );
+  const [localRows, setLocalRows] = React.useState<RoleData[]>(() => rows);
+  const [undeletedRole, setUndeletedRole] = React.useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -53,7 +51,9 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
         } as FormStatus;
       }
 
-      setLocalRows((prev) => prev.filter((r) => String(r.id) !== String(undeletedRole)));
+      setLocalRows((prev) =>
+        prev.filter((r) => String(r.id) !== String(undeletedRole)),
+      );
       apiRef.current?.updateRows([{ id: undeletedRole, _action: "delete" }]);
       setUndeletedRole(null);
       setDeleteDialogOpen(false);
@@ -179,4 +179,3 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
     </Paper>
   );
 }
-

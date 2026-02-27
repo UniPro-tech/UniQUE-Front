@@ -1,18 +1,16 @@
-import { PlainRole, Role } from "@/types/Role";
+import { Role, RoleData } from "@/classes/Role";
 
 export default async function RolesDataGrid({
   rows,
 }: {
-  rows?: PlainRole[] | Role[];
+  rows?: RoleData[] | Role[];
 }) {
   if (!rows) {
-    const fetched = await Role.getAllRoles();
-    rows = fetched.map((role) => role.toPlainObject());
+    const fetched = await Role.getAll();
+    rows = fetched.map((role) => role.toJson());
   } else {
-    rows = rows.map((role) =>
-      role instanceof Role ? role.toPlainObject() : role,
-    );
+    rows = rows.map((role) => (role instanceof Role ? role.toJson() : role));
   }
   const RolesDataGridClient = (await import("../Roles/Client")).default;
-  return <RolesDataGridClient rows={rows as PlainRole[]} />;
+  return <RolesDataGridClient rows={rows as RoleData[]} />;
 }

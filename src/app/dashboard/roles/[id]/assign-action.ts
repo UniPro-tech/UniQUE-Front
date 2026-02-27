@@ -1,12 +1,13 @@
 "use server";
 
-import { User, UserDTO } from "@/types/User";
-import { Role } from "@/types/Role";
+import { Role } from "@/classes/Role";
+import { UserData } from "@/classes/types/User";
+import { User } from "@/classes/User";
 
-export async function getAllUsers(): Promise<UserDTO[]> {
+export async function getAllUsers(): Promise<UserData[]> {
   try {
-    const users = await User.list();
-    return users.map((u) => u.convertPlain());
+    const users = await User.getAll();
+    return users.map((u) => u.toJson());
   } catch (error) {
     console.error("Failed to fetch users:", error);
     return [];
@@ -18,8 +19,8 @@ export async function assignUserToRole(
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const role = await Role.getRoleById(roleId);
-    await role.assignUser(userId);
+    const role = await Role.getById(roleId);
+    await role?.addUser(userId);
     return { success: true };
   } catch (error) {
     console.error("Failed to assign user to role:", error);
@@ -35,8 +36,8 @@ export async function unassignUserFromRole(
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const role = await Role.getRoleById(roleId);
-    await role.unassignUser(userId);
+    const role = await Role.getById(roleId);
+    await role?.removeUser(userId);
     return { success: true };
   } catch (error) {
     console.error("Failed to unassign user from role:", error);

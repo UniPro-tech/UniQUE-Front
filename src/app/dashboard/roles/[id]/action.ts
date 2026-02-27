@@ -1,6 +1,7 @@
 "use server";
 
-import { Role } from "@/types/Role";
+import { Role } from "@/classes/Role";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 
 export interface UpdateRoleFormData {
   customId: string;
@@ -15,7 +16,10 @@ export async function updateRole(
   data: UpdateRoleFormData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const role = await Role.getRoleById(roleId);
+    const role = await Role.getById(roleId);
+    if (!role) {
+      throw ResourceApiErrors.ResourceNotFound;
+    }
 
     role.customId = data.customId;
     role.name = data.name;
@@ -41,7 +45,7 @@ export async function deleteRole(
   roleId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await Role.delete(roleId);
+    await Role.deleteById(roleId);
     return { success: true };
   } catch (error) {
     console.error("Role delete failed:", error);
