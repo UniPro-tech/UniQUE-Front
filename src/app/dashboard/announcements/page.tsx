@@ -2,9 +2,9 @@ import AnnouncementsList from "@/components/Lists/AnnouncementsList";
 import { Stack, Typography, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Link from "next/link";
-import { hasPermission } from "@/lib/permissions";
 import { PermissionBitsFields } from "@/types/Permission";
 import { Announcement } from "@/classes/Announcement";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "アナウンス一覧",
@@ -14,11 +14,13 @@ export const metadata = {
 export default async function Page() {
   const anns = (await Announcement.getAll()).map((a) => a.toJson());
 
+  const user = await (await Session.getCurrent())?.getUser();
+
   const [canCreate, canUpdate, canDelete, canPin] = await Promise.all([
-    hasPermission(PermissionBitsFields.ANNOUNCEMENT_CREATE),
-    hasPermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE),
-    hasPermission(PermissionBitsFields.ANNOUNCEMENT_DELETE),
-    hasPermission(PermissionBitsFields.ANNOUNCEMENT_PIN),
+    user?.hasPermission(PermissionBitsFields.ANNOUNCEMENT_CREATE),
+    user?.hasPermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE),
+    user?.hasPermission(PermissionBitsFields.ANNOUNCEMENT_DELETE),
+    user?.hasPermission(PermissionBitsFields.ANNOUNCEMENT_PIN),
   ]);
 
   return (
