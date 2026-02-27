@@ -223,6 +223,16 @@ export class User {
       code: code,
     });
     if (!response.ok) {
+      if (response.status === 400) {
+        const errorText = await response.json();
+        if (errorText.error === "discord_not_linked") {
+          return {
+            type: "discord_not_linked",
+            valid: false,
+          };
+        }
+        throw FrontendErrors.InvalidInput;
+      }
       throw new Error(
         `Failed to send verification email: ${response.statusText}`,
       );
@@ -454,7 +464,7 @@ export class User {
 }
 
 export interface EmailVerificationResponse {
-  type: "registration" | "email_change";
+  type: "registration" | "email_change" | "discord_not_linked";
   valid: boolean;
 }
 

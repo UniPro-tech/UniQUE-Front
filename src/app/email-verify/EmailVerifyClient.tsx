@@ -55,6 +55,15 @@ export default function EmailVerifyClient({
       // Discord連携から戻ってきた場合
       if (discordLinked) {
         if ("valid" in initialResult && initialResult.valid) {
+          if (
+            "type" in initialResult &&
+            initialResult.type === "discord_not_linked"
+          ) {
+            setResult(initialResult);
+            setState("discord_required");
+            return;
+          }
+
           setResult(initialResult);
           setState("success");
           return;
@@ -69,7 +78,17 @@ export default function EmailVerifyClient({
             if (verifyRes.ok) {
               const verifyData =
                 (await verifyRes.json()) as EmailVerificationResponse;
-              if (verifyData.valid) {
+              if (
+                ("error" in verifyData &&
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore - verifyData may include error field
+                  verifyData.error === "discord_not_linked") ||
+                ("type" in verifyData &&
+                  verifyData.type === "discord_not_linked")
+              ) {
+                setState("discord_required");
+                setResult(verifyData as EmailVerificationResponse);
+              } else if (verifyData.valid) {
                 setResult(verifyData);
                 setState("success");
               } else {
@@ -99,10 +118,12 @@ export default function EmailVerifyClient({
                 const verifyData =
                   (await verifyRes.json()) as EmailVerificationResponse;
                 if (
-                  "error" in verifyData &&
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore - verifyData may include error field
-                  verifyData.error === "discord_not_linked"
+                  ("error" in verifyData &&
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore - verifyData may include error field
+                    verifyData.error === "discord_not_linked") ||
+                  ("type" in verifyData &&
+                    verifyData.type === "discord_not_linked")
                 ) {
                   setState("discord_required");
                   setResult(verifyData as EmailVerificationResponse);
@@ -130,6 +151,16 @@ export default function EmailVerifyClient({
         return;
       }
 
+      // `type` フィールドで Discord 未連携を示す場合
+      if (
+        "type" in initialResult &&
+        initialResult.type === "discord_not_linked"
+      ) {
+        setState("discord_required");
+        setResult(initialResult);
+        return;
+      }
+
       // エラーレスポンスの場合
       if ("error" in initialResult) {
         if (initialResult.error === "discord_not_linked") {
@@ -142,7 +173,7 @@ export default function EmailVerifyClient({
         return;
       }
 
-      // 成功レスポンスの場合
+      // 失敗レスポンスの場合
       if (!initialResult.valid) {
         setState("invalid_code");
         return;
