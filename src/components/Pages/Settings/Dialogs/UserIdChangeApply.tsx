@@ -1,22 +1,22 @@
 "use client";
 
-import * as React from "react";
+import { TextField } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { SnackbarProvider, useSnackbar } from "notistack";
-import type { UserDTO } from "@/types/User";
-import { TextField } from "@mui/material";
+import * as React from "react";
+import type { UserData } from "@/classes/types/User";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { userIdChangeApplyAction } from "./actions/approveRegistApplyAction";
 
 interface UserIdChangeApplyProps {
   open: boolean;
   handleClose: () => void;
-  user: UserDTO | null;
+  user: UserData | null;
 }
 
 export default function UserIdChangeApply({

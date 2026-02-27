@@ -1,7 +1,7 @@
 "use server";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { getUserById } from "@/lib/resources/Users";
-import { FrontendErrors } from "@/types/Errors/FrontendErrors";
+import { User } from "@/classes/User";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { FrontendErrors } from "@/errors/FrontendErrors";
 
 export const userIdChangeApplyAction = async (
   _prevState: FormStatus | null,
@@ -24,7 +24,7 @@ export const userIdChangeApplyAction = async (
       throw FrontendErrors.InvalidInput;
     }
 
-    const user = await getUserById(userId);
+    const user = await User.getById(userId);
     if (!user) {
       throw FrontendErrors.InvalidInput;
     }

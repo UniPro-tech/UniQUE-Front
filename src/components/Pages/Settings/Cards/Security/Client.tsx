@@ -4,10 +4,10 @@ import { SnackbarProvider } from "notistack";
 import React from "react";
 import type { SessionData } from "@/classes/Session";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
-import type { UserDTO } from "@/types/User";
 import PasswordSection from "./Password";
 import SessionsSection from "./Sessions";
 import TOTPSection from "./TOTP";
+import { UserData } from "@/classes/types/User";
 
 export default function SecuritySettingsCardClient({
   user,
@@ -15,7 +15,7 @@ export default function SecuritySettingsCardClient({
   currentSessionId,
   sessions,
 }: {
-  user: UserDTO;
+  user: UserData;
   csrfToken: string;
   currentSessionId: string;
   sessions: SessionData[];

@@ -13,15 +13,15 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { QRCodeCanvas } from "qrcode.react";
-import React, { useActionState, useEffect, useState } from "react";
-import type { UserDTO } from "@/types/User";
+import { useActionState, useEffect, useState } from "react";
 import { disableTOTP, generateTOTP, verifyTOTP } from "./action";
+import { UserData } from "@/classes/types/User";
 
 export default function TOTPSection({
   user,
   csrfToken,
 }: {
-  user: UserDTO;
+  user: UserData;
   csrfToken: string;
 }) {
   const isEnabled = user.isTotpEnabled === true;

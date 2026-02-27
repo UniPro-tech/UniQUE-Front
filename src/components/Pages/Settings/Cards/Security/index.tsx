@@ -1,13 +1,13 @@
 import { unauthorized } from "next/navigation";
 import { Session } from "@/classes/Session";
 import { generateCSRFToken } from "@/libs/csrf";
-import type { UserDTO } from "@/types/User";
 import SecuritySettingsCardClient from "./Client";
+import { UserData } from "@/classes/types/User";
 
 export default async function SecuritySettingsCard({
   user,
 }: {
-  user: UserDTO;
+  user: UserData;
 }) {
   const uid = user.id!;
   const csrfToken = generateCSRFToken(uid);

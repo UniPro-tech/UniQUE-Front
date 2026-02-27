@@ -1,6 +1,6 @@
+import type { UserData } from "@/classes/types/User";
 import { generateCSRFToken } from "@/libs/csrf";
 import AccountSettingsCardClient from "./Client";
-import { UserData } from "@/classes/types/User";
 
 export default async function AccountSettingsCard({
   user,

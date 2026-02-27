@@ -1,5 +1,6 @@
 "use client";
 
+import { EmailVerificationResponse } from "@/classes/User";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import {
@@ -13,7 +14,6 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { VerifyEmailResponse } from "@/lib/EmailVerification";
 
 type VerifyState =
   | "loading"
@@ -23,7 +23,7 @@ type VerifyState =
   | "invalid_code";
 
 interface EmailVerifyClientProps {
-  initialResult: VerifyEmailResponse | null;
+  initialResult: EmailVerificationResponse | null;
   code: string | null;
   discordLinked?: boolean;
   discordError?: string;
@@ -38,7 +38,7 @@ export default function EmailVerifyClient({
   const router = useRouter();
 
   const [state, setState] = useState<VerifyState>("loading");
-  const [result, setResult] = useState<VerifyEmailResponse | null>(
+  const [result, setResult] = useState<EmailVerificationResponse | null>(
     initialResult,
   );
   const [discordLinkingInProgress, setDiscordLinkingInProgress] =
@@ -67,7 +67,8 @@ export default function EmailVerifyClient({
               "/api/email-verify?code=" + encodeURIComponent(code),
             );
             if (verifyRes.ok) {
-              const verifyData = await verifyRes.json();
+              const verifyData =
+                (await verifyRes.json()) as EmailVerificationResponse;
               if (verifyData.valid) {
                 setResult(verifyData);
                 setState("success");
@@ -95,13 +96,16 @@ export default function EmailVerifyClient({
                 "/api/email-verify?code=" + encodeURIComponent(code),
               );
               if (verifyRes.ok) {
-                const verifyData = await verifyRes.json();
+                const verifyData =
+                  (await verifyRes.json()) as EmailVerificationResponse;
                 if (
                   "error" in verifyData &&
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore - verifyData may include error field
                   verifyData.error === "discord_not_linked"
                 ) {
                   setState("discord_required");
-                  setResult(verifyData);
+                  setResult(verifyData as EmailVerificationResponse);
                 } else if (verifyData.valid) {
                   setResult(verifyData);
                   setState("success");
@@ -131,7 +135,7 @@ export default function EmailVerifyClient({
         if (initialResult.error === "discord_not_linked") {
           // Discord未連携エラー
           setState("discord_required");
-          setResult(initialResult as never);
+          setResult(initialResult as EmailVerificationResponse);
         } else {
           setState("invalid_code");
         }
@@ -175,24 +179,20 @@ export default function EmailVerifyClient({
     }
   }, [discordLinkingInProgress]);
 
-  // 成功時のリダイレクト処理
   useEffect(() => {
     if (state === "success" && result) {
       const redirectTimer = setTimeout(() => {
-        switch (result.type) {
-          case "signup":
-            router.push("/signup?completed=true");
-            break;
-          case "change":
-            router.push(
-              "/dashboard/settings?snack=メールアドレスの認証が完了しました。&variant=success",
-            );
-            break;
-          case "migration":
-            router.push("/signin?migrated=true");
-            break;
-          default:
-            router.push("/signin");
+        const typeKey = (result.type ?? "") as string;
+        if (typeKey === "signup" || typeKey === "registration") {
+          router.push("/signup?completed=true");
+        } else if (typeKey === "change" || typeKey === "email_change") {
+          router.push(
+            "/dashboard/settings?snack=メールアドレスの認証が完了しました。&variant=success",
+          );
+        } else if (typeKey === "migration") {
+          router.push("/signin?migrated=true");
+        } else {
+          router.push("/signin");
         }
       }, 2000);
 
@@ -260,7 +260,7 @@ export default function EmailVerifyClient({
           <Stack spacing={2} alignItems="center">
             <CheckCircleIcon sx={{ fontSize: 64, color: "success.main" }} />
             <Typography variant="h6">認証が完了しました!</Typography>
-            <Typography color="textSecondary">
+            <Typography sx={{ color: "text.secondary" }}>
               ページをリダイレクトしています...
             </Typography>
             <CircularProgress size={24} />
@@ -271,7 +271,7 @@ export default function EmailVerifyClient({
           <Stack spacing={2} alignItems="center">
             <ErrorIcon sx={{ fontSize: 64, color: "error.main" }} />
             <Typography variant="h6">無効な認証コードです</Typography>
-            <Typography color="textSecondary">
+            <Typography sx={{ color: "text.secondary" }}>
               認証コードが無効か期限切れです。
               <br />
               もう一度サインアップからやり直してください。
@@ -286,7 +286,7 @@ export default function EmailVerifyClient({
           <Stack spacing={2} alignItems="center">
             <ErrorIcon sx={{ fontSize: 64, color: "error.main" }} />
             <Typography variant="h6">エラーが発生しました</Typography>
-            <Typography color="textSecondary">
+            <Typography sx={{ color: "text.secondary" }}>
               認証処理中にエラーが発生しました。
               <br />
               もう一度お試しください。

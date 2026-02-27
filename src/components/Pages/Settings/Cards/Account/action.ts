@@ -1,9 +1,9 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/libs/csrf";
-import { FormStatus } from "../Base";
 import { Session } from "@/classes/Session";
-import { UserData } from "@/classes/types/User";
+import type { UserData } from "@/classes/types/User";
+import { VerifyCSRFToken } from "@/libs/csrf";
+import type { FormStatus } from "../Base";
 
 export const resendEmailVerificationAction = async (
   _userId: string,

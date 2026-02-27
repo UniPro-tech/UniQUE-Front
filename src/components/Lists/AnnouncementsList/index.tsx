@@ -26,18 +26,8 @@ import {
 import Link from "next/link";
 import React from "react";
 import type { AnnouncementData } from "@/classes/Announcement";
-import type { UserDTO } from "@/types/User";
 import { deleteAnnouncement } from "./actions/delete";
 import { pinAnnouncement } from "./actions/pin";
-
-export type AnnouncementDTO = {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  createdBy?: UserDTO | null;
-  isPinned?: boolean;
-};
 
 type Props = {
   initial?: AnnouncementData[];

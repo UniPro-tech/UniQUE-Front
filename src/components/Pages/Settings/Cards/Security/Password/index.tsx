@@ -9,17 +9,17 @@ import {
   Typography,
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import React, { useActionState, useCallback, useEffect, useState } from "react";
-import type { UserDTO } from "@/types/User";
+import { useActionState, useCallback, useEffect, useState } from "react";
 import type { FormStatus } from "../../Base";
 import { updateSettings } from "./action";
+import { UserData } from "@/classes/types/User";
 
 export default function PasswordSection({
   user,
   csrfToken,
   handleClickOpen,
 }: {
-  user: UserDTO;
+  user: UserData;
   csrfToken: string;
   handleClickOpen: () => void;
 }) {

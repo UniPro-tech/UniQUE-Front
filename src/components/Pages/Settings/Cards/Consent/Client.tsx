@@ -1,17 +1,17 @@
 "use client";
 
-import React from "react";
 import {
+  Box,
+  Button,
   Card,
-  Typography,
-  Stack,
+  Chip,
   List,
   ListItem,
-  Button,
-  Box,
-  Chip,
+  Stack,
+  Typography,
 } from "@mui/material";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import React from "react";
 
 export interface ConsentDTO {
   id: string;

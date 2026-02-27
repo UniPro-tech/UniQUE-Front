@@ -193,8 +193,23 @@ export class User {
   }
 
   static async passwordResetRequest(email: string): Promise<void> {
-    const response = await apiPost("/internal/password-reset/request", {
+    const response = await apiPost("/internal/password_reset/request", {
       email,
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to request password reset: ${response.statusText}`,
+      );
+    }
+  }
+
+  static async confirmPasswordReset(
+    code: string,
+    password: string,
+  ): Promise<void> {
+    const response = await apiPost("/internal/password_reset/confirm", {
+      code,
+      password,
     });
     if (!response.ok) {
       throw new Error(
@@ -438,7 +453,7 @@ export class User {
   }
 }
 
-interface EmailVerificationResponse {
+export interface EmailVerificationResponse {
   type: "registration" | "email_change";
   valid: boolean;
 }

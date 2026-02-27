@@ -1,4 +1,6 @@
 "use client";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import {
   Button,
   Chip,
@@ -8,27 +10,24 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import type { UserDTO } from "@/types/User";
-import Base from "../Base";
-import { FormStatus } from "../Base";
-import { useActionState, useEffect, useState } from "react";
-import { updateAccountSettings, resendEmailVerificationAction } from "./action";
 import { enqueueSnackbar } from "notistack";
+import { useActionState, useEffect, useState } from "react";
 import UserIdChangeApply from "../../Dialogs/UserIdChangeApply";
+import Base, { type FormStatus } from "../Base";
+import { resendEmailVerificationAction, updateAccountSettings } from "./action";
+import { UserData } from "@/classes/types/User";
 
 export default function AccountSettingsCardClient({
   user,
   csrfToken,
 }: {
-  user: UserDTO;
+  user: UserData;
   csrfToken: string;
 }) {
   const [lastResult, action, isPending] = useActionState(
     updateAccountSettings,
     { user: user, status: null } as {
-      user: UserDTO;
+      user: UserData;
       status: FormStatus | null;
     },
   );
