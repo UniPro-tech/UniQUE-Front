@@ -21,5 +21,8 @@ export const IsIncludedInBitmask = (
     // targetが0の場合は常にfalseを返す
     return false;
   }
+  if (target === -1n) {
+    return true;
+  }
   return (bitmask & target) === target;
 };
