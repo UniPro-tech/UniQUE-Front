@@ -17,8 +17,7 @@ import { jaJP } from "@mui/x-data-grid/locales";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import AssignUserToRoleDialog from "@/components/Dialogs/AssignUserToRole";
-import type { UserDTO } from "@/types/User";
-import { unassignUserFromRole } from "@/app/dashboard/roles/[id]/assign-action";
+import { unassignUserFromRole } from "@/components/Dialogs/AssignUserToRole/action";
 import { RoleData } from "@/classes/Role";
 import { UserData } from "@/classes/types/User";
 
@@ -133,7 +132,7 @@ export default function RoleUsersDataGridClient({
         headerName: "表示名",
         width: 180,
         flex: 1,
-        valueGetter: (_value: unknown, row: UserDTO) =>
+        valueGetter: (_value: unknown, row: UserData) =>
           row.profile?.displayName || row.customId || "",
       },
       {

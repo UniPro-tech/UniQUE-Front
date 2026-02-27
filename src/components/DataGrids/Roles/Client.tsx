@@ -12,7 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
 import DeleteDialog from "@/components/Dialogs/Delete";
-import { deleteRole } from "@/app/dashboard/roles/[id]/action";
+import { deleteRole } from "@/components/Forms/RoleEditForm/action";
 import { redirect, RedirectType } from "next/navigation";
 import { Box, Paper } from "@mui/material";
 import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
