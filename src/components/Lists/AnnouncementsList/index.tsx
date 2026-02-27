@@ -1,35 +1,34 @@
 "use client";
-import React from "react";
-import Link from "next/link";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Snackbar,
-  Alert,
-  Card,
-  CardHeader,
-  CardContent,
-  CardActions,
-  Avatar,
-  Stack,
-  Divider,
-  Chip,
-  Box,
-  Typography,
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
+import React from "react";
+import type { AnnouncementData } from "@/classes/Announcement";
 import type { UserDTO } from "@/types/User";
-import { AnnouncementData } from "@/classes/Announcement";
-import { pinAnnouncement } from "./actions/pin";
 import { deleteAnnouncement } from "./actions/delete";
+import { pinAnnouncement } from "./actions/pin";
 
 export type AnnouncementDTO = {
   id: string;

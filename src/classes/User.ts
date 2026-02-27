@@ -1,3 +1,7 @@
+import { ConvertPermissionBitsToText } from "@/constants/Permission";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
+import { FrontendErrors } from "@/errors/FrontendErrors";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 import {
   apiDelete,
   apiGet,
@@ -6,19 +10,15 @@ import {
   apiPut,
   createApiClient,
 } from "@/libs/apiClient";
+import { IsIncludedInBitmask, MergeBitmask } from "@/libs/bitmask";
+import { toCamelcase, toSnakecase } from "@/libs/snakeCamelUtil";
 import {
   ExternalIdentity,
-  ExternalIdentityCreateData,
+  type ExternalIdentityCreateData,
 } from "./ExternalIdentity";
-import { Profile, ProfileData } from "./Profile";
-import { Role, RoleData } from "./Role";
-import { toCamelcase, toSnakecase } from "@/libs/snakeCamelUtil";
-import { IsIncludedInBitmask, MergeBitmask } from "@/libs/bitmask";
-import { ConvertPermissionBitsToText } from "@/constants/Permission";
-import { FrontendErrors } from "@/errors/FrontendErrors";
-import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { UserData, UserStatus } from "./types/User";
-import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
+import { Profile, type ProfileData } from "./Profile";
+import { Role, type RoleData } from "./Role";
+import { type UserData, UserStatus } from "./types/User";
 
 export class User {
   id: string;

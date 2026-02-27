@@ -1,7 +1,7 @@
+import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
 import AnnouncementCreateForm from "@/components/Forms/AnnouncementCreateForm";
 import { PermissionBitsFields } from "@/constants/Permission";
 import { requirePermission } from "@/libs/permissions";
-import { Stack, Typography, Breadcrumbs, Link } from "@mui/material";
 
 export const metadata = {
   title: "お知らせ新規作成",

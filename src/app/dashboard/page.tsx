@@ -1,7 +1,7 @@
-import { Stack, Typography, Box, Button } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import AnnouncementsList from "@/components/Lists/AnnouncementsList";
 import { Announcement } from "@/classes/Announcement";
+import AnnouncementsList from "@/components/Lists/AnnouncementsList";
 
 export const metadata = {
   title: "ダッシュボード",

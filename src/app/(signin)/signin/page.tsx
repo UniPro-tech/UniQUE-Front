@@ -1,26 +1,26 @@
+import type { VariantType } from "notistack";
+import AuthenticationPage, {
+  type AuthorizationFormState,
+} from "@/components/Pages/Authentication/Client";
 import TemporarySnackProvider, {
-  SnackbarData,
+  type SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import { VariantType } from "notistack";
 import {
-  AuthenticationErrorCodes,
+  type AuthenticationErrorCodes,
   getAuthenticationErrorSnackbarData,
 } from "@/errors/AuthenticationErrors";
 import {
-  FormRequestErrorCodes,
+  type AuthServerErrorCodes,
+  getAuthServerErrorSnackbarData,
+} from "@/errors/AuthServerErrors";
+import {
+  type FormRequestErrorCodes,
   getFormRequestErrorSnackbarData,
 } from "@/errors/FormRequestErrors";
 import {
-  getAuthServerErrorSnackbarData,
-  AuthServerErrorCodes,
-} from "@/errors/AuthServerErrors";
-import {
-  FrontendErrorCodes,
+  type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
-import AuthenticationPage, {
-  AuthorizationFormState,
-} from "@/components/Pages/Authentication/Client";
 
 export const metadata = {
   title: "サインイン",

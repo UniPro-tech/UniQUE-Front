@@ -1,18 +1,18 @@
 "use client";
 import {
-  Stack,
-  Typography,
-  Divider,
-  TextField,
-  FormHelperText,
   Button,
+  Divider,
+  FormHelperText,
   Link,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import React, { useActionState, useEffect, useState, useCallback } from "react";
-import { updateSettings } from "./action";
+import React, { useActionState, useCallback, useEffect, useState } from "react";
 import type { UserDTO } from "@/types/User";
-import { FormStatus } from "../../Base";
+import type { FormStatus } from "../../Base";
+import { updateSettings } from "./action";
 
 export default function PasswordSection({
   user,

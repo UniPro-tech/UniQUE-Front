@@ -1,8 +1,8 @@
+import { unauthorized } from "next/navigation";
+import { Session } from "@/classes/Session";
 import { generateCSRFToken } from "@/libs/csrf";
 import type { UserDTO } from "@/types/User";
 import SecuritySettingsCardClient from "./Client";
-import { unauthorized } from "next/navigation";
-import { Session } from "@/classes/Session";
 
 export default async function SecuritySettingsCard({
   user,

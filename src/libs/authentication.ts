@@ -1,13 +1,13 @@
-import { toCamelcase } from "@/libs/snakeCamelUtil";
-import { createApiClient } from "./apiClient";
-import { getRealIPAddress } from "./request";
 import { cookies, headers } from "next/headers";
-import { ParseJwt } from "./jwt";
 import { Session } from "@/classes/Session";
-import { ClearSessionCookie } from "./cookies";
 import { AuthenticationErrors } from "@/errors/AuthenticationErrors";
 import { AuthServerErrors } from "@/errors/AuthServerErrors";
 import { FrontendErrors } from "@/errors/FrontendErrors";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
+import { createApiClient } from "./apiClient";
+import { ClearSessionCookie } from "./cookies";
+import { ParseJwt } from "./jwt";
+import { getRealIPAddress } from "./request";
 
 export interface Credentials {
   username?: string;
@@ -67,13 +67,14 @@ export const AuthenticationRequest = async (
 
   if (!response.ok) {
     switch (response.status) {
-      case 401:
+      case 401: {
         const errorData = await response.json();
         if (errorData.reason == "invalid_credentials") {
           throw AuthenticationErrors.InvalidCredentials;
         } else if (errorData.reason == "user_inactive") {
           throw AuthenticationErrors.AccountLocked;
         }
+      }
       case 400:
         throw FrontendErrors.InvalidInput;
       default:

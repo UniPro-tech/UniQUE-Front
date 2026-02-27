@@ -1,6 +1,6 @@
-import SocialAccountsCardClietnt from "./Client";
 import { ExternalIdentity } from "@/classes/ExternalIdentity";
-import { UserData } from "@/classes/types/User";
+import type { UserData } from "@/classes/types/User";
+import SocialAccountsCardClietnt from "./Client";
 
 export default async function SocialAccountsSettingsCard({
   user,

@@ -1,7 +1,7 @@
 "use server";
 
 import { Role } from "@/classes/Role";
-import { UserData } from "@/classes/types/User";
+import type { UserData } from "@/classes/types/User";
 import { User } from "@/classes/User";
 
 export async function getAllUsers(): Promise<UserData[]> {

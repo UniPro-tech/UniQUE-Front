@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { ExternalIdentity } from "@/classes/ExternalIdentity";
 import { Session } from "@/classes/Session";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { ExternalIdentity } from "@/classes/ExternalIdentity";
 
 // guild invite and role assignment are performed by backend API
 

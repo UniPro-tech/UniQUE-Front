@@ -1,21 +1,21 @@
 "use client";
 import {
+  Box,
+  Button,
+  Card,
+  Chip,
+  Divider,
+  List,
+  ListItem,
   Stack,
   Typography,
-  Divider,
-  Button,
-  List,
-  Chip,
-  ListItem,
-  Card,
-  Box,
 } from "@mui/material";
-import { logoutSession } from "./action";
-import { useActionState, useEffect } from "react";
-import { FormStatus } from "../../Base";
 import { enqueueSnackbar } from "notistack";
-import { SessionData } from "@/classes/Session";
+import { useActionState, useEffect } from "react";
+import type { SessionData } from "@/classes/Session";
 import { parseUA } from "@/libs/request";
+import type { FormStatus } from "../../Base";
+import { logoutSession } from "./action";
 
 export default function SessionsSection({
   currentSessionId,

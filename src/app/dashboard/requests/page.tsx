@@ -1,9 +1,9 @@
 import { Stack, Typography } from "@mui/material";
+import { UserStatus } from "@/classes/types/User";
+import { User } from "@/classes/User";
 import MembersDataGrid from "@/components/DataGrids/Members";
 import { PermissionBitsFields } from "@/constants/Permission";
 import { requirePermission } from "@/libs/permissions";
-import { User } from "@/classes/User";
-import { UserStatus } from "@/classes/types/User";
 
 export const metadata = {
   title: "メンバー申請一覧",

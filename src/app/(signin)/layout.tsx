@@ -1,7 +1,7 @@
 "use client";
-import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
+import type * as React from "react";
 import AppTheme from "@/components/mui-template/shared-theme/AppTheme";
 
 export default function AuthLayout(props: { children: React.ReactNode }) {

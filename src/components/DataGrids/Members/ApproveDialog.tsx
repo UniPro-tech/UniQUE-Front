@@ -1,20 +1,20 @@
-import * as React from "react";
+import { FormHelperText, MenuItem, TextField, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
-import { FormHelperText, MenuItem, TextField, Typography } from "@mui/material";
+import * as React from "react";
+import type { UserData } from "@/classes/types/User";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import PeriodSelectorOptions from "@/components/PeriodSelectorOptions";
-import { UserData } from "@/classes/types/User";
-import { approveAction } from "./actions/approveAction";
 import {
   AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
 } from "@/constants/UserConstants";
+import { approveAction } from "./actions/approveAction";
 
 interface ApproveRegistApplyProps {
   open: boolean;

@@ -1,18 +1,18 @@
 "use client";
 
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import MuiCard from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import MuiCard from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
-import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
-import { Theme } from "@mui/material/styles";
-import { ApplicationData } from "@/classes/Application";
-import { UserData } from "@/classes/types/User";
+import Stack from "@mui/material/Stack";
+import type { Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import type { ApplicationData } from "@/classes/Application";
+import type { UserData } from "@/classes/types/User";
 
 export default function ConsentCard(props: {
   app: ApplicationData;

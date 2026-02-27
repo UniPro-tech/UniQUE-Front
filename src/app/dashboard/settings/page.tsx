@@ -1,13 +1,13 @@
+import { Stack, Typography } from "@mui/material";
+import type { VariantType } from "notistack";
+import { Session } from "@/classes/Session";
 import AccountSettingsCard from "@/components/Pages/Settings/Cards/Account";
 import ConsentSettingsCard from "@/components/Pages/Settings/Cards/Consent";
 import SecuritySettingsCard from "@/components/Pages/Settings/Cards/Security";
 import SocialAccountsSettingsCard from "@/components/Pages/Settings/Cards/SocialAccounts";
-import { Stack, Typography } from "@mui/material";
-import { VariantType } from "notistack";
 import TemporarySnackProvider, {
-  SnackbarData,
+  type SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "アカウント設定",

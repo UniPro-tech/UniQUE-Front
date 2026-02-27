@@ -1,17 +1,17 @@
 "use client";
 
+import ErrorIcon from "@mui/icons-material/Error";
+import HomeIcon from "@mui/icons-material/Home";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {
+  Alert,
   Box,
   Button,
+  Card,
   Container,
   Stack,
   Typography,
-  Alert,
-  Card,
 } from "@mui/material";
-import ErrorIcon from "@mui/icons-material/Error";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import HomeIcon from "@mui/icons-material/Home";
 import Link from "next/link";
 
 interface ErrorProps {

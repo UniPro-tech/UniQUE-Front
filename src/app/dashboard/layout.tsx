@@ -1,7 +1,7 @@
-import Drawer from "@/components/drawer";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { Session } from "@/classes/Session";
 import BirthdateGuard from "@/components/BirthdateGuard";
+import Drawer from "@/components/drawer";
 import { generateCSRFToken } from "@/libs/csrf";
 
 export default async function RootLayout({

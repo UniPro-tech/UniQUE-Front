@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { VerifyJwt } from "./libs/jwt";
 
 const COOKIE_NAME = "session_jwt";

@@ -1,13 +1,13 @@
 "use client";
 import { Card, Stack, Typography } from "@mui/material";
-import type { UserDTO } from "@/types/User";
 import { SnackbarProvider } from "notistack";
-import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import React from "react";
+import type { SessionData } from "@/classes/Session";
+import ForgotPassword from "@/components/Dialogs/ForgotPassword";
+import type { UserDTO } from "@/types/User";
 import PasswordSection from "./Password";
-import TOTPSection from "./TOTP";
 import SessionsSection from "./Sessions";
-import { SessionData } from "@/classes/Session";
+import TOTPSection from "./TOTP";
 
 export default function SecuritySettingsCardClient({
   user,

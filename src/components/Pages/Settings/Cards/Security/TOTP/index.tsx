@@ -1,21 +1,21 @@
 "use client";
-import React, { useActionState, useEffect, useState } from "react";
 import {
-  Stack,
-  Typography,
-  Divider,
-  Button,
-  TextField,
   Box,
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import { generateTOTP, verifyTOTP, disableTOTP } from "./action";
 import { QRCodeCanvas } from "qrcode.react";
+import React, { useActionState, useEffect, useState } from "react";
 import type { UserDTO } from "@/types/User";
+import { disableTOTP, generateTOTP, verifyTOTP } from "./action";
 
 export default function TOTPSection({
   user,

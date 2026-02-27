@@ -1,26 +1,26 @@
 "use client";
 
-import { Box, Button, Card, Stack, Typography, Chip } from "@mui/material";
 import {
-  Person as PersonIcon,
-  Email as EmailIcon,
-  Badge as BadgeIcon,
-  Web as WebIcon,
-  Cake as CakeIcon,
-  X as XIcon,
   ArrowBack as ArrowBackIcon,
-  Edit as EditIcon,
+  Badge as BadgeIcon,
+  Cake as CakeIcon,
   CalendarToday as CalendarIcon,
+  Edit as EditIcon,
+  Email as EmailIcon,
+  Person as PersonIcon,
+  Web as WebIcon,
+  X as XIcon,
 } from "@mui/icons-material";
+import { Box, Button, Card, Chip, Stack, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
-import {
-  getStatusLabel,
-  getAffiliationPeriodLabel,
-} from "@/constants/UserConstants";
-import { UserData, UserStatus } from "@/classes/types/User";
-import { useState } from "react";
-import ProfileEditForm from "@/components/Forms/ProfileEditForm";
 import { SnackbarProvider } from "notistack";
+import { useState } from "react";
+import { type UserData, UserStatus } from "@/classes/types/User";
+import ProfileEditForm from "@/components/Forms/ProfileEditForm";
+import {
+  getAffiliationPeriodLabel,
+  getStatusLabel,
+} from "@/constants/UserConstants";
 
 interface ProfileProps {
   user: UserData;

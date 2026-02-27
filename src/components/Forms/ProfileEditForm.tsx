@@ -1,25 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { Cancel as CancelIcon, Save as SaveIcon } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
   Card,
+  CircularProgress,
+  FormControlLabel,
+  Stack,
+  Switch,
   TextField,
   Typography,
-  Alert,
-  CircularProgress,
-  Stack,
-  FormControlLabel,
-  Switch,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { Save as SaveIcon, Cancel as CancelIcon } from "@mui/icons-material";
+import { useState } from "react";
+import type { ProfileData } from "@/classes/Profile";
 import {
+  type UpdateProfileData,
   updateProfile,
-  UpdateProfileData,
 } from "@/components/Cards/Profile/action";
-import { ProfileData } from "@/classes/Profile";
 
 interface ProfileEditFormProps {
   profile?: ProfileData;

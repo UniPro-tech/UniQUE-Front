@@ -1,22 +1,22 @@
 "use client";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { Box, Paper } from "@mui/material";
 import {
   DataGrid,
-  DataGridProps,
+  type DataGridProps,
   GridActionsCellItem,
-  GridColDef,
-  GridRowId,
+  type GridColDef,
+  type GridRowId,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import React from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
+import { RedirectType, redirect } from "next/navigation";
+import React from "react";
+import type { RoleData } from "@/classes/Role";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import { deleteRole } from "@/components/Forms/RoleEditForm/action";
-import { redirect, RedirectType } from "next/navigation";
-import { Box, Paper } from "@mui/material";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { RoleData } from "@/classes/Role";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 
 export default function RolesDataGridClient({ rows }: { rows: RoleData[] }) {
   const apiRef = useGridApiRef();

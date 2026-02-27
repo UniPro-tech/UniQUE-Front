@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { VerifyEmailResponse } from "@/lib/EmailVerification";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 import {
+  Alert,
   Box,
   Button,
   Card,
   CircularProgress,
   Stack,
   Typography,
-  Alert,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { VerifyEmailResponse } from "@/lib/EmailVerification";
 
 type VerifyState =
   | "loading"

@@ -1,4 +1,9 @@
-import { createTheme, alpha, PaletteMode, Shadows } from "@mui/material/styles";
+import {
+  alpha,
+  createTheme,
+  type PaletteMode,
+  type Shadows,
+} from "@mui/material/styles";
 
 declare module "@mui/material/Paper" {
   interface PaperPropsVariantOverrides {
@@ -402,7 +407,7 @@ export const shape = {
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error
 const defaultShadows: Shadows = [
   "none",
   "var(--template-palette-baseShadow)",

@@ -1,4 +1,4 @@
-import { Role, RoleData } from "@/classes/Role";
+import { Role, type RoleData } from "@/classes/Role";
 
 export default async function RolesDataGrid({
   rows,

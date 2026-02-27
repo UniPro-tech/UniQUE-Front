@@ -1,6 +1,6 @@
 "use server";
 
-import { Application, ApplicationData } from "@/classes/Application";
+import { Application, type ApplicationData } from "@/classes/Application";
 
 export const addRedirectUri = async (
   applicationData: ApplicationData,

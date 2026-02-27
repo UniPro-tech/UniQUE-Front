@@ -1,12 +1,12 @@
-import TemporarySnackProvider, {
-  SnackbarData,
-} from "@/components/TemporarySnackProvider";
-import { toCamelcase } from "@/libs/snakeCamelUtil";
-import { createApiClient } from "@/libs/apiClient";
 import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
+import { RedirectType, redirect } from "next/navigation";
 import { Session } from "@/classes/Session";
 import ConsentCard from "@/components/Pages/Authorization/ConsentCard";
+import TemporarySnackProvider, {
+  type SnackbarData,
+} from "@/components/TemporarySnackProvider";
+import { createApiClient } from "@/libs/apiClient";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 
 export default async function Page({
   searchParams,

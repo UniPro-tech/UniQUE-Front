@@ -1,4 +1,4 @@
-import { ProfileData, Profile } from "../Profile";
+import type { Profile, ProfileData } from "../Profile";
 
 export enum UserStatus {
   ESTABLISHED = "established",

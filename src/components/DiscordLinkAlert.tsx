@@ -1,4 +1,5 @@
 "use client";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Alert,
   AlertTitle,
@@ -8,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
 
 export default function DiscordLinkAlert() {
   const [isDiscordLinked, setIsDiscordLinked] = useState<boolean | null>(null);

@@ -1,19 +1,19 @@
 "use client";
 
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
 import { Box } from "@mui/material";
-import { logoutAction } from "./action";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Tooltip from "@mui/material/Tooltip";
 import { useRouter } from "next/navigation";
-import { UserData } from "@/classes/types/User";
+import * as React from "react";
+import type { UserData } from "@/classes/types/User";
+import { logoutAction } from "./action";
 
 export default function AccountMenu({ user }: { user: UserData | null }) {
   const router = useRouter();

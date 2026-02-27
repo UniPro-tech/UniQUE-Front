@@ -2,18 +2,18 @@
 
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
-import AppTheme from "@/components/mui-template/shared-theme/AppTheme";
-import AuthCard from "./components/AuthCard";
-import Content from "./components/Content";
-import { isMobile } from "@/libs/window";
-import AuthCardMobile from "./components/AuthCardMobile";
 import {
+  createContext,
+  type Dispatch,
+  type SetStateAction,
   useContext,
   useState,
-  createContext,
-  Dispatch,
-  SetStateAction,
 } from "react";
+import AppTheme from "@/components/mui-template/shared-theme/AppTheme";
+import { isMobile } from "@/libs/window";
+import AuthCard from "./components/AuthCard";
+import AuthCardMobile from "./components/AuthCardMobile";
+import Content from "./components/Content";
 
 export enum AuthorizationPageMode {
   SignIn = "signin",

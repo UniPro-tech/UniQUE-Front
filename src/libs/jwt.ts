@@ -1,8 +1,8 @@
 import {
-  JWTPayload,
-  JWTVerifyGetKey,
-  JWTHeaderParameters,
   importJWK,
+  type JWTHeaderParameters,
+  type JWTPayload,
+  type JWTVerifyGetKey,
   jwtVerify,
 } from "jose";
 

@@ -1,23 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 import {
-  confirmPasswordReset,
-  requestPasswordReset,
-} from "@/lib/PasswordReset";
-import {
+  Alert,
   Box,
   Button,
   Card,
   CircularProgress,
   Stack,
-  Typography,
-  Alert,
   TextField,
+  Typography,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  confirmPasswordReset,
+  requestPasswordReset,
+} from "@/lib/PasswordReset";
 
 type PasswordResetState =
   | "request"

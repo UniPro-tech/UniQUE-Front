@@ -1,18 +1,18 @@
-import * as React from "react";
+import { Divider, FormHelperText } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { SitemarkIcon } from "../../CustomIcons";
-import { Card, SignInContainer } from "../Base";
+import * as React from "react";
 import { useInitialFormState } from "../../../Client";
 import { submitMigration } from "../../actions/migration";
-import { Divider, FormHelperText } from "@mui/material";
+import { SitemarkIcon } from "../../CustomIcons";
+import { Card, SignInContainer } from "../Base";
 
 export default function MigrationCard() {
   const initialState = useInitialFormState();
@@ -92,7 +92,7 @@ export default function MigrationCard() {
     if (
       !externalEmail.value ||
       !/\S+@\S+\.\S+/.test(externalEmail.value) ||
-      /\@uniproject\.jp\s*$/.test(externalEmail.value)
+      /@uniproject\.jp\s*$/.test(externalEmail.value)
     ) {
       setExternalEmailError(true);
       setExternalEmailErrorMessage(

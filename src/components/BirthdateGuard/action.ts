@@ -1,10 +1,10 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/libs/csrf";
+import { Session } from "@/classes/Session";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { FormRequestErrors } from "@/errors/FormRequestErrors";
 import { FrontendErrors } from "@/errors/FrontendErrors";
-import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { Session } from "@/classes/Session";
+import { VerifyCSRFToken } from "@/libs/csrf";
 
 export const updateBirthdate = async (
   prevState: { birthdate: string; status: FormStatus | null },

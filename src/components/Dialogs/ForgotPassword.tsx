@@ -1,5 +1,4 @@
 "use client";
-import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -7,9 +6,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { resetPasswordAction } from "../mui-template/signup-side/lib/ResetPasswordAction";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import * as React from "react";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 
 interface ForgotPasswordProps {
   open: boolean;
@@ -23,7 +22,10 @@ export default function ForgotPassword({
   csrfToken,
 }: ForgotPasswordProps) {
   const [state, action] = React.useActionState(
-    resetPasswordAction,
+    () => {
+      // TODO: Implement forgot password logic here
+      return null as null | FormStatus;
+    },
     null as null | FormStatus,
   );
   React.useEffect(() => {
@@ -31,7 +33,7 @@ export default function ForgotPassword({
       enqueueSnackbar(state.message, { variant: state.status });
       handleClose();
     }
-  }, [state]);
+  }, [handleClose, state]);
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
       <Dialog

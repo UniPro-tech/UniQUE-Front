@@ -1,31 +1,31 @@
+import type { VariantType } from "notistack";
 import AuthenticationPage, {
-  AuthorizationFormState,
+  type AuthorizationFormState,
   AuthorizationPageMode,
 } from "@/components/Pages/Authentication/Client";
 import TemporarySnackProvider, {
-  SnackbarData,
+  type SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import {
-  AuthenticationErrorCodes,
+  type AuthenticationErrorCodes,
   getAuthenticationErrorSnackbarData,
 } from "@/errors/AuthenticationErrors";
 import {
-  AuthServerErrorCodes,
+  type AuthServerErrorCodes,
   getAuthServerErrorSnackbarData,
 } from "@/errors/AuthServerErrors";
 import {
-  FormRequestErrorCodes,
+  type FormRequestErrorCodes,
   getFormRequestErrorSnackbarData,
 } from "@/errors/FormRequestErrors";
 import {
-  FrontendErrorCodes,
+  type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
 import {
   getResourceApiErrorSnackbarData,
-  ResourceApiErrorCodes,
+  type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
-import { VariantType } from "notistack";
 
 export const metadata = {
   title: "メンバー登録申請",

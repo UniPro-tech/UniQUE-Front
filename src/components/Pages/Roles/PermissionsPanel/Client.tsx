@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
 import {
-  Grid,
-  FormControlLabel,
-  Checkbox,
-  Typography,
-  Stack,
   Button,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  Stack,
+  Typography,
 } from "@mui/material";
-import { Role, RoleData } from "@/classes/Role";
+import React, { useState } from "react";
+import { Role, type RoleData } from "@/classes/Role";
 import { PermissionBitsFields, PermissionTexts } from "@/constants/Permission";
 
 export default function PermissionsPanelClient({

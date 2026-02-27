@@ -1,29 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { Cancel as CancelIcon, Save as SaveIcon } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
   Card,
+  CircularProgress,
+  MenuItem,
+  Stack,
   TextField,
   Typography,
-  Alert,
-  CircularProgress,
-  Stack,
-  MenuItem,
 } from "@mui/material";
-import { Save as SaveIcon, Cancel as CancelIcon } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { UserStatus } from "@/classes/types/User";
 import {
+  type CreateMemberFormData,
   createMember,
   redirectToMemberList,
-  CreateMemberFormData,
 } from "@/components/Pages/Members/Forms/actions/create";
 import {
   AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
 } from "@/constants/UserConstants";
-import { useRouter } from "next/navigation";
-import { UserStatus } from "@/classes/types/User";
 
 export default function MemberCreateForm() {
   const router = useRouter();

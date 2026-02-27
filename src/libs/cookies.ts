@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { AuthenticationResponse } from "./authentication";
+import type { AuthenticationResponse } from "./authentication";
 
 // サーバー/クライアント両対応の cookie 取得
 export const getAllCookies = async (): Promise<string> => {

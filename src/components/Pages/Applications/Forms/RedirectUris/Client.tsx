@@ -1,29 +1,29 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Button,
-  Stack,
-  TextField,
-  Typography,
-  Paper,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
   DataGrid,
+  type DataGridProps,
   GridActionsCellItem,
-  GridColDef,
-  GridRowId,
-  DataGridProps,
+  type GridColDef,
+  type GridRowId,
 } from "@mui/x-data-grid";
 import { jaJP } from "@mui/x-data-grid/locales";
 import { SnackbarProvider, useSnackbar } from "notistack";
-import { ApplicationData } from "@/classes/Application";
+import React, { useEffect, useState } from "react";
+import type { ApplicationData } from "@/classes/Application";
 import { addRedirectUri, deleteRedirectUri } from "./action";
 
 export default function RedirectUrisClient({

@@ -1,5 +1,5 @@
-import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { createApiClient } from "@/libs/apiClient";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { Application } from "./Application";
 
 export interface AuthorizationRequestData {
@@ -76,7 +76,7 @@ export class AuthorizationRequest {
   }
 
   static async autoConsentedById(id: string): Promise<boolean> {
-    const authReq = await this.getById(id);
+    const authReq = await AuthorizationRequest.getById(id);
     return authReq.autoConsented();
   }
 

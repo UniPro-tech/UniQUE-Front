@@ -1,26 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import {
+  ContentCopy as ContentCopyIcon,
+  Save as SaveIcon,
+} from "@mui/icons-material";
+import {
+  Alert,
   Box,
   Button,
   Card,
+  CircularProgress,
+  Divider,
+  IconButton,
+  InputAdornment,
+  Paper,
+  Stack,
   TextField,
   Typography,
-  Alert,
-  CircularProgress,
-  Stack,
-  Divider,
-  Paper,
-  InputAdornment,
-  IconButton,
 } from "@mui/material";
-import {
-  Save as SaveIcon,
-  ContentCopy as ContentCopyIcon,
-} from "@mui/icons-material";
+import { useState } from "react";
+import type { ApplicationData } from "@/classes/Application";
 import { changeAction } from "./action";
-import { ApplicationData } from "@/classes/Application";
 
 interface ApplicationEditFormProps {
   application: ApplicationData;

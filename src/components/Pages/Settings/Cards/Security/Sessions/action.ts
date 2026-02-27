@@ -1,10 +1,10 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/libs/csrf";
-import { FormStatus } from "../../Base";
+import { Session, type SessionData } from "@/classes/Session";
 import { FormRequestErrors } from "@/errors/FormRequestErrors";
 import { FrontendErrors } from "@/errors/FrontendErrors";
-import { Session, SessionData } from "@/classes/Session";
+import { VerifyCSRFToken } from "@/libs/csrf";
+import type { FormStatus } from "../../Base";
 
 export const logoutSession = async (
   prevState: { sessions: SessionData[]; status: FormStatus | null },

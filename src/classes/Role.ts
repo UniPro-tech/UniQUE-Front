@@ -1,5 +1,4 @@
-import { PermissionTexts } from "@/constants/Permission";
-import { User } from "./User";
+import type { PermissionTexts } from "@/constants/Permission";
 import {
   apiDelete,
   apiGet,
@@ -9,6 +8,7 @@ import {
   stringJsonParseSafe,
 } from "@/libs/apiClient";
 import { toCamelcase } from "@/libs/snakeCamelUtil";
+import { User } from "./User";
 
 export interface RoleData {
   id: string;

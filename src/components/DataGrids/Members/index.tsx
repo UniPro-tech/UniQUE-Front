@@ -1,35 +1,35 @@
 "use client";
+import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RestoreIcon from "@mui/icons-material/Restore";
+import SaveIcon from "@mui/icons-material/Save";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Button, darken } from "@mui/material";
 import {
   DataGrid,
-  DataGridProps,
+  type DataGridProps,
   GridActionsCellItem,
+  type GridColDef,
+  type GridRowId,
+  type GridValidRowModel,
   gridClasses,
-  GridColDef,
-  GridRowId,
-  GridValidRowModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import React from "react";
-import RestoreIcon from "@mui/icons-material/Restore";
-import CheckIcon from "@mui/icons-material/Check";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, darken } from "@mui/material";
-import SaveIcon from "@mui/icons-material/Save";
 import { jaJP } from "@mui/x-data-grid/locales";
-import { enqueueSnackbar } from "notistack";
-import ApproveRegistApplyDialog from "@/components/DataGrids/Members/ApproveDialog";
-import {
-  USER_STATUS_OPTIONS,
-  AFFILIATION_PERIOD_OPTIONS,
-} from "@/constants/UserConstants";
 import { useRouter } from "next/navigation";
-import DeleteDialog from "@/components/Dialogs/Delete";
-import RejectDialog from "@/components/DataGrids/Members/RejectDialog";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { enqueueSnackbar } from "notistack";
+import React from "react";
+import type { ProfileData } from "@/classes/Profile";
+import type { UserData, UserStatus } from "@/classes/types/User";
+import ApproveRegistApplyDialog from "@/components/DataGrids/Members/ApproveDialog";
 import { deleteUserById } from "@/components/DataGrids/Members/actions/deleteAction";
-import { UserData, UserStatus } from "@/classes/types/User";
-import { ProfileData } from "@/classes/Profile";
+import RejectDialog from "@/components/DataGrids/Members/RejectDialog";
+import DeleteDialog from "@/components/Dialogs/Delete";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import {
+  AFFILIATION_PERIOD_OPTIONS,
+  USER_STATUS_OPTIONS,
+} from "@/constants/UserConstants";
 import { updateUserById } from "./actions/updateAction";
 
 export default function MembersDataGrid({

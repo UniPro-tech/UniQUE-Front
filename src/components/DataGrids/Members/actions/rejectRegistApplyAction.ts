@@ -1,6 +1,6 @@
 "use server";
 import { User } from "@/classes/User";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 
 export const rejectRegistApplyAction = async (
   _prevState: FormStatus | null,

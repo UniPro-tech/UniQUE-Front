@@ -1,9 +1,9 @@
+import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
+import { notFound } from "next/navigation";
 import { Application } from "@/classes/Application";
 import ApplicationEditForm from "@/components/Pages/Applications/Forms/ApplicationEditForm";
 import RedirectUris from "@/components/Pages/Applications/Forms/RedirectUris";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
-import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,

@@ -1,8 +1,8 @@
 "use server";
-import { AuthenticationRequest, Credentials } from "@/libs/authentication";
-import { SetSessionCookie } from "@/libs/cookies";
 import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
+import { RedirectType, redirect } from "next/navigation";
+import { AuthenticationRequest, type Credentials } from "@/libs/authentication";
+import { SetSessionCookie } from "@/libs/cookies";
 
 export const submitSignIn = async (formData: FormData) => {
   const username = formData.get("username") as string;

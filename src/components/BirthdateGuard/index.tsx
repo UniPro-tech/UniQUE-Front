@@ -1,17 +1,17 @@
 "use client";
 
 import {
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Button,
   TextField,
   Typography,
 } from "@mui/material";
 import { useActionState, useEffect } from "react";
-import { updateBirthdate } from "./action";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { updateBirthdate } from "./action";
 
 export default function BirthdateGuard({
   mustSetBirthdate,

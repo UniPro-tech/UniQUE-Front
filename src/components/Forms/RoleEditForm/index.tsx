@@ -1,28 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { Save as SaveIcon } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
   Card,
+  Checkbox,
+  CircularProgress,
+  Divider,
+  FormControlLabel,
+  FormGroup,
+  Stack,
   TextField,
   Typography,
-  Alert,
-  CircularProgress,
-  Stack,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  Divider,
 } from "@mui/material";
-import { Save as SaveIcon } from "@mui/icons-material";
+import { useState } from "react";
+import type { RoleData } from "@/classes/Role";
 import {
+  type UpdateRoleFormData,
   updateRole,
-  UpdateRoleFormData,
 } from "@/components/Forms/RoleEditForm/action";
-import { PermissionGroups } from "../PermissionGroups";
-import { RoleData } from "@/classes/Role";
 import { PermissionBitsFields, PermissionTexts } from "@/constants/Permission";
+import { PermissionGroups } from "../PermissionGroups";
 
 interface RoleEditFormProps {
   role: RoleData;

@@ -1,6 +1,6 @@
-import { Application } from "@/classes/Application";
-import RedirectUrisClient from "./Client";
 import { SnackbarProvider } from "notistack";
+import type { Application } from "@/classes/Application";
+import RedirectUrisClient from "./Client";
 
 export default async function RedirectUris({
   application,

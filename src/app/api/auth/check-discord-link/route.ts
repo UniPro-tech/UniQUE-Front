@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { User } from "@/classes/User";
+import { type NextRequest, NextResponse } from "next/server";
 import { Session } from "@/classes/Session";
+import { User } from "@/classes/User";
 
 /**
  * Discord連携状態をチェックするエンドポイント

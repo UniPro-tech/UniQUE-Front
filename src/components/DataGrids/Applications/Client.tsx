@@ -1,22 +1,22 @@
 "use client";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Box, Link as MuiLink, Paper } from "@mui/material";
 import {
   DataGrid,
-  DataGridProps,
+  type DataGridProps,
   GridActionsCellItem,
-  GridColDef,
-  GridRowId,
+  type GridColDef,
+  type GridRowId,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import React from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
+import { RedirectType, redirect } from "next/navigation";
+import React from "react";
+import type { ApplicationData } from "@/classes/Application";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { redirect, RedirectType } from "next/navigation";
-import { Box, Paper, Link as MuiLink } from "@mui/material";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { ApplicationData } from "@/classes/Application";
 import { deleteApplicationById } from "./deleteAction";
 
 export default function ApplicationsDataGridClient({

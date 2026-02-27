@@ -1,7 +1,7 @@
-import RoleUsersDataGridClient from "./Client";
 import { use } from "react";
-import { UserData } from "@/classes/types/User";
-import { Role } from "@/classes/Role";
+import type { Role } from "@/classes/Role";
+import type { UserData } from "@/classes/types/User";
+import RoleUsersDataGridClient from "./Client";
 
 export default function RoleUsersDataGrid({ role }: { role: Role }) {
   const users = use(role.getUsers());

@@ -1,11 +1,11 @@
+import { Box, Breadcrumbs, Link, Stack, Typography } from "@mui/material";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Role } from "@/classes/Role";
 import RoleUsersDataGrid from "@/components/DataGrids/RoleUsers";
 import RoleEditForm from "@/components/Forms/RoleEditForm";
 import RoleBulkAssignButton from "@/components/Pages/Roles/RoleBulkAssignButton";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { Breadcrumbs, Link, Stack, Typography, Box } from "@mui/material";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 export async function generateMetadata({
   params,

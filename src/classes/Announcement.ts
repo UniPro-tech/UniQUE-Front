@@ -1,10 +1,10 @@
-import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
-import { toCamelcase } from "@/libs/snakeCamelUtil";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
 import { FrontendErrors } from "@/errors/FrontendErrors";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
-import { ProfileData } from "./Profile";
-import { UserData } from "./types/User";
+import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
+import type { ProfileData } from "./Profile";
+import type { UserData } from "./types/User";
 
 export interface AnnouncementData {
   id: string;
@@ -130,10 +130,11 @@ export class Announcement {
           throw AuthorizationErrors.Unauthorized;
         case 403:
           throw AuthorizationErrors.AccessDenied;
-        default:
+        default: {
           const data = await response.json();
           console.log("API Error:", data);
           throw ResourceApiErrors.ApiServerInternalError;
+        }
       }
     }
     const responseData = toCamelcase<AnnouncementData>(await response.json());

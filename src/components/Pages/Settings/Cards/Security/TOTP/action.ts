@@ -1,7 +1,7 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/libs/csrf";
 import { Session } from "@/classes/Session";
+import { VerifyCSRFToken } from "@/libs/csrf";
 
 export const generateTOTP = async (_prevState: null, formData: FormData) => {
   try {

@@ -1,4 +1,4 @@
-import { Application, ApplicationData } from "@/classes/Application";
+import { Application, type ApplicationData } from "@/classes/Application";
 import ApplicationsDataGridClient from "./Client";
 
 export default async function ApplicationsDataGrid({

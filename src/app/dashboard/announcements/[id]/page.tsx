@@ -1,14 +1,14 @@
-import { Stack, Typography, Button, Box } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import TemporarySnackProvider, {
-  SnackbarData,
-} from "@/components/TemporarySnackProvider";
-import { PermissionBitsFields } from "@/constants/Permission";
+import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Announcement } from "@/classes/Announcement";
-import { notFound } from "next/navigation";
 import { Session } from "@/classes/Session";
+import TemporarySnackProvider, {
+  type SnackbarData,
+} from "@/components/TemporarySnackProvider";
+import { PermissionBitsFields } from "@/constants/Permission";
 
 export const metadata = {
   title: "アナウンス詳細",

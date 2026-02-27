@@ -1,4 +1,4 @@
-import { SnackbarData } from "@/components/TemporarySnackProvider";
+import type { SnackbarData } from "@/components/TemporarySnackProvider";
 
 export enum FrontendErrorCodes {
   UnhandledException = "E0001",

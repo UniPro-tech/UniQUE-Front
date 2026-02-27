@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import Profile from "@/components/Cards/Profile";
 import { User } from "@/classes/User";
+import Profile from "@/components/Cards/Profile";
 
 export const metadata = {
   title: "ユーザー詳細",

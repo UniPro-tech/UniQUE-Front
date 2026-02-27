@@ -1,7 +1,6 @@
 "use client";
 
-import { AuthorizationPageMode } from "../Client";
-import { useAuthPageMode } from "../Client";
+import { AuthorizationPageMode, useAuthPageMode } from "../Client";
 import MigrationCard from "./MobileCards/MigrationCard";
 import MultiFactorCard from "./MobileCards/MultiFactorCard";
 import SignInCard from "./MobileCards/SignInCard";

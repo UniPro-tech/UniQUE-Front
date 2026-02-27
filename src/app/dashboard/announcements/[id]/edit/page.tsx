@@ -1,8 +1,8 @@
-import AnnouncementEditForm from "@/components/Forms/AnnouncementEditForm";
 import { Stack, Typography } from "@mui/material";
-import { PermissionBitsFields } from "@/constants/Permission";
 import { notFound } from "next/navigation";
 import { Announcement } from "@/classes/Announcement";
+import AnnouncementEditForm from "@/components/Forms/AnnouncementEditForm";
+import { PermissionBitsFields } from "@/constants/Permission";
 import { requirePermission } from "@/libs/permissions";
 
 export const metadata = {

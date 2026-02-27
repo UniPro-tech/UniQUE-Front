@@ -1,8 +1,8 @@
-import { toCamelcase } from "@/libs/snakeCamelUtil";
-import { User } from "./User";
-import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
-import { UserData } from "./types/User";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
+import { apiDelete, apiGet, apiPatch, apiPost } from "@/libs/apiClient";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
+import type { UserData } from "./types/User";
+import { User } from "./User";
 
 export interface ApplicationData {
   id: string;

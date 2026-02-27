@@ -1,6 +1,6 @@
 "use server";
 
-import { UserData } from "@/classes/types/User";
+import type { UserData } from "@/classes/types/User";
 import { User } from "@/classes/User";
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 

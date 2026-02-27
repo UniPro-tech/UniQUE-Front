@@ -1,6 +1,6 @@
 import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
-import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { apiDelete, apiGet, apiPost } from "@/libs/apiClient";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 
 export interface ExternalIdentityData {
   id: string;

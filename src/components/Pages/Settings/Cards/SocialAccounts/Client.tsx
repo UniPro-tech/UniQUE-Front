@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import { useState, useTransition } from "react";
-import { ExternalIdentityData } from "@/classes/ExternalIdentity";
-import { UserData } from "@/classes/types/User";
+import type { ExternalIdentityData } from "@/classes/ExternalIdentity";
+import type { UserData } from "@/classes/types/User";
 import { deleteAction } from "./action";
 
 /** Discord brand colour */

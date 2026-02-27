@@ -1,8 +1,8 @@
 "use server";
 
-import { UserStatus } from "@/classes/types/User";
-import { User } from "@/classes/User";
 import { redirect } from "next/navigation";
+import type { UserStatus } from "@/classes/types/User";
+import { User } from "@/classes/User";
 
 export interface CreateMemberFormData {
   customId: string;

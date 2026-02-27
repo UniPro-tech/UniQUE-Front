@@ -1,10 +1,10 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/libs/csrf";
-import { FormStatus } from "../../Base";
-import { FormRequestErrors } from "@/errors/FormRequestErrors";
-import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
 import { Session } from "@/classes/Session";
+import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
+import { FormRequestErrors } from "@/errors/FormRequestErrors";
+import { VerifyCSRFToken } from "@/libs/csrf";
+import type { FormStatus } from "../../Base";
 
 export const updateSettings = async (
   _prevState: null | FormStatus,

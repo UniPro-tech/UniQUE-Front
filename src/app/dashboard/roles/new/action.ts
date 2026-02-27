@@ -1,7 +1,7 @@
 "use server";
 
-import { Role } from "@/classes/Role";
 import { redirect } from "next/navigation";
+import { Role } from "@/classes/Role";
 
 export interface CreateRoleFormData {
   customId: string;

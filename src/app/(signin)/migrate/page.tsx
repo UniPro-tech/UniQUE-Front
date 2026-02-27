@@ -1,31 +1,31 @@
+import type { VariantType } from "notistack";
+import { AuthorizationPageMode } from "@/components/Pages/Authentication";
+import AuthenticationPage, {
+  type AuthorizationFormState,
+} from "@/components/Pages/Authentication/Client";
 import TemporarySnackProvider, {
-  SnackbarData,
+  type SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import { VariantType } from "notistack";
 import {
-  AuthenticationErrorCodes,
+  type AuthenticationErrorCodes,
   getAuthenticationErrorSnackbarData,
 } from "@/errors/AuthenticationErrors";
 import {
-  AuthServerErrorCodes,
+  type AuthServerErrorCodes,
   getAuthServerErrorSnackbarData,
 } from "@/errors/AuthServerErrors";
 import {
-  FormRequestErrorCodes,
+  type FormRequestErrorCodes,
   getFormRequestErrorSnackbarData,
 } from "@/errors/FormRequestErrors";
 import {
-  getResourceApiErrorSnackbarData,
-  ResourceApiErrorCodes,
-} from "@/errors/ResourceApiErrors";
-import {
-  FrontendErrorCodes,
+  type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
-import AuthenticationPage, {
-  AuthorizationFormState,
-} from "@/components/Pages/Authentication/Client";
-import { AuthorizationPageMode } from "@/components/Pages/Authentication";
+import {
+  getResourceApiErrorSnackbarData,
+  type ResourceApiErrorCodes,
+} from "@/errors/ResourceApiErrors";
 
 export const metadata = {
   title: "アカウント移行",

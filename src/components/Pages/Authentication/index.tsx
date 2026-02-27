@@ -1,4 +1,6 @@
-import AuthenticationPageClient, { AuthorizationFormState } from "./Client";
+import AuthenticationPageClient, {
+  type AuthorizationFormState,
+} from "./Client";
 
 export enum AuthorizationPageMode {
   SignIn = "signin",

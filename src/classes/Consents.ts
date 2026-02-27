@@ -1,4 +1,4 @@
-import { Scope } from "@/constants/Scope";
+import type { Scope } from "@/constants/Scope";
 import { createApiClient } from "@/libs/apiClient";
 
 export interface ConsentsData {

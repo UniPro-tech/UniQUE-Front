@@ -1,15 +1,15 @@
 "use client";
+import BadgeIcon from "@mui/icons-material/Badge";
+import CachedIcon from "@mui/icons-material/Cached";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import HubIcon from "@mui/icons-material/Hub";
+import KeyIcon from "@mui/icons-material/Key";
+import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import BadgeIcon from "@mui/icons-material/Badge";
-import KeyIcon from "@mui/icons-material/Key";
-import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
-import HubIcon from "@mui/icons-material/Hub";
-import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
-import { SitemarkIcon } from "./CustomIcons";
-import CachedIcon from "@mui/icons-material/Cached";
 import { AuthorizationPageMode, useAuthPageMode } from "../Client";
+import { SitemarkIcon } from "./CustomIcons";
 
 const SignInItems = [
   {

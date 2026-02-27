@@ -1,6 +1,6 @@
 "use server";
+import { RedirectType, redirect } from "next/navigation";
 import { User } from "@/classes/User";
-import { redirect, RedirectType } from "next/navigation";
 
 export const submitSignUp = async (formData: FormData) => {
   const external_email = formData.get("external_email") as string;
