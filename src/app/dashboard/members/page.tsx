@@ -1,8 +1,8 @@
-import { getUsersList } from "@/lib/resources/Users";
 import { PermissionBitsFields } from "@/types/Permission";
 import { Link as MLink, Stack, Typography, Button } from "@mui/material";
 import MembersDataGrid from "@/components/DataGrids/Members";
 import { Session } from "@/classes/Session";
+import { User } from "@/classes/User";
 
 export const metadata = {
   title: "ユーザー一覧",
@@ -10,11 +10,11 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const users = await getUsersList();
+  const users = await User.getAll();
 
   // establishedステータスのユーザーを除外
   const filteredUsers = users.filter((u) => u.status !== "established");
-  const rows = filteredUsers.map((u) => u.convertPlain());
+  const rows = filteredUsers.map((u) => u.toJson());
   const user = await (await Session.getCurrent())?.getUser();
   const [canDelete, canUpdate, canRead, canCreate] = await Promise.all([
     user?.hasPermission(PermissionBitsFields.USER_DELETE),
