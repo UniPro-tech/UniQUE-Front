@@ -32,7 +32,8 @@ export const GET = async (request: NextRequest) => {
 
   // エラーチェック
   if (error) {
-    console.error("Discord OAuth error:", error);
+    const sanitizedError = String(error).replace(/\r|\n/g, "");
+    console.error("Discord OAuth error:", sanitizedError);
     let redirectPath: string;
     if (from === "email_verify" && emailVerifyCode) {
       redirectPath = `/email-verify?code=${encodeURIComponent(emailVerifyCode)}&discord_error=true`;
