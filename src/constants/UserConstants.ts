@@ -88,7 +88,7 @@ export function getSelectableAffiliationPeriods(): Array<{
   }
 
   return periods.map((period) => ({
-    value: period.toLowerCase(),
+    value: period,
     label: period,
   }));
 }
