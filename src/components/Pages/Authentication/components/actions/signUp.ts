@@ -20,7 +20,7 @@ export const submitSignUp = async (formData: FormData) => {
     redirect(`/signup?${queryParams.toString()}`, RedirectType.replace);
   }
 
-  User.create(
+  await User.create(
     {
       externalEmail: external_email,
       customId: username,

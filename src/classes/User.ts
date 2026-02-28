@@ -134,6 +134,8 @@ export class User {
     if (!response.ok) {
       switch (response.status) {
         case 400:
+          const errorText = await response.json();
+          console.log("Failed to create user:", errorText);
           throw FrontendErrors.InvalidInput;
         case 409:
           throw ResourceApiErrors.ResourceAlreadyExists;
