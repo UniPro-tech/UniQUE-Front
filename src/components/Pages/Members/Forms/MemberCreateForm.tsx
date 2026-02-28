@@ -21,8 +21,8 @@ import {
   redirectToMemberList,
 } from "@/components/Pages/Members/Forms/actions/create";
 import {
-  AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
+  getSelectableAffiliationPeriods,
 } from "@/constants/UserConstants";
 
 export default function MemberCreateForm() {
@@ -167,7 +167,7 @@ export default function MemberCreateForm() {
             helperText="所属期を選択（任意）"
             disabled={loading}
           >
-            {AFFILIATION_PERIOD_OPTIONS.map((opt) => {
+            {getSelectableAffiliationPeriods().map((opt) => {
               const info = getAffiliationPeriodInfo(opt.value);
               return (
                 <MenuItem key={opt.value} value={opt.value}>
@@ -176,7 +176,7 @@ export default function MemberCreateForm() {
                     variant="caption"
                     sx={{ ml: 1, color: "text.secondary" }}
                   >
-                    ({info.year}年度 {info.label})
+                    ({info.calendarYear}年度 {info.label})
                   </Typography>
                 </MenuItem>
               );

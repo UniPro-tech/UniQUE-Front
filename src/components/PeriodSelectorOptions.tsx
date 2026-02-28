@@ -1,4 +1,5 @@
 "use client";
+
 import {
   FormControl,
   InputLabel,
@@ -7,9 +8,10 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
+  getSelectableAffiliationPeriods,
 } from "@/constants/UserConstants";
+import { useMemo } from "react";
 
 /**
  * ## PeriodSelectorOptions
@@ -17,7 +19,11 @@ import {
  * @returns React.JSX 所属期のMenuItem
  */
 export default function PeriodSelectorOptions() {
-  const periods = AFFILIATION_PERIOD_OPTIONS;
+  // 所属期のオプション配列をメモ化
+  const affiliationPeriodValueOptionsArray = useMemo(
+    () => getSelectableAffiliationPeriods(),
+    [],
+  );
 
   return (
     <FormControl fullWidth>
@@ -34,7 +40,7 @@ export default function PeriodSelectorOptions() {
         required
         sx={{ display: "flex", flexDirection: "row" }}
       >
-        {periods.map((p) => {
+        {affiliationPeriodValueOptionsArray.map((p) => {
           const period = p.value;
           const info = getAffiliationPeriodInfo(period);
           return (
@@ -48,7 +54,7 @@ export default function PeriodSelectorOptions() {
                 variant="caption"
                 sx={{ ml: 1, color: "text.secondary" }}
               >
-                ({info.year}年度 {info.label})
+                ({info.calendarYear}年度 {info.label})
               </Typography>
             </MenuItem>
           );

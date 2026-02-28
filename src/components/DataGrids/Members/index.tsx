@@ -27,7 +27,7 @@ import RejectDialog from "@/components/DataGrids/Members/RejectDialog";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 import {
-  AFFILIATION_PERIOD_OPTIONS,
+  getSelectableAffiliationPeriods,
   USER_STATUS_OPTIONS,
 } from "@/constants/UserConstants";
 import { updateUserById } from "./actions/updateAction";
@@ -52,11 +52,7 @@ export default function MembersDataGrid({
 
   // 所属期のオプション配列をメモ化
   const affiliationPeriodValueOptionsArray = React.useMemo(
-    () =>
-      AFFILIATION_PERIOD_OPTIONS.map((opt) => ({
-        value: opt.value,
-        label: opt.label,
-      })),
+    () => getSelectableAffiliationPeriods(),
     [],
   );
 
