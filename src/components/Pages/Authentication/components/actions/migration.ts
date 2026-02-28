@@ -54,7 +54,7 @@ export const submitMigration = async (formData: FormData) => {
         email,
         customId: username,
         externalEmail: external_email,
-        affiliationPeriod: period.toLowerCase(),
+        affiliationPeriod: period.toUpperCase(),
         status: UserStatus.ACTIVE,
         profile: {
           displayName: name,
