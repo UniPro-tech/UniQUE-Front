@@ -52,11 +52,7 @@ export default function MembersDataGrid({
 
   // 所属期のオプション配列をメモ化
   const affiliationPeriodValueOptionsArray = React.useMemo(
-    () =>
-      getSelectableAffiliationPeriods().map((opt) => ({
-        value: opt.value,
-        label: opt.label,
-      })),
+    () => getSelectableAffiliationPeriods(),
     [],
   );
 
