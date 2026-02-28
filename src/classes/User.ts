@@ -193,10 +193,12 @@ export class User {
   }
 
   static async passwordResetRequest(email: string): Promise<void> {
-    const response = await apiPost("/internal/password_reset/request", {
+    const apiClient = createApiClient(`${process.env.AUTH_API_URL}`);
+    const response = await apiClient.post("/internal/password_reset/request", {
       email,
     });
     if (!response.ok) {
+      console.error("Failed to request password reset:", await response.text());
       throw new Error(
         `Failed to request password reset: ${response.statusText}`,
       );
@@ -207,13 +209,14 @@ export class User {
     code: string,
     password: string,
   ): Promise<void> {
-    const response = await apiPost("/internal/password_reset/confirm", {
+    const apiClient = createApiClient(`${process.env.AUTH_API_URL}`);
+    const response = await apiClient.post("/internal/password_reset/confirm", {
       code,
       password,
     });
     if (!response.ok) {
       throw new Error(
-        `Failed to request password reset: ${response.statusText}`,
+        `Failed to confirm password reset: ${response.statusText}`,
       );
     }
   }

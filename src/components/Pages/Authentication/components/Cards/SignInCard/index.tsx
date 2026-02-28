@@ -13,6 +13,7 @@ import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import ForgotPassword from "../../ForgotPassword";
 import { Card } from "../Base";
+import { SnackbarProvider } from "notistack";
 
 export default function SignUpCard() {
   const initialState = useInitialFormState();
@@ -125,7 +126,6 @@ export default function SignUpCard() {
             color={passwordError ? "error" : "primary"}
           />
         </FormControl>
-        <ForgotPassword open={open} handleClose={handleClose} />
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label={"ログイン状態を保持する"}
@@ -139,6 +139,9 @@ export default function SignUpCard() {
           サインイン
         </Button>
       </Box>
+      <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
+        <ForgotPassword open={open} handleClose={handleClose} />
+      </SnackbarProvider>
     </Card>
   );
 }

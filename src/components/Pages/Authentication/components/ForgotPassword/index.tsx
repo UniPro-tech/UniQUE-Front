@@ -1,3 +1,5 @@
+"use client";
+
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -5,7 +7,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import * as React from "react";
+import { useState } from "react";
+import { submitForgotPassword } from "./action";
+import { useSnackbar } from "notistack";
 
 interface ForgotPasswordProps {
   open: boolean;
@@ -16,10 +20,20 @@ export default function ForgotPassword({
   open,
   handleClose,
 }: ForgotPasswordProps) {
+  const [email, setEmail] = useState("");
+  const { enqueueSnackbar } = useSnackbar();
   return (
     <Dialog
       open={open}
       onClose={handleClose}
+      onSubmit={async (formevent) => {
+        formevent.preventDefault();
+        const res = await submitForgotPassword(email);
+        enqueueSnackbar(res.message, { variant: res.status });
+        if (res.status === "success") {
+          handleClose();
+        }
+      }}
       slotProps={{
         paper: {
           component: "form",
@@ -29,7 +43,12 @@ export default function ForgotPassword({
     >
       <DialogTitle>パスワードリセット</DialogTitle>
       <DialogContent
-        sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          width: "100%",
+        }}
       >
         <DialogContentText>
           登録されている外部メールアドレスを入力してください。パスワードリセットの手順を記載したメールが送信されます。
@@ -43,6 +62,8 @@ export default function ForgotPassword({
           label="Email address"
           placeholder="Email address"
           type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           fullWidth
         />
       </DialogContent>
