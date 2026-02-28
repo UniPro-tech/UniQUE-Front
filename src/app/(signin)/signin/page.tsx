@@ -34,11 +34,12 @@ export default async function Page({
     name?: string;
     username?: string;
     email?: string;
-    externalEmail?: string;
+    external_email?: string;
     agreeToTerms?: string;
     rememberMe?: string;
     migration?: string;
     signouted?: string;
+    redirect?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -53,9 +54,10 @@ export default async function Page({
     name,
     username,
     email,
-    externalEmail,
+    external_email: externalEmail,
     agreeToTerms,
     rememberMe,
+    redirect: redirectPath,
   } = await searchParams;
   const initState: AuthorizationFormState = {
     name,
@@ -95,7 +97,7 @@ export default async function Page({
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
-      <AuthenticationPage initFormState={initState} />
+      <AuthenticationPage initFormState={initState} redirectTo={redirectPath} />
     </>
   );
 }

@@ -1,6 +1,6 @@
+import { unauthorized } from "next/navigation";
 import { Session } from "@/classes/Session";
 import Profile from "@/components/Cards/Profile";
-import { unauthorized } from "next/navigation";
 
 export const metadata = {
   title: "プロフィール",

@@ -42,6 +42,7 @@ export default async function Page({
     rememberMe?: string;
     migration?: string;
     signouted?: string;
+    redirect?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -59,6 +60,7 @@ export default async function Page({
     externalEmail,
     agreeToTerms,
     rememberMe,
+    redirect: redirectPath,
   } = await searchParams;
   const initState: AuthorizationFormState = {
     name,
@@ -111,6 +113,7 @@ export default async function Page({
       <AuthenticationPage
         initFormState={initState}
         mode={AuthorizationPageMode.MFA}
+        redirectTo={redirectPath}
       />
     </>
   );

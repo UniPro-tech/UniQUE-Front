@@ -25,6 +25,7 @@ export enum AuthorizationPageMode {
 export interface SignInSideProps {
   initFormState?: AuthorizationFormState;
   mode?: AuthorizationPageMode;
+  redirectTo?: string;
 }
 
 function SignInPC() {
@@ -102,16 +103,19 @@ export const AuthPageModeContext = createContext(AuthorizationPageMode.SignIn);
 export const SetAuthPageModeContext = createContext<
   Dispatch<SetStateAction<AuthorizationPageMode>> | undefined
 >(undefined);
+export const RedirectToContext = createContext<string | undefined>(undefined);
 
 export const useInitialFormState = () => useContext(InitialFormStateContext);
 export const useSetInitialFormState = () =>
   useContext(SetInitialFormStateContext);
+export const useRedirectTo = () => useContext(RedirectToContext);
 export const useAuthPageMode = () => useContext(AuthPageModeContext);
 export const useSetAuthPageMode = () => useContext(SetAuthPageModeContext);
 
 export default function AuthenticationPageClient(props: SignInSideProps) {
   const [mode, setMode] = useState(props.mode || AuthorizationPageMode.SignIn);
   const [initState, setInitState] = useState(props.initFormState || undefined);
+  const redirectTo = props.redirectTo;
   return (
     <AppTheme>
       <CssBaseline enableColorScheme />
@@ -120,7 +124,9 @@ export default function AuthenticationPageClient(props: SignInSideProps) {
           <SetInitialFormStateContext.Provider value={setInitState}>
             <AuthPageModeContext.Provider value={mode}>
               <SetAuthPageModeContext.Provider value={setMode}>
-                <AuthCardMobile />
+                <RedirectToContext.Provider value={redirectTo}>
+                  <AuthCardMobile />
+                </RedirectToContext.Provider>
               </SetAuthPageModeContext.Provider>
             </AuthPageModeContext.Provider>
           </SetInitialFormStateContext.Provider>
@@ -130,7 +136,9 @@ export default function AuthenticationPageClient(props: SignInSideProps) {
           <SetInitialFormStateContext.Provider value={setInitState}>
             <AuthPageModeContext.Provider value={mode}>
               <SetAuthPageModeContext.Provider value={setMode}>
-                <SignInPC />
+                <RedirectToContext.Provider value={redirectTo}>
+                  <SignInPC />
+                </RedirectToContext.Provider>
               </SetAuthPageModeContext.Provider>
             </AuthPageModeContext.Provider>
           </SetInitialFormStateContext.Provider>

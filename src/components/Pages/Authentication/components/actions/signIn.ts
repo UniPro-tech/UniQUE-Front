@@ -9,6 +9,13 @@ export const submitSignIn = async (formData: FormData) => {
   const password = formData.get("password") as string | undefined;
   const remember = formData.get("remember") === "on";
   const code = formData.get("code") as string | undefined;
+  const rawRedirectTo = formData.get("redirectTo") as string | undefined;
+  const redirectTo =
+    typeof rawRedirectTo === "string" &&
+    rawRedirectTo.startsWith("/") &&
+    !rawRedirectTo.startsWith("//")
+      ? rawRedirectTo
+      : "/dashboard";
 
   const credentials: Credentials = {
     username,
@@ -24,6 +31,7 @@ export const submitSignIn = async (formData: FormData) => {
       username,
       remember: remember ? "1" : "0",
       error: errorCode,
+      ...(redirectTo ? { redirect: redirectTo } : {}),
     });
     redirect(`/signin?${queryParams.toString()}`, RedirectType.replace);
   });
@@ -44,10 +52,13 @@ export const submitSignIn = async (formData: FormData) => {
       maxAge: 5 * 60, // 5分間有効
     });
 
-    redirect("/signin/mfa", RedirectType.replace);
+    redirect(
+      `/signin/mfa?redirect=${encodeURIComponent(redirectTo || "/dashboard")}`,
+      RedirectType.replace,
+    );
   }
 
   SetSessionCookie(response);
 
-  redirect("/dashboard", RedirectType.push);
+  redirect(redirectTo ? redirectTo : "/dashboard", RedirectType.push);
 };
