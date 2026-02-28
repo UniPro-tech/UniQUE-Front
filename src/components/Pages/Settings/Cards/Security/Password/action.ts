@@ -29,6 +29,12 @@ export const updateSettings = async (
 
     const session = await Session.getCurrent();
     const user = await session?.getUser();
+    if (!user) {
+      return {
+        status: "error",
+        message: "ユーザーが見つかりませんでした。",
+      } as FormStatus;
+    }
     await user.changePassword(currentPassword, newPassword);
 
     // 必要に応じて結果を返す

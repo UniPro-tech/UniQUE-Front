@@ -16,6 +16,13 @@ export async function updateProfile(data: UpdateProfileData) {
 
     const user = await session?.getUser();
 
+    if (!user) {
+      return {
+        success: false,
+        error: "ユーザーが見つかりませんでした",
+      };
+    }
+
     // プロフィール情報を更新
     if (data.displayName !== undefined)
       user.profile.displayName = data.displayName;

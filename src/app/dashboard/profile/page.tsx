@@ -1,5 +1,6 @@
 import { Session } from "@/classes/Session";
 import Profile from "@/components/Cards/Profile";
+import { unauthorized } from "next/navigation";
 
 export const metadata = {
   title: "プロフィール",
@@ -8,7 +9,10 @@ export const metadata = {
 
 export default async function ProfilePage() {
   const session = await Session.getCurrent();
-  const user = (await session?.getUser()).toJson();
+  if (!session) {
+    unauthorized();
+  }
+  const user = (await session.getUser()).toJson();
 
   return <Profile user={user} variant="self" showTimestamps />;
 }

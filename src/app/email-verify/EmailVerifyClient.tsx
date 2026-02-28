@@ -80,8 +80,6 @@ export default function EmailVerifyClient({
                 (await verifyRes.json()) as EmailVerificationResponse;
               if (
                 ("error" in verifyData &&
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-expect-error - verifyData may include error field
                   verifyData.error === "discord_not_linked") ||
                 ("type" in verifyData &&
                   verifyData.type === "discord_not_linked")
@@ -119,8 +117,6 @@ export default function EmailVerifyClient({
                   (await verifyRes.json()) as EmailVerificationResponse;
                 if (
                   ("error" in verifyData &&
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-expect-error - verifyData may include error field
                     verifyData.error === "discord_not_linked") ||
                   ("type" in verifyData &&
                     verifyData.type === "discord_not_linked")

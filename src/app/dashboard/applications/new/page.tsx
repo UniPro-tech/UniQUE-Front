@@ -1,6 +1,7 @@
 import { Breadcrumbs, Link, Stack, Typography } from "@mui/material";
 import { Session } from "@/classes/Session";
 import ApplicationCreateForm from "@/components/Pages/Applications/Forms/ApplicationCreateForm";
+import { unauthorized } from "next/navigation";
 
 export const metadata = {
   title: "アプリケーション新規作成",
@@ -10,6 +11,10 @@ export const metadata = {
 export default async function Page() {
   // セッションを取得
   const session = await Session.getCurrent();
+
+  if (!session) {
+    unauthorized();
+  }
 
   return (
     <Stack spacing={3}>
@@ -29,7 +34,7 @@ export default async function Page() {
         </Typography>
       </Stack>
 
-      <ApplicationCreateForm userId={session?.userId} />
+      <ApplicationCreateForm userId={session.userId} />
     </Stack>
   );
 }

@@ -35,6 +35,16 @@ export const updateAccountSettings = async (
 
     const session = await Session.getCurrent();
     const user = await session?.getUser();
+    if (!user) {
+      return {
+        user: _prevState.user,
+        status: {
+          status: "error",
+          message: "ユーザーが見つかりませんでした。",
+        } as FormStatus,
+      };
+    }
+
     user.profile.displayName = displayName;
     // 生年月日は一度設定したら変更不可
     if (!user.profile.birthdate && birthdate) {

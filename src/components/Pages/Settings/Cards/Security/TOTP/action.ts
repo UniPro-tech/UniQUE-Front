@@ -13,6 +13,9 @@ export const generateTOTP = async (_prevState: null, formData: FormData) => {
 
     const session = await Session.getCurrent();
     const user = await session?.getUser();
+    if (!user) {
+      return { error: "ユーザーが見つかりませんでした" };
+    }
 
     const totpRes = await user.setupBeginTotp(password);
 
@@ -33,6 +36,9 @@ export const verifyTOTP = async (_prevState: null, formData: FormData) => {
     const session = await Session.getCurrent();
 
     const user = await session?.getUser();
+    if (!user) {
+      return { error: "ユーザーが見つかりませんでした" };
+    }
 
     const result = await user.setupFinishTotp(code);
 
@@ -52,6 +58,9 @@ export const disableTOTP = async (_prevState: null, formData: FormData) => {
 
     const session = await Session.getCurrent();
     const user = await session?.getUser();
+    if (!user) {
+      return { error: "ユーザーが見つかりませんでした" };
+    }
 
     await user.disableTotp(password);
 
