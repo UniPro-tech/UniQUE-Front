@@ -18,21 +18,23 @@ export default function MigrationCard() {
   const initialState = useInitialFormState();
 
   const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
+  const [emailErrorMessage, setEmailErrorMessage] = React.useState(
+    "@uniproject.jpで終わるメールアドレスを入力してください。",
+  );
   const [externalEmailError, setExternalEmailError] = React.useState(false);
   const [externalEmailErrorMessage, setExternalEmailErrorMessage] =
     React.useState(
-      "UniProjectに登録しているGmailやOutlookなどのメールアドレスを入力してください。",
+      "UniProjectに登録している@uniproject.jp以外のメールアドレスを入力してください。不明な場合はお問合せください。",
     );
   const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState(
+    "お好きなパスワードを8文字以上で設定してください。",
+  );
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState("");
   const [agreeTosError, setAgreeTosError] = React.useState(false);
-  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState(
-    "利用規約、プライバシーポリシー、サークル規約に同意してください。",
-  );
+  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState("");
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -147,7 +149,7 @@ export default function MigrationCard() {
           <FormLabel htmlFor="name">お名前</FormLabel>
           <TextField
             helperText={
-              "ニックネームでも構いません。表示名を設定してください。"
+              "ニックネームでも構いません。お好きな表示名を設定してください。"
             }
             id="name"
             type="text"
