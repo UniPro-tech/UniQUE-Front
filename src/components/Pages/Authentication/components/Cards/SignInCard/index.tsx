@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { SnackbarProvider } from "notistack";
 import * as React from "react";
-import { useInitialFormState } from "../../../Client";
+import { useInitialFormState, useRedirectTo } from "../../../Client";
 import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import ForgotPassword from "../../ForgotPassword";
@@ -17,6 +17,7 @@ import { Card } from "../Base";
 
 export default function SignUpCard() {
   const initialState = useInitialFormState();
+  const redirectTo = useRedirectTo();
 
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
@@ -82,6 +83,11 @@ export default function SignUpCard() {
         sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
         action={submitSignIn}
       >
+        <input
+          type="hidden"
+          name="redirectTo"
+          value={redirectTo ? redirectTo : "/dashboard"}
+        />
         <FormControl>
           <FormLabel htmlFor="username">ユーザー名</FormLabel>
           <TextField

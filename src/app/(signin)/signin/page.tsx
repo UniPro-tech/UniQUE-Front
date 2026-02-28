@@ -34,11 +34,12 @@ export default async function Page({
     name?: string;
     username?: string;
     email?: string;
-    externalEmail?: string;
+    external_email?: string;
     agreeToTerms?: string;
     rememberMe?: string;
     migration?: string;
     signouted?: string;
+    redirect?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -53,7 +54,7 @@ export default async function Page({
     name,
     username,
     email,
-    externalEmail,
+    external_email: externalEmail,
     agreeToTerms,
     rememberMe,
   } = await searchParams;
