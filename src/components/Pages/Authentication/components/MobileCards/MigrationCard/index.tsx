@@ -18,21 +18,23 @@ export default function MigrationCard() {
   const initialState = useInitialFormState();
 
   const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
+  const [emailErrorMessage, setEmailErrorMessage] = React.useState(
+    "@uniproject.jpのメールアドレスを入力してください。",
+  );
   const [externalEmailError, setExternalEmailError] = React.useState(false);
   const [externalEmailErrorMessage, setExternalEmailErrorMessage] =
     React.useState(
-      "UniProjectに登録しているGmailやOutlookなどのメールアドレスを入力してください。",
+      "UniProjectに登録している@uniproject.jp以外のメールアドレスを入力してください。不明な場合はお問い合わせください。",
     );
   const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState(
+    "8文字以上のお好きなパスワードを設定してください。",
+  );
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState("");
   const [agreeTosError, setAgreeTosError] = React.useState(false);
-  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState(
-    "利用規約、プライバシーポリシー、サークル規約に同意してください。",
-  );
+  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState("");
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -63,7 +65,7 @@ export default function MigrationCard() {
 
     if (confirmPassword.value !== password.value) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage("Passwords do not match.");
+      setConfirmPasswordErrorMessage("パスワードが一致しません。");
       isValid = false;
     } else {
       setConfirmPasswordError(false);
@@ -137,7 +139,7 @@ export default function MigrationCard() {
             <FormLabel htmlFor="name">お名前</FormLabel>
             <TextField
               helperText={
-                "ニックネームでも構いません。表示名を設定してください。"
+                "ニックネームでも構いません。お好きな表示名を設定してください。"
               }
               id="name"
               type="text"
@@ -257,26 +259,6 @@ export default function MigrationCard() {
           >
             サインアップ
           </Button>
-          <Typography sx={{ textAlign: "center" }}>
-            アカウントをお持ちですか？{" "}
-            <span>
-              <Link href="/signin" variant="body2" sx={{ alignSelf: "center" }}>
-                サインイン
-              </Link>
-            </span>
-          </Typography>
-          <Typography sx={{ textAlign: "center" }}>
-            既存メンバーではありませんか？{" "}
-            <span>
-              <Link
-                href="/migration"
-                variant="body2"
-                sx={{ alignSelf: "center" }}
-              >
-                登録申請
-              </Link>
-            </span>
-          </Typography>
         </Box>
         <Divider>or</Divider>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -290,13 +272,9 @@ export default function MigrationCard() {
         <Divider>or</Divider>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Typography sx={{ textAlign: "center" }}>
-            既存メンバーですか？{" "}
-            <Link
-              href="/migration"
-              variant="body2"
-              sx={{ alignSelf: "center" }}
-            >
-              アカウント移行
+            アカウントをお持ちですか？{" "}
+            <Link href="/signin" variant="body2" sx={{ alignSelf: "center" }}>
+              サインイン
             </Link>
           </Typography>
         </Box>

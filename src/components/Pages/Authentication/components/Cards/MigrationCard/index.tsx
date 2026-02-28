@@ -134,7 +134,7 @@ export default function MigrationCard() {
       <Typography sx={{ textAlign: "left" }}>
         既存メンバーではありませんか？{" "}
         <span>
-          <Link href="/migrate" variant="body2" sx={{ alignSelf: "center" }}>
+          <Link href="/signup" variant="body2" sx={{ alignSelf: "center" }}>
             登録申請
           </Link>
         </span>

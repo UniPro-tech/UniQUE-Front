@@ -29,9 +29,7 @@ export default function SignUpCard() {
     "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
   );
   const [agreeTosError, setAgreeTosError] = React.useState(false);
-  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState(
-    "利用規約、プライバシーポリシー、サークル規約に同意してください。",
-  );
+  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState("");
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;

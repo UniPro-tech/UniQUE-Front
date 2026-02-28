@@ -20,7 +20,9 @@ export default function SignUpCard() {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState(
+    "8文字以上のお好きなパスワードを設定してください。",
+  );
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState("");
@@ -29,9 +31,7 @@ export default function SignUpCard() {
     "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
   );
   const [agreeTosError, setAgreeTosError] = React.useState(false);
-  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState(
-    "利用規約、プライバシーポリシー、サークル規約に同意してください。",
-  );
+  const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState("");
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -45,7 +45,7 @@ export default function SignUpCard() {
 
     if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
       setEmailError(true);
-      setEmailErrorMessage("Please enter a valid email address.");
+      setEmailErrorMessage("有効なメールアドレスを入力してください。");
       isValid = false;
     } else {
       setEmailError(false);
@@ -63,7 +63,7 @@ export default function SignUpCard() {
 
     if (confirmPassword.value !== password.value) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage("Passwords do not match.");
+      setConfirmPasswordErrorMessage("パスワードが一致しません。");
       isValid = false;
     } else {
       setConfirmPasswordError(false);
