@@ -5,7 +5,7 @@ export interface ProfileData {
   birthdateVisible: boolean;
   twitterHandle: string | null;
   websiteUrl: string | null;
-  joinedAt: string | Date | null;
+  joinedAt: string | null;
   isAdult?: boolean;
 }
 
@@ -18,7 +18,7 @@ export class Profile {
   birthdateVisible: boolean;
   twitterHandle: string | null;
   websiteUrl: string | null;
-  joinedAt: Date | null;
+  joinedAt: string | null;
   isAdult?: boolean;
 
   constructor(data: ProfileData) {
@@ -28,7 +28,7 @@ export class Profile {
     this.birthdateVisible = data.birthdateVisible;
     this.twitterHandle = data.twitterHandle;
     this.websiteUrl = data.websiteUrl;
-    this.joinedAt = data.joinedAt ? new Date(data.joinedAt) : null;
+    this.joinedAt = data.joinedAt;
     this.isAdult = data.isAdult;
   }
 
@@ -46,7 +46,7 @@ export class Profile {
       birthdateVisible: this.birthdateVisible,
       twitterHandle: this.twitterHandle,
       websiteUrl: this.websiteUrl,
-      joinedAt: this.joinedAt ? this.joinedAt.toISOString() : null,
+      joinedAt: this.joinedAt,
       isAdult: this.isAdult,
     };
   }
