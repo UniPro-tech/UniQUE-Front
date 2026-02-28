@@ -21,7 +21,6 @@ import {
   redirectToMemberList,
 } from "@/components/Pages/Members/Forms/actions/create";
 import {
-  AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
   getSelectableAffiliationPeriods,
 } from "@/constants/UserConstants";
