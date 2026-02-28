@@ -248,9 +248,9 @@ export default function MembersDataGrid({
         : []),
       {
         field: "joinedAt",
-        headerName: "参加日時",
+        headerName: "参加日",
         width: 150,
-        type: "dateTime",
+        type: "date",
         valueGetter: (_value: unknown, row: UserData) => {
           const d = row.profile?.joinedAt;
           return d ? new Date(d) : null;

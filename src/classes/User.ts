@@ -131,11 +131,11 @@ export class User {
       ...userData,
       profile: {
         ...userData.profile,
-        joinedAt: userData.profile?.joinedAt
-          ? typeof userData.profile?.joinedAt === "string"
+        ...(userData.status === UserStatus.ACTIVE && {
+          joinedAt: userData.profile?.joinedAt
             ? userData.profile.joinedAt
-            : new Date(userData.profile?.joinedAt).toISOString()
-          : undefined,
+            : new Date().toLocaleDateString("sv-SE"), // 日付のみ
+        }),
       },
       password,
     });
@@ -444,13 +444,13 @@ export class User {
     affiliationPeriod: string;
     email: string;
     sakuraEmailPassword: string;
-    joinedAt?: Date;
+    joinedAt?: string;
   }): Promise<void> {
     const response = await apiPost(`/users/${this.id}/approve`, {
       affiliationPeriod: affiliationPeriod,
       email,
       sakuraEmailPassword,
-      joinedAt: joinedAt ? joinedAt.toISOString() : new Date().toISOString(),
+      joinedAt: joinedAt ? joinedAt : new Date().toLocaleDateString("sv-SE"), // 日付のみ
     });
     if (!response.ok) {
       switch (response.status) {
@@ -473,7 +473,9 @@ export class User {
     this.status = UserStatus.ACTIVE;
     this.affiliationPeriod = affiliationPeriod;
     this.email = email;
-    this.profile.joinedAt = joinedAt ? joinedAt : new Date();
+    this.profile.joinedAt = joinedAt
+      ? joinedAt
+      : new Date().toLocaleDateString("sv-SE"); // 日付のみ
   }
 }
 
