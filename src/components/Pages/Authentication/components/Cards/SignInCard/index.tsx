@@ -7,13 +7,13 @@ import FormLabel from "@mui/material/FormLabel";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { SnackbarProvider } from "notistack";
 import * as React from "react";
 import { useInitialFormState } from "../../../Client";
 import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import ForgotPassword from "../../ForgotPassword";
 import { Card } from "../Base";
-import { SnackbarProvider } from "notistack";
 
 export default function SignUpCard() {
   const initialState = useInitialFormState();

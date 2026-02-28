@@ -1,7 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
 import { Stack } from "@mui/material";
-import fs from "fs";
 import Link from "next/link";
-import path from "path";
 import Markdown from "react-markdown";
 
 export const metadata = {

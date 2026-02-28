@@ -40,7 +40,7 @@ export default async function Page({
   try {
     role = await Role.getById(id);
   } catch (error) {
-    if (error == ResourceApiErrors.ResourceNotFound) {
+    if (error === ResourceApiErrors.ResourceNotFound) {
       notFound();
     }
   }

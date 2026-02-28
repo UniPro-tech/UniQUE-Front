@@ -1,8 +1,8 @@
 "use server";
 import { RedirectType, redirect } from "next/navigation";
+import { UserStatus } from "@/classes/types/User";
 import { User } from "@/classes/User";
 import { AuthenticationErrors } from "@/errors/AuthenticationErrors";
-import { UserStatus } from "@/classes/types/User";
 
 export const submitMigration = async (formData: FormData) => {
   const name = formData.get("name") as string;

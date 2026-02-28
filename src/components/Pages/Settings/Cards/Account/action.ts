@@ -2,9 +2,9 @@
 
 import { Session } from "@/classes/Session";
 import type { UserData } from "@/classes/types/User";
+import { User } from "@/classes/User";
 import { VerifyCSRFToken } from "@/libs/csrf";
 import type { FormStatus } from "../Base";
-import { User } from "@/classes/User";
 
 export const resendEmailVerificationAction = async (
   userId: string,

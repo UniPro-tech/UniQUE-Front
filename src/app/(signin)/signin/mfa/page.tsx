@@ -1,4 +1,7 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
+import { AuthorizationPageMode } from "@/components/Pages/Authentication";
 import AuthenticationPage, {
   type AuthorizationFormState,
 } from "@/components/Pages/Authentication/Client";
@@ -21,9 +24,6 @@ import {
   type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
-import { AuthorizationPageMode } from "@/components/Pages/Authentication";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "サインイン",

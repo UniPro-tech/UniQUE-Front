@@ -1,6 +1,5 @@
 "use client";
 
-import { EmailVerificationResponse } from "@/classes/User";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import {
@@ -14,6 +13,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import type { EmailVerificationResponse } from "@/classes/User";
 
 type VerifyState =
   | "loading"
@@ -81,7 +81,7 @@ export default function EmailVerifyClient({
               if (
                 ("error" in verifyData &&
                   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore - verifyData may include error field
+                  // @ts-expect-error - verifyData may include error field
                   verifyData.error === "discord_not_linked") ||
                 ("type" in verifyData &&
                   verifyData.type === "discord_not_linked")
@@ -120,7 +120,7 @@ export default function EmailVerifyClient({
                 if (
                   ("error" in verifyData &&
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore - verifyData may include error field
+                    // @ts-expect-error - verifyData may include error field
                     verifyData.error === "discord_not_linked") ||
                   ("type" in verifyData &&
                     verifyData.type === "discord_not_linked")

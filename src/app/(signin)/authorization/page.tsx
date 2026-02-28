@@ -1,13 +1,12 @@
 import { cookies } from "next/headers";
 import { RedirectType, redirect } from "next/navigation";
+import { Application } from "@/classes/Application";
 import { Session } from "@/classes/Session";
 import ConsentCard from "@/components/Pages/Authorization/ConsentCard";
 import TemporarySnackProvider, {
   type SnackbarData,
 } from "@/components/TemporarySnackProvider";
 import { createApiClient } from "@/libs/apiClient";
-import { toCamelcase } from "@/libs/snakeCamelUtil";
-import { Application } from "@/classes/Application";
 
 export default async function Page({
   searchParams,
@@ -42,27 +41,23 @@ export default async function Page({
 
   if (error) {
     return (
-      <>
-        <main style={{ padding: 24 }}>
-          <h1>Authorization Error</h1>
-          <p>
-            {error == "forbidden_scope"
-              ? "このスコープに対する認可を行う権限がありません。"
-              : error}
-          </p>
-        </main>
-      </>
+      <main style={{ padding: 24 }}>
+        <h1>Authorization Error</h1>
+        <p>
+          {error === "forbidden_scope"
+            ? "このスコープに対する認可を行う権限がありません。"
+            : error}
+        </p>
+      </main>
     );
   }
 
   if (!auth_request_id) {
     return (
-      <>
-        <main style={{ padding: 24 }}>
-          <h1>Bad Request</h1>
-          <p>不正なリクエストです。</p>
-        </main>
-      </>
+      <main style={{ padding: 24 }}>
+        <h1>Bad Request</h1>
+        <p>不正なリクエストです。</p>
+      </main>
     );
   }
 
@@ -140,7 +135,7 @@ export default async function Page({
         (c): boolean => c.application_id === authReqData.client_id,
       );
 
-      if (hasConsent && authReqData.prompt == "none") {
+      if (hasConsent && authReqData.prompt === "none") {
         // 同意済みであればconsentedにする
         const query = new URLSearchParams();
         query.append("user_id", sessionJson.userId);

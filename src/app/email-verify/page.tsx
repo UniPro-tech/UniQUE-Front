@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import EmailVerifyClient from "./EmailVerifyClient";
 import { Session } from "@/classes/Session";
+import EmailVerifyClient from "./EmailVerifyClient";
 
 interface EmailVerifyPageProps {
   searchParams: Promise<{

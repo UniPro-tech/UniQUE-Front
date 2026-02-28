@@ -31,12 +31,12 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  let application;
+  let application: Application | null = null;
 
   try {
     application = await Application.getById(id);
   } catch (error) {
-    if (error == ResourceApiErrors.ResourceNotFound) {
+    if (error === ResourceApiErrors.ResourceNotFound) {
       notFound();
     }
   }

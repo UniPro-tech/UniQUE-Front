@@ -14,8 +14,8 @@ import {
 import { enqueueSnackbar } from "notistack";
 import { QRCodeCanvas } from "qrcode.react";
 import { useActionState, useEffect, useState } from "react";
+import type { UserData } from "@/classes/types/User";
 import { disableTOTP, generateTOTP, verifyTOTP } from "./action";
-import { UserData } from "@/classes/types/User";
 
 export default function TOTPSection({
   user,

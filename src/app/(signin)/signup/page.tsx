@@ -1,4 +1,5 @@
 import type { VariantType } from "notistack";
+import { AuthorizationPageMode } from "@/components/Pages/Authentication";
 import AuthenticationPage, {
   type AuthorizationFormState,
 } from "@/components/Pages/Authentication/Client";
@@ -25,7 +26,6 @@ import {
   getResourceApiErrorSnackbarData,
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
-import { AuthorizationPageMode } from "@/components/Pages/Authentication";
 
 export const metadata = {
   title: "メンバー登録申請",

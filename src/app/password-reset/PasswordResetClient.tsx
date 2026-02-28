@@ -52,7 +52,7 @@ export default function PasswordResetClient() {
     try {
       await passwordResetRequest(email);
       setState("success");
-    } catch (err) {
+    } catch (_err) {
       setError("エラーが発生しました。");
       setState("error");
     } finally {
@@ -84,7 +84,7 @@ export default function PasswordResetClient() {
 
       await confirmPasswordReset(code, password);
       setState("success");
-    } catch (err) {
+    } catch (_err) {
       setError("エラーが発生しました。");
       setState("error");
     } finally {

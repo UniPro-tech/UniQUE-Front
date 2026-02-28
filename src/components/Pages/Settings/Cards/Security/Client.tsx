@@ -3,11 +3,11 @@ import { Card, Stack, Typography } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import type { SessionData } from "@/classes/Session";
+import type { UserData } from "@/classes/types/User";
 import ForgotPassword from "@/components/Dialogs/ForgotPassword";
 import PasswordSection from "./Password";
 import SessionsSection from "./Sessions";
 import TOTPSection from "./TOTP";
-import { UserData } from "@/classes/types/User";
 
 export default function SecuritySettingsCardClient({
   user,

@@ -20,7 +20,7 @@ export async function updateProfile(data: UpdateProfileData) {
     if (data.displayName !== undefined)
       user.profile.displayName = data.displayName;
     if (data.bio !== undefined) user.profile.bio = data.bio;
-    if (data.bio == "") user.profile.bio = null; // 空文字はnullに変換
+    if (data.bio === "") user.profile.bio = null; // 空文字はnullに変換
     if (data.websiteUrl !== undefined)
       user.profile.websiteUrl = data.websiteUrl;
     if (data.websiteUrl === "") user.profile.websiteUrl = null; // 空文字はnullに変換

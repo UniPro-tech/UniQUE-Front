@@ -1,5 +1,5 @@
-import { User } from "@/classes/User";
 import { type NextRequest, NextResponse } from "next/server";
+import { User } from "@/classes/User";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

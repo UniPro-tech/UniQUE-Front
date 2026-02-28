@@ -14,7 +14,7 @@ export default async function UserDetailPage({
 }) {
   const { id } = await params;
 
-  let user;
+  let user: User | null = null;
   try {
     user = await User.getById(id);
   } catch (error) {

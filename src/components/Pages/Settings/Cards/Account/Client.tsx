@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useActionState, useEffect, useState } from "react";
+import type { UserData } from "@/classes/types/User";
 import UserIdChangeApply from "../../Dialogs/UserIdChangeApply";
 import Base, { type FormStatus } from "../Base";
 import { resendEmailVerificationAction, updateAccountSettings } from "./action";
-import { UserData } from "@/classes/types/User";
 
 export default function AccountSettingsCardClient({
   user,
