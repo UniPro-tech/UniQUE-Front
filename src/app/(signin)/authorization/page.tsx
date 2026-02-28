@@ -7,6 +7,7 @@ import TemporarySnackProvider, {
 } from "@/components/TemporarySnackProvider";
 import { createApiClient } from "@/libs/apiClient";
 import { toCamelcase } from "@/libs/snakeCamelUtil";
+import { Application } from "@/classes/Application";
 
 export default async function Page({
   searchParams,
@@ -88,11 +89,8 @@ export default async function Page({
   }
   const authReqData = (await authReqRes.json()) as AuthorizationResponse;
 
-  const apiClient = createApiClient();
-  const appRes = await apiClient.get(
-    `/applications/${encodeURIComponent(authReqData.client_id)}`,
-  );
-  if (!appRes.ok) {
+  const app = await Application.getById(authReqData.client_id);
+  if (!app) {
     snacks.push({ message: "不正なクライアントIDです。", variant: "error" });
     return (
       <>
@@ -104,8 +102,6 @@ export default async function Page({
       </>
     );
   }
-
-  const app = await appRes.json();
 
   const cookieStore = await cookies();
   const COOKIE_NAME = "session_jwt";
@@ -176,8 +172,8 @@ export default async function Page({
     <>
       <TemporarySnackProvider snacks={snacks} />
       <ConsentCard
-        app={toCamelcase(app)}
-        user={await session.getUser()}
+        app={await app.toJson()}
+        user={(await session.getUser()).toJson()}
         scope={authReqData.scope}
         jwt={jwtToken}
         redirect_uri={authReqData.redirect_uri}
