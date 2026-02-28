@@ -148,7 +148,12 @@ export default function SignUpCard() {
             width: "100%",
             gap: 2,
           }}
-          action={submitSignUp}
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (validateInputs()) {
+              await submitSignUp(new FormData(e.currentTarget));
+            }
+          }}
         >
           <FormControl>
             <FormLabel htmlFor="name">お名前</FormLabel>

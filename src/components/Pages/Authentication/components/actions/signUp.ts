@@ -7,7 +7,7 @@ export const submitSignUp = async (formData: FormData) => {
   const username = formData.get("username") as string;
   const name = formData.get("name") as string;
   const password = formData.get("password") as string;
-  const passwordConfirm = formData.get("passwordConfirm") as string;
+  const passwordConfirm = formData.get("confirm_password") as string;
   const remember = formData.get("remember") === "on";
 
   if (password !== passwordConfirm) {
