@@ -255,6 +255,22 @@ export default function MembersDataGrid({
           const d = row.profile?.joinedAt;
           return d ? new Date(d) : null;
         },
+        valueSetter: (params) => {
+          const date: Date =
+            params.value instanceof Date
+              ? params.value
+              : new Date(params.value);
+          if (isNaN(date.getTime())) {
+            return params.row; // 無効な日付の場合は変更を適用しない
+          }
+          return {
+            ...params.row,
+            profile: {
+              ...params.row.profile,
+              joinedAt: date.toLocaleDateString("sv-SE"), // 日付のみ
+            },
+          };
+        },
         editable: true,
       },
       {
