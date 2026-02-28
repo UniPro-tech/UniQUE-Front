@@ -176,7 +176,7 @@ export default function MemberCreateForm() {
                     variant="caption"
                     sx={{ ml: 1, color: "text.secondary" }}
                   >
-                    ({info.year}年度 {info.label})
+                    ({info.calendarYear}年度 {info.label})
                   </Typography>
                 </MenuItem>
               );
