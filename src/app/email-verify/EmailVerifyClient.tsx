@@ -215,7 +215,7 @@ export default function EmailVerifyClient({
       const redirectTimer = setTimeout(() => {
         const typeKey = (result.type ?? "") as string;
         if (typeKey === "signup" || typeKey === "registration") {
-          router.push("/signup?completed=true");
+          router.push("/signup/success?email_verified=true");
         } else if (typeKey === "change" || typeKey === "email_change") {
           router.push(
             "/dashboard/settings?snack=メールアドレスの認証が完了しました。&variant=success",
@@ -276,6 +276,14 @@ export default function EmailVerifyClient({
               メールアドレスの認証とユーザー登録を完了するには、Discord
               アカウントを連携してください。
             </Alert>
+            {discordError && (
+              <Alert severity="error">
+                Discord連携エラー:{" "}
+                {discordError === "conflict"
+                  ? "このDiscordアカウントは既に使用されています。別のアカウントを使用するか、サポートにお問い合わせください。"
+                  : "不明なエラーが発生しました。もう一度お試しください。"}
+              </Alert>
+            )}
             <Button
               variant="contained"
               onClick={handleDiscordLink}
