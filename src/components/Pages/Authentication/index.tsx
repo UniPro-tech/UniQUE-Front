@@ -16,11 +16,9 @@ export interface SignInSideProps {
 
 export default function AuthenticationPage(props: SignInSideProps) {
   return (
-    <>
-      <AuthenticationPageClient
-        mode={props.mode}
-        initFormState={props.initFormState}
-      />
-    </>
+    <AuthenticationPageClient
+      mode={props.mode}
+      initFormState={props.initFormState}
+    />
   );
 }

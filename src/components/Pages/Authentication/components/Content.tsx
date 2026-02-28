@@ -115,8 +115,8 @@ export default function Content() {
             );
           case AuthorizationPageMode.SignIn:
           case AuthorizationPageMode.MFA:
-            return SignInItems.map((item, index) => (
-              <Stack key={index} direction="row" sx={{ gap: 2 }}>
+            return SignInItems.map((item) => (
+              <Stack key={item.title} direction="row" sx={{ gap: 2 }}>
                 {item.icon}
                 <Box sx={{ display: "block", width: "100%" }}>
                   <Typography gutterBottom sx={{ fontWeight: "medium" }}>

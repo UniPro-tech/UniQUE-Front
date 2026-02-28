@@ -73,7 +73,7 @@ export default function EmailVerifyClient({
         try {
           if (code) {
             const verifyRes = await fetch(
-              "/api/email-verify?code=" + encodeURIComponent(code),
+              `/api/email-verify?code=${encodeURIComponent(code)}`,
             );
             if (verifyRes.ok) {
               const verifyData =
@@ -112,7 +112,7 @@ export default function EmailVerifyClient({
           if (code) {
             try {
               const verifyRes = await fetch(
-                "/api/email-verify?code=" + encodeURIComponent(code),
+                `/api/email-verify?code=${encodeURIComponent(code)}`,
               );
               if (verifyRes.ok) {
                 const verifyData =

@@ -304,7 +304,7 @@ export default function MiniDrawer({
               ))}
             </List>
             {index < NAVIGSTION_LINKS.length - 1 && (
-              <Divider key={"divider-" + index} />
+              <Divider key={`divider-${index}`} />
             )}
           </div>
         ))}

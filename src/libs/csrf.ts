@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import nacl from "tweetnacl";
 import * as util from "tweetnacl-util";
 
@@ -49,7 +49,7 @@ export const VerifyCSRFToken = (
   try {
     const verified = nacl.sign.open(util.decodeBase64(token), publicKey);
     if (verified) {
-      const expire = parseInt(util.encodeUTF8(verified).split("&exp=")[1]);
+      const expire = parseInt(util.encodeUTF8(verified).split("&exp=")[1], 10);
       if (Date.now() > expire && !exp) {
         return null;
       }
@@ -57,7 +57,7 @@ export const VerifyCSRFToken = (
     } else {
       return null;
     }
-  } catch (e) {
+  } catch (_e) {
     //TODO: エラーログを記録
     return null;
   }

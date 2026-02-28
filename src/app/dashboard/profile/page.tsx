@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function ProfilePage() {
   const session = await Session.getCurrent();
-  const user = (await session!.getUser()).toJson();
+  const user = (await session?.getUser()).toJson();
 
   return <Profile user={user} variant="self" showTimestamps />;
 }

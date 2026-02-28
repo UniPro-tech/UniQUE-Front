@@ -51,9 +51,9 @@ export default function TOTPSection({
   const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
-    if (genResult && genResult.error) {
+    if (genResult?.error) {
       enqueueSnackbar(genResult.error, { variant: "error" });
-    } else if (genResult && genResult.secret) {
+    } else if (genResult?.secret) {
       Promise.resolve().then(() => {
         setIsFinished(true);
       });
@@ -70,9 +70,9 @@ export default function TOTPSection({
   }, [genResult]);
 
   useEffect(() => {
-    if (verifyResult && verifyResult.error) {
+    if (verifyResult?.error) {
       enqueueSnackbar(verifyResult.error, { variant: "error" });
-    } else if (verifyResult && verifyResult.valid) {
+    } else if (verifyResult?.valid) {
       enqueueSnackbar("二段階認証を有効化しました。", { variant: "success" });
       Promise.resolve().then(() => {
         setLocalEnabled(true);
@@ -86,9 +86,9 @@ export default function TOTPSection({
   }, [verifyResult]);
 
   useEffect(() => {
-    if (disableResult && disableResult.error) {
+    if (disableResult?.error) {
       enqueueSnackbar(disableResult.error, { variant: "error" });
-    } else if (disableResult && disableResult.success) {
+    } else if (disableResult?.success) {
       enqueueSnackbar(disableResult.message || "二段階認証を無効化しました。", {
         variant: "success",
       });

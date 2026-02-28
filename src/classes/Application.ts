@@ -43,7 +43,7 @@ export class Application {
     if (!data.userId && !data.owner) {
       throw new Error("Either ownerId or owner must be provided");
     }
-    this.ownerId = data.userId || data.owner!.id;
+    this.ownerId = data.userId || data.owner?.id;
     this.clientSecret = data.clientSecret || null;
     this.createdAt =
       data.createdAt instanceof Date

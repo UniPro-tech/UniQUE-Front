@@ -183,7 +183,7 @@ export default function AnnouncementsList({
         {items.map((a) => {
           const preview =
             a.content && a.content.length > 200
-              ? a.content.slice(0, 200) + "…"
+              ? `${a.content.slice(0, 200)}…`
               : a.content;
 
           return (

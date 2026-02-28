@@ -22,7 +22,7 @@ import {
 } from "@mui/x-data-grid";
 import { jaJP } from "@mui/x-data-grid/locales";
 import { SnackbarProvider, useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ApplicationData } from "@/classes/Application";
 import { addRedirectUri, deleteRedirectUri } from "./action";
 
@@ -68,7 +68,7 @@ export default function RedirectUrisClient({
 
   const rows = uris.map((u) => ({ id: u, uri: u }));
 
-  const columns = React.useMemo<GridColDef[]>(() => {
+  const columns = useMemo<GridColDef[]>(() => {
     return [
       {
         field: "actions",
@@ -103,11 +103,9 @@ export default function RedirectUrisClient({
         },
       },
     ];
-  }, [uris]);
+  }, [onDelete]);
 
-  const initialState = React.useMemo<
-    NonNullable<DataGridProps["initialState"]>
-  >(
+  const initialState = useMemo<NonNullable<DataGridProps["initialState"]>>(
     () => ({
       sorting: { sortModel: [{ field: "uri", sort: "asc" }] },
       pagination: { paginationModel: { pageSize: 10, page: 0 } },

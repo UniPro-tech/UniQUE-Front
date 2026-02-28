@@ -123,36 +123,33 @@ export default function AccountSettingsCardClient({
           }
           name="external_email"
         />
-        {(lastResult.user.externalEmail || lastResult.user.pendingEmail) && (
-          <>
-            {lastResult.user.emailVerified && !lastResult.user.pendingEmail ? (
+        {(lastResult.user.externalEmail || lastResult.user.pendingEmail) &&
+          (lastResult.user.emailVerified && !lastResult.user.pendingEmail ? (
+            <Chip
+              icon={<VerifiedIcon />}
+              label="認証済み"
+              color="success"
+              size="small"
+              sx={{ alignSelf: "flex-start" }}
+            />
+          ) : (
+            <Stack direction="row" spacing={1} alignItems="center">
               <Chip
-                icon={<VerifiedIcon />}
-                label="認証済み"
-                color="success"
+                icon={<ErrorOutlineIcon />}
+                label="未認証"
+                color="warning"
                 size="small"
-                sx={{ alignSelf: "flex-start" }}
               />
-            ) : (
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Chip
-                  icon={<ErrorOutlineIcon />}
-                  label="未認証"
-                  color="warning"
-                  size="small"
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleResendVerification}
-                  disabled={isSendingVerification}
-                >
-                  {isSendingVerification ? "送信中..." : "認証メールを送信"}
-                </Button>
-              </Stack>
-            )}
-          </>
-        )}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleResendVerification}
+                disabled={isSendingVerification}
+              >
+                {isSendingVerification ? "送信中..." : "認証メールを送信"}
+              </Button>
+            </Stack>
+          ))}
       </Stack>
       <Stack>
         <TextField

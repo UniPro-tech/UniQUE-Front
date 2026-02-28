@@ -22,7 +22,7 @@ export default function PermissionsPanelClient({
   const [bits, setBits] = useState<bigint>(permissionBitmask ?? 0n);
 
   const names = Object.keys(PermissionBitsFields).filter((k) =>
-    isNaN(Number(k)),
+    Number.isNaN(Number(k)),
   );
 
   const handleToggle =

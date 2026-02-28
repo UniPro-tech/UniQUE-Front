@@ -69,7 +69,7 @@ export default function MemberCreateForm() {
     }
 
     // 外部メールが入力されている場合は uniproject.jp ドメインであってはならない
-    if (formData.externalEmail && formData.externalEmail.trim()) {
+    if (formData.externalEmail?.trim()) {
       if (formData.externalEmail.toLowerCase().endsWith("@uniproject.jp")) {
         setError("外部メールは uniproject.jp ドメイン以外を指定してください");
         setLoading(false);

@@ -69,9 +69,9 @@ export const AuthenticationRequest = async (
     switch (response.status) {
       case 401: {
         const errorData = await response.json();
-        if (errorData.reason == "invalid_credentials") {
+        if (errorData.reason === "invalid_credentials") {
           throw AuthenticationErrors.InvalidCredentials;
-        } else if (errorData.reason == "user_inactive") {
+        } else if (errorData.reason === "user_inactive") {
           throw AuthenticationErrors.AccountLocked;
         }
       }

@@ -7,6 +7,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 import * as React from "react";
+import { useEffect } from "react";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 
 interface DeleteDialogProps {
@@ -29,12 +30,12 @@ export default function DeleteDialog({
     dataAction,
     null as null | FormStatus,
   );
-  React.useEffect(() => {
+  useEffect(() => {
     if (state) {
       enqueueSnackbar(state.message, { variant: state.status });
       handleClose();
     }
-  }, [state]);
+  }, [state, handleClose]);
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
       <Dialog

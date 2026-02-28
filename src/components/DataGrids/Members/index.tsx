@@ -18,7 +18,7 @@ import {
 import { jaJP } from "@mui/x-data-grid/locales";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
-import React from "react";
+import React, { useMemo } from "react";
 import type { ProfileData } from "@/classes/Profile";
 import type { UserData, UserStatus } from "@/classes/types/User";
 import ApproveRegistApplyDialog from "@/components/DataGrids/Members/ApproveDialog";
@@ -93,7 +93,7 @@ export default function MembersDataGrid({
     return row.email !== undefined && row.status !== undefined;
   }, []);
 
-  const columns = React.useMemo<GridColDef[]>(() => {
+  const columns = useMemo<GridColDef[]>(() => {
     return [
       ...(beforeJoined
         ? ([
@@ -272,7 +272,6 @@ export default function MembersDataGrid({
       },
     ];
   }, [
-    unsavedChangesRef,
     apiRef,
     beforeJoined,
     localRows,

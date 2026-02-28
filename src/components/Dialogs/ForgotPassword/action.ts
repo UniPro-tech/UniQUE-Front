@@ -16,7 +16,7 @@ export async function submitForgotPassword(email: string) {
       status: "success",
       message: "パスワードリセットメールを送信しました。",
     } as const;
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "パスワードリセットに失敗しました。再度お試しください。",

@@ -12,7 +12,7 @@ export default async function RootLayout({
   const session = await Session.getCurrent();
   const user = session ? await session.getUser() : null;
   const roles = user
-    ? (await user?.getRoles()).map((role) => role.toJson())
+    ? (await user.getRoles()).map((role) => role.toJson())
     : undefined;
   const birthdate = user?.profile.birthdate ? user.profile.birthdate : null;
   const mustSetBirthdate = Boolean(!birthdate);

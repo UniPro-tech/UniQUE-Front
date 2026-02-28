@@ -34,7 +34,7 @@ export const updateAccountSettings = async (
     const birthdate = formData.get("birthdate") as string;
 
     const session = await Session.getCurrent();
-    const user = await session!.getUser();
+    const user = await session?.getUser();
     user.profile.displayName = displayName;
     // 生年月日は一度設定したら変更不可
     if (!user.profile.birthdate && birthdate) {

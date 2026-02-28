@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const toCamelcase = <T>(obj: any): T => {
   if (Array.isArray(obj)) {
     return obj.map((item) => toCamelcase(item)) as unknown as T;

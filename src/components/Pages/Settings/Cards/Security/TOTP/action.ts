@@ -12,7 +12,7 @@ export const generateTOTP = async (_prevState: null, formData: FormData) => {
     const password = formData.get("password") as string;
 
     const session = await Session.getCurrent();
-    const user = await session!.getUser();
+    const user = await session?.getUser();
 
     const totpRes = await user.setupBeginTotp(password);
 
@@ -32,7 +32,7 @@ export const verifyTOTP = async (_prevState: null, formData: FormData) => {
 
     const session = await Session.getCurrent();
 
-    const user = await session!.getUser();
+    const user = await session?.getUser();
 
     const result = await user.setupFinishTotp(code);
 
@@ -51,7 +51,7 @@ export const disableTOTP = async (_prevState: null, formData: FormData) => {
     const password = formData.get("password") as string;
 
     const session = await Session.getCurrent();
-    const user = await session!.getUser();
+    const user = await session?.getUser();
 
     await user.disableTotp(password);
 

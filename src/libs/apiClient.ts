@@ -51,7 +51,7 @@ async function buildHeaders(
   }
   const jwt = await getJwtToken();
   if (jwt) {
-    base["Authorization"] = `Bearer ${jwt}`;
+    base.Authorization = `Bearer ${jwt}`;
   }
   return base;
 }

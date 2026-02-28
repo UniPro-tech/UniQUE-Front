@@ -14,7 +14,7 @@ export async function updateProfile(data: UpdateProfileData) {
   try {
     const session = await Session.getCurrent();
 
-    const user = await session!.getUser();
+    const user = await session?.getUser();
 
     // プロフィール情報を更新
     if (data.displayName !== undefined)

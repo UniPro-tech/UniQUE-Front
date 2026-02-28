@@ -29,7 +29,7 @@ export default async function Page() {
         </Typography>
       </Stack>
 
-      <ApplicationCreateForm userId={session!.userId} />
+      <ApplicationCreateForm userId={session?.userId} />
     </Stack>
   );
 }
