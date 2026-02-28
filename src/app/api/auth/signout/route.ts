@@ -1,6 +1,6 @@
-import Session from "@/types/Session";
+import { Session } from "@/classes/Session";
 
 export const POST = async () => {
-  await Session.logout();
+  (await Session.getCurrent())?.delete();
   return new Response(null, { status: 204 });
 };

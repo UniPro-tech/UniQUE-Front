@@ -1,8 +1,8 @@
-import { SnackbarProvider } from "notistack";
 import { Card } from "@mui/material";
+import { SnackbarProvider } from "notistack";
 
 export interface FormStatus {
-  status: "success" | "error";
+  status: "error" | "success" | "default" | "warning" | "info" | undefined;
   message: string;
 }
 

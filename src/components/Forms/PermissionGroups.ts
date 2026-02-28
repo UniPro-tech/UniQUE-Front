@@ -1,4 +1,4 @@
-import { PermissionBitsFields } from "@/types/Permission";
+import { PermissionBitsFields } from "@/constants/Permission";
 
 // 権限のグループ化
 export const PermissionGroups = [

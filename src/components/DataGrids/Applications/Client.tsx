@@ -1,31 +1,31 @@
 "use client";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Box, Link as MuiLink, Paper } from "@mui/material";
 import {
   DataGrid,
-  DataGridProps,
+  type DataGridProps,
   GridActionsCellItem,
-  GridColDef,
-  GridRowId,
+  type GridColDef,
+  type GridRowId,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import React from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
+import { RedirectType, redirect } from "next/navigation";
+import React from "react";
+import type { ApplicationData } from "@/classes/Application";
 import DeleteDialog from "@/components/Dialogs/Delete";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import { deleteApplicationById } from "@/app/dashboard/applications/delete-action";
-import type { ApplicationWithOwner } from "@/types/Application";
-import { redirect, RedirectType } from "next/navigation";
-import { Box, Paper, Link as MuiLink } from "@mui/material";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { deleteApplicationById } from "./deleteAction";
 
 export default function ApplicationsDataGridClient({
   rows,
 }: {
-  rows: ApplicationWithOwner[];
+  rows: ApplicationData[];
 }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<ApplicationWithOwner[]>(
+  const [localRows, setLocalRows] = React.useState<ApplicationData[]>(
     () => rows,
   );
 
@@ -174,10 +174,11 @@ export default function ApplicationsDataGridClient({
         width: 200,
         flex: 0.8,
         renderCell: (params) => {
-          const displayName = params.row.ownerDisplayName;
-          const customId = params.row.ownerCustomId;
+          const displayName = (params.row as ApplicationData).owner?.profile
+            .displayName;
+          const customId = (params.row as ApplicationData).owner?.customId;
           if (!displayName && !customId) return "不明";
-          return `${displayName} (${customId})`;
+          return `${displayName} (@${customId})`;
         },
       },
     ];

@@ -1,12 +1,12 @@
-import TemporarySnackProvider, {
-  SnackbarData,
-} from "@/components/TemporarySnackProvider";
-import ConsentCard from "@/components/mui-template/signup-side/components/ConsentCard";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
-import { createApiClient } from "@/lib/apiClient";
-import Session from "@/types/Session";
 import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
+import { RedirectType, redirect } from "next/navigation";
+import { Application } from "@/classes/Application";
+import { Session } from "@/classes/Session";
+import ConsentCard from "@/components/Pages/Authorization/ConsentCard";
+import TemporarySnackProvider, {
+  type SnackbarData,
+} from "@/components/TemporarySnackProvider";
+import { createApiClient } from "@/libs/apiClient";
 
 export default async function Page({
   searchParams,
@@ -18,9 +18,19 @@ export default async function Page({
 }) {
   const params = await searchParams;
   const { auth_request_id, error } = params;
+  const session = await Session.getCurrent();
 
-  const session = await (await Session.get())?.convertPlain();
   if (!session) {
+    const query = new URLSearchParams(params as Record<string, string>);
+    const recirectpath = `/authorization?${query.toString()}`;
+    redirect(
+      `/signin?redirect=${encodeURIComponent(recirectpath)}`,
+      RedirectType.replace,
+    );
+  }
+
+  const sessionJson = session.toJson();
+  if (!sessionJson) {
     const query = new URLSearchParams(params as Record<string, string>);
     const recirectpath = `/authorization?${query.toString()}`;
     redirect(
@@ -31,27 +41,23 @@ export default async function Page({
 
   if (error) {
     return (
-      <>
-        <main style={{ padding: 24 }}>
-          <h1>Authorization Error</h1>
-          <p>
-            {error == "forbidden_scope"
-              ? "このスコープに対する認可を行う権限がありません。"
-              : error}
-          </p>
-        </main>
-      </>
+      <main style={{ padding: 24 }}>
+        <h1>Authorization Error</h1>
+        <p>
+          {error === "forbidden_scope"
+            ? "このスコープに対する認可を行う権限がありません。"
+            : error}
+        </p>
+      </main>
     );
   }
 
   if (!auth_request_id) {
     return (
-      <>
-        <main style={{ padding: 24 }}>
-          <h1>Bad Request</h1>
-          <p>不正なリクエストです。</p>
-        </main>
-      </>
+      <main style={{ padding: 24 }}>
+        <h1>Bad Request</h1>
+        <p>不正なリクエストです。</p>
+      </main>
     );
   }
 
@@ -78,11 +84,8 @@ export default async function Page({
   }
   const authReqData = (await authReqRes.json()) as AuthorizationResponse;
 
-  const apiClient = createApiClient();
-  const appRes = await apiClient.get(
-    `/applications/${encodeURIComponent(authReqData.client_id)}`,
-  );
-  if (!appRes.ok) {
+  const app = await Application.getById(authReqData.client_id);
+  if (!app) {
     snacks.push({ message: "不正なクライアントIDです。", variant: "error" });
     return (
       <>
@@ -94,8 +97,6 @@ export default async function Page({
       </>
     );
   }
-
-  const app = await appRes.json();
 
   const cookieStore = await cookies();
   const COOKIE_NAME = "session_jwt";
@@ -120,7 +121,7 @@ export default async function Page({
   const consentedQuery = new URLSearchParams();
   try {
     const query = new URLSearchParams();
-    query.append("user_id", session.user.id);
+    query.append("user_id", sessionJson.userId);
     query.append("application_id", authReqData.client_id);
     query.append("scope", authReqData.scope);
     const consentsRes = await authClient.get(
@@ -134,10 +135,10 @@ export default async function Page({
         (c): boolean => c.application_id === authReqData.client_id,
       );
 
-      if (hasConsent && authReqData.prompt == "none") {
+      if (hasConsent && authReqData.prompt === "none") {
         // 同意済みであればconsentedにする
         const query = new URLSearchParams();
-        query.append("user_id", session.user.id);
+        query.append("user_id", sessionJson.userId);
         query.append("application_id", authReqData.client_id);
         query.append("scope", authReqData.scope);
         const consentRes = await authClient.post(
@@ -166,8 +167,8 @@ export default async function Page({
     <>
       <TemporarySnackProvider snacks={snacks} />
       <ConsentCard
-        app={toCamelcase(app)}
-        user={session.user}
+        app={await app.toJson()}
+        user={(await session.getUser()).toJson()}
         scope={authReqData.scope}
         jwt={jwtToken}
         redirect_uri={authReqData.redirect_uri}

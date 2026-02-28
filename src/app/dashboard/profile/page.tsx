@@ -1,5 +1,5 @@
-import Session from "@/types/Session";
-import ProfileClient from "@/components/Pages/Profile/ProfileClient";
+import { Session } from "@/classes/Session";
+import Profile from "@/components/Cards/Profile";
 
 export const metadata = {
   title: "プロフィール",
@@ -7,9 +7,8 @@ export const metadata = {
 };
 
 export default async function ProfilePage() {
-  const session = await Session.get();
-  const user = session!.user;
-  const userDTO = user.convertPlain();
+  const session = await Session.getCurrent();
+  const user = (await session?.getUser()).toJson();
 
-  return <ProfileClient user={userDTO} />;
+  return <Profile user={user} variant="self" showTimestamps />;
 }

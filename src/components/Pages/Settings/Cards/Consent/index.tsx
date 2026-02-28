@@ -1,10 +1,14 @@
-import { createApiClient } from "@/lib/apiClient";
-import { toCamelcase } from "@/lib/SnakeCamlUtil";
-import ConsentSettingsCardClient, { type ConsentDTO } from "./Client";
+import type { UserData } from "@/classes/types/User";
+import { createApiClient } from "@/libs/apiClient";
+import { toCamelcase } from "@/libs/snakeCamelUtil";
 import { revokeConsentAction } from "./actions";
-import { UserDTO } from "@/types/User";
+import ConsentSettingsCardClient, { type ConsentDTO } from "./Client";
 
-export default async function ConsentSettingsCard({ user }: { user: UserDTO }) {
+export default async function ConsentSettingsCard({
+  user,
+}: {
+  user: UserData;
+}) {
   const authApiUrl = process.env.AUTH_API_URL || "";
   const authClient = createApiClient(authApiUrl);
   let consents: ConsentDTO[] = [];

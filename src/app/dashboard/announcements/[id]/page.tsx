@@ -1,13 +1,14 @@
-import { Stack, Typography, Button, Box } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import Announcement from "@/types/Announcement";
-import TemporarySnackProvider, {
-  SnackbarData,
-} from "@/components/TemporarySnackProvider";
-import { hasPermission } from "@/lib/permissions";
-import { PermissionBitsFields } from "@/types/Permission";
+import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Announcement } from "@/classes/Announcement";
+import { Session } from "@/classes/Session";
+import TemporarySnackProvider, {
+  type SnackbarData,
+} from "@/components/TemporarySnackProvider";
+import { PermissionBitsFields } from "@/constants/Permission";
 
 export const metadata = {
   title: "アナウンス詳細",
@@ -23,7 +24,13 @@ export default async function Page({
 }) {
   const { id } = await params;
   const ann = await Announcement.getById(id);
-  const a = ann.toPlainObject();
+
+  if (!ann) {
+    notFound();
+  }
+
+  const a = ann.toJson();
+
   const { success, type, error } = await searchParams;
 
   const snacks: SnackbarData[] = [];
@@ -41,7 +48,10 @@ export default async function Page({
     snacks.push({ message: `エラー: ${error}`, variant: "error" });
   }
 
-  const canEdit = await hasPermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE);
+  const user = await (await Session.getCurrent())?.getUser();
+  const canEdit = await user?.hasPermission(
+    PermissionBitsFields.ANNOUNCEMENT_UPDATE,
+  );
 
   return (
     <Stack spacing={3}>

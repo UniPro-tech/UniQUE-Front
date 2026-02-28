@@ -1,29 +1,27 @@
 "use client";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { Box, Paper } from "@mui/material";
 import {
   DataGrid,
-  DataGridProps,
+  type DataGridProps,
   GridActionsCellItem,
-  GridColDef,
-  GridRowId,
+  type GridColDef,
+  type GridRowId,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import React from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { jaJP } from "@mui/x-data-grid/locales";
-import type { PlainRole } from "@/types/Role";
+import { RedirectType, redirect } from "next/navigation";
+import React from "react";
+import type { RoleData } from "@/classes/Role";
 import DeleteDialog from "@/components/Dialogs/Delete";
-import { deleteRole } from "@/app/dashboard/roles/[id]/action";
-import { redirect, RedirectType } from "next/navigation";
-import { Box, Paper } from "@mui/material";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { deleteRole } from "@/components/Forms/RoleEditForm/action";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 
-export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
+export default function RolesDataGridClient({ rows }: { rows: RoleData[] }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<PlainRole[]>(() => rows);
-  const [undeletedRole, setUndeletedRole] = React.useState<string | null>(
-    null,
-  );
+  const [localRows, setLocalRows] = React.useState<RoleData[]>(() => rows);
+  const [undeletedRole, setUndeletedRole] = React.useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -53,7 +51,9 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
         } as FormStatus;
       }
 
-      setLocalRows((prev) => prev.filter((r) => String(r.id) !== String(undeletedRole)));
+      setLocalRows((prev) =>
+        prev.filter((r) => String(r.id) !== String(undeletedRole)),
+      );
       apiRef.current?.updateRows([{ id: undeletedRole, _action: "delete" }]);
       setUndeletedRole(null);
       setDeleteDialogOpen(false);
@@ -179,4 +179,3 @@ export default function RolesDataGridClient({ rows }: { rows: PlainRole[] }) {
     </Paper>
   );
 }
-

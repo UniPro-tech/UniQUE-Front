@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import User from "@/types/User";
-import UserDetailClient from "@/components/Pages/Members/UserDetailClient";
+import { User } from "@/classes/User";
+import Profile from "@/components/Cards/Profile";
 
 export const metadata = {
   title: "ユーザー詳細",
@@ -14,7 +14,7 @@ export default async function UserDetailPage({
 }) {
   const { id } = await params;
 
-  let user;
+  let user: User | null = null;
   try {
     user = await User.getById(id);
   } catch (error) {
@@ -22,6 +22,10 @@ export default async function UserDetailPage({
     notFound();
   }
 
-  const userDTO = user.convertPlain();
-  return <UserDetailClient user={userDTO} />;
+  if (!user) {
+    notFound();
+  }
+
+  const userData = user.toJson();
+  return <Profile user={userData} variant="detail" showTimestamps />;
 }

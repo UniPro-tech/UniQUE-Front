@@ -1,11 +1,11 @@
-import RoleUsersDataGrid from "@/components/DataGrids/RoleUsers";
-import RoleEditForm from "@/components/Forms/RoleEditForm";
-import RoleBulkAssignButton from "@/components/RoleBulkAssignButton";
-import { ResourceApiErrors } from "@/types/Errors/ResourceApiErrors";
-import { Role } from "@/types/Role";
-import { Breadcrumbs, Link, Stack, Typography, Box } from "@mui/material";
+import { Box, Breadcrumbs, Link, Stack, Typography } from "@mui/material";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { Role } from "@/classes/Role";
+import RoleUsersDataGrid from "@/components/DataGrids/RoleUsers";
+import RoleEditForm from "@/components/Forms/RoleEditForm";
+import RoleBulkAssignButton from "@/components/Pages/Roles/RoleBulkAssignButton";
+import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
 
 export async function generateMetadata({
   params,
@@ -14,7 +14,10 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   try {
-    const role = await Role.getRoleById(id);
+    const role = await Role.getById(id);
+    if (!role) {
+      notFound();
+    }
     return {
       title: `${role.name} - ロール編集`,
       description: `${role.name}の詳細設定を行います`,
@@ -33,11 +36,11 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  let role;
+  let role: Role | null = null;
   try {
-    role = await Role.getRoleById(id);
+    role = await Role.getById(id);
   } catch (error) {
-    if (error == ResourceApiErrors.ResourceNotFound) {
+    if (error === ResourceApiErrors.ResourceNotFound) {
       notFound();
     }
   }
@@ -63,7 +66,7 @@ export default async function Page({
       </Stack>
 
       <Box>
-        <RoleEditForm role={role.toPlainObject()} />
+        <RoleEditForm role={role.toJson()} />
       </Box>
 
       <Stack spacing={2}>

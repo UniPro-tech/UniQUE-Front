@@ -1,35 +1,35 @@
 "use client";
-import {
-  DataGrid,
-  DataGridProps,
-  GridActionsCellItem,
-  gridClasses,
-  GridColDef,
-  GridRowId,
-  GridValidRowModel,
-  useGridApiRef,
-} from "@mui/x-data-grid";
-import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { darken, Paper, Box, Button, Stack } from "@mui/material";
+import { Box, Button, darken, Paper, Stack } from "@mui/material";
+import {
+  DataGrid,
+  type DataGridProps,
+  GridActionsCellItem,
+  type GridColDef,
+  type GridRowId,
+  type GridValidRowModel,
+  gridClasses,
+  useGridApiRef,
+} from "@mui/x-data-grid";
 import { jaJP } from "@mui/x-data-grid/locales";
-import { FormStatus } from "@/components/Pages/Settings/Cards/Base";
-import DeleteDialog from "@/components/Dialogs/Delete";
+import React from "react";
+import type { RoleData } from "@/classes/Role";
+import type { UserData } from "@/classes/types/User";
 import AssignUserToRoleDialog from "@/components/Dialogs/AssignUserToRole";
-import type { UserDTO } from "@/types/User";
-import { type PlainRole } from "@/types/Role";
-import { unassignUserFromRole } from "@/app/dashboard/roles/[id]/assign-action";
+import { unassignUserFromRole } from "@/components/Dialogs/AssignUserToRole/action";
+import DeleteDialog from "@/components/Dialogs/Delete";
+import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
 
 export default function RoleUsersDataGridClient({
   role,
   rows,
 }: {
-  role: PlainRole;
-  rows: UserDTO[];
+  role: RoleData;
+  rows: UserData[];
 }) {
   const apiRef = useGridApiRef();
-  const [localRows, setLocalRows] = React.useState<UserDTO[]>(() => rows);
+  const [localRows, setLocalRows] = React.useState<UserData[]>(() => rows);
   const [assignDialogOpen, setAssignDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -132,7 +132,7 @@ export default function RoleUsersDataGridClient({
         headerName: "表示名",
         width: 180,
         flex: 1,
-        valueGetter: (_value: unknown, row: UserDTO) =>
+        valueGetter: (_value: unknown, row: UserData) =>
           row.profile?.displayName || row.customId || "",
       },
       {

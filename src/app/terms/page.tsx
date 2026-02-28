@@ -1,8 +1,8 @@
+import fs from "node:fs";
+import path from "node:path";
 import { Stack } from "@mui/material";
-import Markdown from "react-markdown";
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
+import Markdown from "react-markdown";
 
 export const metadata = {
   title: "利用規約",

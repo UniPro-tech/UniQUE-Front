@@ -1,35 +1,42 @@
 "use client";
-import * as React from "react";
-import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import AppsIcon from "@mui/icons-material/Apps";
+import CampaignIcon from "@mui/icons-material/Campaign";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
+import PeopleIcon from "@mui/icons-material/People";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { Stack } from "@mui/material";
+import MuiAppBar, {
+  type AppBarProps as MuiAppBarProps,
+} from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import MuiDrawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import CampaignIcon from "@mui/icons-material/Campaign";
 import ListItemText from "@mui/material/ListItemText";
-import HomeIcon from "@mui/icons-material/Home";
-import PeopleIcon from "@mui/icons-material/People";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import AppsIcon from "@mui/icons-material/Apps";
-import AccountButton from "./Sidebar/AccountButton";
-import DiscordLinkAlert from "./DiscordLinkAlert";
-import { Stack } from "@mui/material";
-import { PermissionBitsFields } from "@/types/Permission";
+import {
+  type CSSObject,
+  styled,
+  type Theme,
+  useTheme,
+} from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
 import Image from "next/image";
 import Link from "next/link";
-import type { SessionPlain } from "@/types/Session";
-import type { RoleDTO } from "@/types/Role";
+import * as React from "react";
+import type { RoleData } from "@/classes/Role";
+import type { UserData } from "@/classes/types/User";
+import { PermissionBitsFields } from "@/constants/Permission";
+import DiscordLinkAlert from "./DiscordLinkAlert";
+import AccountButton from "./Sidebar/AccountButton";
 
 const drawerWidth = 240;
 
@@ -91,28 +98,32 @@ const AppBar = styled(MuiAppBar, {
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: "nowrap",
-  boxSizing: "border-box",
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        ...openedMixin(theme),
-        "& .MuiDrawer-paper": openedMixin(theme),
+})(({ theme }) => {
+  return {
+    width: drawerWidth,
+    whiteSpace: "nowrap",
+    boxSizing: "border-box",
+    variants: [
+      {
+        props: ({ open }) => open,
+        style: {
+          ...openedMixin(theme),
+          "& .MuiDrawer-paper": openedMixin(theme),
+        },
       },
-    },
-    {
-      props: ({ open }) => !open,
-      style: {
-        ...closedMixin(theme),
-        "& .MuiDrawer-paper": closedMixin(theme),
+      {
+        props: ({ open }) => !open,
+        style: {
+          ...closedMixin(theme),
+          "& .MuiDrawer-paper": closedMixin(theme),
+          "@media (max-width: 600px)": {
+            display: "none",
+          },
+        },
       },
-    },
-  ],
-}));
+    ],
+  };
+});
 
 interface NavLink {
   text: string;
@@ -121,12 +132,12 @@ interface NavLink {
 }
 
 export default function MiniDrawer({
-  session,
+  user,
   userRoles,
   children,
 }: {
-  session: SessionPlain | null;
-  userRoles?: RoleDTO[];
+  user: UserData | null;
+  userRoles?: RoleData[];
   children: React.ReactNode;
 }) {
   /**
@@ -136,7 +147,7 @@ export default function MiniDrawer({
   const hasPermission = (requiredFlag: bigint): boolean => {
     return (
       userRoles?.some(
-        (role) => (role.permissionBitmask & requiredFlag) !== 0n,
+        (role) => (BigInt(role.permissionBitmask) & requiredFlag) !== 0n,
       ) ?? false
     );
   };
@@ -210,6 +221,8 @@ export default function MiniDrawer({
           background: "#e6ecec",
           color: "#000000",
         }}
+        variant="outlined"
+        suppressHydrationWarning
       >
         <Toolbar>
           <Stack
@@ -241,7 +254,7 @@ export default function MiniDrawer({
             </Link>
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
-          <AccountButton session={session} />
+          <AccountButton user={user} />
         </Toolbar>
         <DiscordLinkAlert />
       </AppBar>
@@ -276,7 +289,7 @@ export default function MiniDrawer({
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
-                        mr: open ? 3 : "auto",
+                        mr: open ? 1 : "auto",
                         justifyContent: "center",
                       }}
                     >
@@ -291,7 +304,7 @@ export default function MiniDrawer({
               ))}
             </List>
             {index < NAVIGSTION_LINKS.length - 1 && (
-              <Divider key={"divider-" + index} />
+              <Divider key={`divider-${index}`} />
             )}
           </div>
         ))}
@@ -300,7 +313,7 @@ export default function MiniDrawer({
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 1, sm: 2, md: 3 },
+          p: { xs: 3, sm: 2, md: 3 },
           width: { xs: "100%", sm: "auto" },
           maxWidth: "100%",
           overflow: "auto",

@@ -1,12 +1,12 @@
+import { Stack, Typography } from "@mui/material";
+import type { VariantType } from "notistack";
+import { Session } from "@/classes/Session";
 import AccountSettingsCard from "@/components/Pages/Settings/Cards/Account";
 import ConsentSettingsCard from "@/components/Pages/Settings/Cards/Consent";
 import SecuritySettingsCard from "@/components/Pages/Settings/Cards/Security";
 import SocialAccountsSettingsCard from "@/components/Pages/Settings/Cards/SocialAccounts";
-import Session from "@/types/Session";
-import { Stack, Typography } from "@mui/material";
-import { VariantType } from "notistack";
 import TemporarySnackProvider, {
-  SnackbarData,
+  type SnackbarData,
 } from "@/components/TemporarySnackProvider";
 
 export const metadata = {
@@ -24,8 +24,8 @@ export default async function Page({
   }>;
 }) {
   const { oauth, status, reason } = await searchParams;
-  const session = await Session.get();
-  const user = session ? session.user.convertPlain() : null;
+  const session = await Session.getCurrent();
+  const user = session ? (await session.getUser()).toJson() : null;
   const snacks: SnackbarData[] = [
     ...(oauth
       ? reason === "conflict"

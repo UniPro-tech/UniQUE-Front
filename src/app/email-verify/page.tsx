@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Session } from "@/classes/Session";
 import EmailVerifyClient from "./EmailVerifyClient";
 
 interface EmailVerifyPageProps {
@@ -13,6 +14,8 @@ export default async function EmailVerifyPage({
   searchParams,
 }: EmailVerifyPageProps) {
   const params = await searchParams;
+  const session = await Session.getCurrent();
+  if (session) await session.delete();
   const code = params.code;
   const discordLinked = params.discord_linked === "true";
   const discordError = params.discord_error;

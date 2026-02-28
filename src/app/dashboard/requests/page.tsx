@@ -1,11 +1,9 @@
-import { getUsersList } from "@/lib/resources/Users";
 import { Stack, Typography } from "@mui/material";
-import MembersDataGrid from "@/components/DataGrids/Member";
-import { rejectRegistApplyAction } from "@/components/Dialogs/actions/rejectRegistApplyAction";
-import { requirePermission } from "@/lib/permissions";
-import { PermissionBitsFields } from "@/types/Permission";
-import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
-import { redirect } from "next/navigation";
+import { UserStatus } from "@/classes/types/User";
+import { User } from "@/classes/User";
+import MembersDataGrid from "@/components/DataGrids/Members";
+import { PermissionBitsFields } from "@/constants/Permission";
+import { requirePermission } from "@/libs/permissions";
 
 export const metadata = {
   title: "メンバー申請一覧",
@@ -13,28 +11,19 @@ export const metadata = {
 };
 
 export default async function Page() {
-  try {
-    await requirePermission(PermissionBitsFields.USER_READ);
-  } catch (err) {
-    if (err === AuthorizationErrors.AccessDenied) {
-      redirect("/dashboard?error=access_denied");
-    }
-    throw err;
-  }
+  await requirePermission(PermissionBitsFields.USER_READ);
 
-  const users = await getUsersList({ filterPendingApplicants: true });
-  const rows = users.map((u) => u.convertPlain());
+  const users = await User.getAll();
+  const rows = users
+    .map((u) => u.toJson())
+    .filter((u) => u.status === UserStatus.ESTABLISHED);
   return (
     <Stack spacing={4}>
       <Stack>
         <Typography variant="h5">メンバー申請一覧</Typography>
         <Typography variant="body1">メンバー申請一覧です。</Typography>
       </Stack>
-      <MembersDataGrid
-        rows={rows}
-        beforeJoined
-        rejectAction={rejectRegistApplyAction}
-      />
+      <MembersDataGrid rows={rows} beforeJoined />
     </Stack>
   );
 }

@@ -1,4 +1,6 @@
 "use client";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import {
   Button,
   Chip,
@@ -8,27 +10,24 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import type { UserDTO } from "@/types/User";
-import Base from "../Base";
-import { FormStatus } from "../Base";
-import { useActionState, useEffect, useState } from "react";
-import { updateAccountSettings, resendEmailVerificationAction } from "./action";
 import { enqueueSnackbar } from "notistack";
+import { useActionState, useEffect, useState } from "react";
+import type { UserData } from "@/classes/types/User";
 import UserIdChangeApply from "../../Dialogs/UserIdChangeApply";
+import Base, { type FormStatus } from "../Base";
+import { resendEmailVerificationAction, updateAccountSettings } from "./action";
 
 export default function AccountSettingsCardClient({
   user,
   csrfToken,
 }: {
-  user: UserDTO;
+  user: UserData;
   csrfToken: string;
 }) {
   const [lastResult, action, isPending] = useActionState(
     updateAccountSettings,
     { user: user, status: null } as {
-      user: UserDTO;
+      user: UserData;
       status: FormStatus | null;
     },
   );
@@ -124,36 +123,33 @@ export default function AccountSettingsCardClient({
           }
           name="external_email"
         />
-        {(lastResult.user.externalEmail || lastResult.user.pendingEmail) && (
-          <>
-            {lastResult.user.emailVerified && !lastResult.user.pendingEmail ? (
+        {(lastResult.user.externalEmail || lastResult.user.pendingEmail) &&
+          (lastResult.user.emailVerified && !lastResult.user.pendingEmail ? (
+            <Chip
+              icon={<VerifiedIcon />}
+              label="認証済み"
+              color="success"
+              size="small"
+              sx={{ alignSelf: "flex-start" }}
+            />
+          ) : (
+            <Stack direction="row" spacing={1} alignItems="center">
               <Chip
-                icon={<VerifiedIcon />}
-                label="認証済み"
-                color="success"
+                icon={<ErrorOutlineIcon />}
+                label="未認証"
+                color="warning"
                 size="small"
-                sx={{ alignSelf: "flex-start" }}
               />
-            ) : (
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Chip
-                  icon={<ErrorOutlineIcon />}
-                  label="未認証"
-                  color="warning"
-                  size="small"
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleResendVerification}
-                  disabled={isSendingVerification}
-                >
-                  {isSendingVerification ? "送信中..." : "認証メールを送信"}
-                </Button>
-              </Stack>
-            )}
-          </>
-        )}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleResendVerification}
+                disabled={isSendingVerification}
+              >
+                {isSendingVerification ? "送信中..." : "認証メールを送信"}
+              </Button>
+            </Stack>
+          ))}
       </Stack>
       <Stack>
         <TextField

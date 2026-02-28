@@ -1,25 +1,25 @@
 "use client";
 import {
-  Stack,
-  Typography,
-  Divider,
-  TextField,
-  FormHelperText,
   Button,
+  Divider,
+  FormHelperText,
   Link,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import React, { useActionState, useEffect, useState, useCallback } from "react";
+import { useActionState, useCallback, useEffect, useState } from "react";
+import type { UserData } from "@/classes/types/User";
+import type { FormStatus } from "../../Base";
 import { updateSettings } from "./action";
-import type { UserDTO } from "@/types/User";
-import { FormStatus } from "../../Base";
 
 export default function PasswordSection({
   user,
   csrfToken,
   handleClickOpen,
 }: {
-  user: UserDTO;
+  user: UserData;
   csrfToken: string;
   handleClickOpen: () => void;
 }) {

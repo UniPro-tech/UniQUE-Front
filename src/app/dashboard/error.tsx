@@ -1,21 +1,18 @@
 "use client";
 
-import React from "react";
+import ErrorIcon from "@mui/icons-material/Error";
+import HomeIcon from "@mui/icons-material/Home";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {
+  Alert,
   Box,
   Button,
+  Card,
   Container,
   Stack,
   Typography,
-  Alert,
-  Card,
 } from "@mui/material";
-import ErrorIcon from "@mui/icons-material/Error";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import HomeIcon from "@mui/icons-material/Home";
 import Link from "next/link";
-import { AuthorizationErrors } from "@/types/Errors/AuthorizationErrors";
-import { isAccessDeniedError } from "@/lib/errorHandler";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -27,12 +24,8 @@ interface ErrorProps {
  * アクセス拒否エラーと一般エラーを区別して表示
  */
 export default function DashboardError({ error, reset }: ErrorProps) {
-  const isAccessDenied =
-    isAccessDeniedError(AuthorizationErrors.AccessDenied) &&
-    error.message.includes("AccessDenied");
-
   // アクセス拒否エラー用の表示
-  if (isAccessDenied || error.message.includes("B0001")) {
+  if (error.message.includes("B0001")) {
     return (
       <Container maxWidth="sm">
         <Box

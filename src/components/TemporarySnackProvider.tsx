@@ -1,22 +1,38 @@
 "use client";
 
-import { enqueueSnackbar, SnackbarProvider, VariantType } from "notistack";
-import { useEffect } from "react";
-import { replacePath } from "@/lib/replacePathAction";
 import { usePathname } from "next/navigation";
+import { SnackbarProvider, useSnackbar, type VariantType } from "notistack";
+import { useEffect } from "react";
+import { replacePath } from "@/libs/replacePathAction";
 
 export interface SnackbarData {
   message: string;
   variant: VariantType;
 }
 
+function InnerSnackRunner({
+  snacks,
+  replaceDuration,
+}: {
+  snacks: SnackbarData[];
+  replaceDuration: number;
+}) {
+  const path = usePathname();
+  const { enqueueSnackbar } = useSnackbar();
+  useEffect(() => {
+    snacks.forEach((snack) => {
+      enqueueSnackbar(snack.message, { variant: snack.variant });
+    });
+    if (snacks.length > 0) {
+      replacePath(path, replaceDuration);
+    }
+  }, [snacks, replaceDuration, path, enqueueSnackbar]);
+  return null;
+}
+
 /**
  * # TemporarySnackProvider
  * 最初だけsnackbarを表示するコンポーネント
- * ## usecase
- * ページ遷移時にクエリパラメータで渡された情報を元にsnackbarを表示したい場合など
- * @param snacks SnackbarData[] 表示するsnackbarの情報配列
- * @returns JSX.Element
  */
 export default function TemporarySnackProvider({
   snacks,
@@ -25,16 +41,9 @@ export default function TemporarySnackProvider({
   snacks: SnackbarData[];
   replaceDuration?: number;
 }) {
-  const path = usePathname();
-  useEffect(() => {
-    snacks.forEach((snack) => {
-      enqueueSnackbar(snack.message, { variant: snack.variant });
-    });
-    if (snacks.length > 0) {
-      replacePath(path, replaceDuration);
-    }
-  }, [snacks, replaceDuration, path]);
   return (
-    <SnackbarProvider maxSnack={3} autoHideDuration={6000}></SnackbarProvider>
+    <SnackbarProvider maxSnack={3} autoHideDuration={6000}>
+      <InnerSnackRunner snacks={snacks} replaceDuration={replaceDuration} />
+    </SnackbarProvider>
   );
 }

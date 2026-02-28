@@ -1,6 +1,6 @@
 "use server";
 
-import Announcement, { CreateAnnouncementRequest } from "@/types/Announcement";
+import { Announcement } from "@/classes/Announcement";
 
 export interface CreateAnnouncementFormData {
   title: string;
@@ -19,13 +19,11 @@ export async function createAnnouncement(
       return { success: false, error: "本文を入力してください" };
     }
 
-    const req: CreateAnnouncementRequest = {
+    await Announcement.create({
       title: data.title,
       content: data.content,
-      is_pinned: data.isPinned,
-    };
-
-    await Announcement.create(req);
+      isPinned: data.isPinned || false,
+    });
 
     return { success: true };
   } catch (err) {

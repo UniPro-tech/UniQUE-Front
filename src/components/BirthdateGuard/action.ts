@@ -1,10 +1,10 @@
 "use server";
 
-import { VerifyCSRFToken } from "@/lib/CSRF";
-import Session from "@/types/Session";
-import { FormRequestErrors } from "@/types/Errors/FormRequestErrors";
-import { FrontendErrors } from "@/types/Errors/FrontendErrors";
+import { Session } from "@/classes/Session";
 import type { FormStatus } from "@/components/Pages/Settings/Cards/Base";
+import { FormRequestErrors } from "@/errors/FormRequestErrors";
+import { FrontendErrors } from "@/errors/FrontendErrors";
+import { VerifyCSRFToken } from "@/libs/csrf";
 
 export const updateBirthdate = async (
   prevState: { birthdate: string; status: FormStatus | null },
@@ -18,7 +18,7 @@ export const updateBirthdate = async (
     const birthdate = formData.get("birthdate") as string;
     if (!birthdate) throw FrontendErrors.InvalidInput;
 
-    const session = await Session.get();
+    const session = await Session.getCurrent();
     if (!session) {
       return {
         birthdate: prevState.birthdate,
@@ -29,10 +29,7 @@ export const updateBirthdate = async (
       };
     }
 
-    const user = session.user;
-    if (!user.profile) {
-      user.profile = { userId: user.id, displayName: user.displayName };
-    }
+    const user = await session.getUser();
     user.profile.birthdate = birthdate;
     await user.save();
 

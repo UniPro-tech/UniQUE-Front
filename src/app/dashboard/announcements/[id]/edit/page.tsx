@@ -1,9 +1,9 @@
-import Announcement from "@/types/Announcement";
-import AnnouncementEditForm from "@/components/Forms/AnnouncementEditForm";
 import { Stack, Typography } from "@mui/material";
-import { hasPermission } from "@/lib/permissions";
-import { PermissionBitsFields } from "@/types/Permission";
-import { forbidden } from "next/navigation";
+import { notFound } from "next/navigation";
+import { Announcement } from "@/classes/Announcement";
+import AnnouncementEditForm from "@/components/Forms/AnnouncementEditForm";
+import { PermissionBitsFields } from "@/constants/Permission";
+import { requirePermission } from "@/libs/permissions";
 
 export const metadata = {
   title: "お知らせ編集",
@@ -15,11 +15,13 @@ export default async function Page({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  requirePermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE);
   const { id } = await params;
-  const canEdit = await hasPermission(PermissionBitsFields.ANNOUNCEMENT_UPDATE);
-  if (!canEdit) return forbidden();
   const ann = await Announcement.getById(id);
-  const a = ann.toPlainObject();
+  if (!ann) {
+    return notFound();
+  }
+  const a = ann.toJson();
 
   return (
     <Stack spacing={3}>

@@ -1,6 +1,6 @@
 "use server";
 
-import { createApiClient } from "@/lib/apiClient";
+import { createApiClient } from "@/libs/apiClient";
 
 export async function revokeConsentAction(consentId: string): Promise<boolean> {
   const authApiUrl = process.env.AUTH_API_URL || "";

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { verifyEmailCode } from "@/lib/EmailVerification";
+import { type NextRequest, NextResponse } from "next/server";
+import { User } from "@/classes/User";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await verifyEmailCode(code);
+    const result = await User.emailVerify(code);
 
     if (!result) {
       return NextResponse.json({ valid: false, type: null }, { status: 200 });

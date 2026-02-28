@@ -1,30 +1,31 @@
-import Content from "@/components/mui-template/signup-side/components/Content";
-import SignInCard from "@/components/mui-template/signup-side/components/SignInCard";
+import type { VariantType } from "notistack";
+import { AuthorizationPageMode } from "@/components/Pages/Authentication";
+import AuthenticationPage, {
+  type AuthorizationFormState,
+} from "@/components/Pages/Authentication/Client";
 import TemporarySnackProvider, {
-  SnackbarData,
+  type SnackbarData,
 } from "@/components/TemporarySnackProvider";
-import { VariantType } from "notistack";
-import { SignInCardMode } from "@/components/mui-template/signup-side/types/SignInCardMode";
 import {
-  AuthenticationErrorCodes,
+  type AuthenticationErrorCodes,
   getAuthenticationErrorSnackbarData,
-} from "@/types/Errors/AuthenticationErrors";
+} from "@/errors/AuthenticationErrors";
 import {
-  AuthServerErrorCodes,
+  type AuthServerErrorCodes,
   getAuthServerErrorSnackbarData,
-} from "@/types/Errors/AuthServerErrors";
+} from "@/errors/AuthServerErrors";
 import {
-  FormRequestErrorCodes,
+  type FormRequestErrorCodes,
   getFormRequestErrorSnackbarData,
-} from "@/types/Errors/FormRequestErrors";
+} from "@/errors/FormRequestErrors";
+import {
+  type FrontendErrorCodes,
+  getFrontendErrorSnackbarData,
+} from "@/errors/FrontendErrors";
 import {
   getResourceApiErrorSnackbarData,
-  ResourceApiErrorCodes,
-} from "@/types/Errors/ResourceApiErrors";
-import {
-  FrontendErrorCodes,
-  getFrontendErrorSnackbarData,
-} from "@/types/Errors/FrontendErrors";
+  type ResourceApiErrorCodes,
+} from "@/errors/ResourceApiErrors";
 
 export const metadata = {
   title: "アカウント移行",
@@ -36,57 +37,80 @@ export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
-    mail?: string;
+    name?: string;
+    username?: string;
+    email?: string;
+    externalEmail?: string;
+    agreeToTerms?: string;
+    rememberMe?: string;
+    migration?: string;
+    signouted?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
       | AuthServerErrorCodes
-      | ResourceApiErrorCodes
-      | FrontendErrorCodes;
-    name?: string;
-    email?: string;
-    period?: string;
-    username?: string;
+      | FrontendErrorCodes
+      | ResourceApiErrorCodes;
   }>;
 }) {
-  const { mail, error, name, email, period, username } = await searchParams;
-  const snacks: SnackbarData[] = [];
-
-  if (mail) {
-    snacks.push({
-      message: `メール認証を送信しました。メールをご確認ください。`,
-      variant: "success" as VariantType,
-    });
-  }
-
-  if (error) {
-    if (error.startsWith("A")) {
-      snacks.push(
-        getAuthenticationErrorSnackbarData(error as AuthenticationErrorCodes),
-      );
-    } else if (error.startsWith("F")) {
-      snacks.push(
-        getFormRequestErrorSnackbarData(error as FormRequestErrorCodes),
-      );
-    } else if (error.startsWith("D")) {
-      snacks.push(
-        getAuthServerErrorSnackbarData(error as AuthServerErrorCodes),
-      );
-    } else if (error.startsWith("R")) {
-      snacks.push(
-        getResourceApiErrorSnackbarData(error as ResourceApiErrorCodes),
-      );
-    } else if (error.startsWith("E")) {
-      snacks.push(getFrontendErrorSnackbarData(error as FrontendErrorCodes));
-    }
-  }
+  const {
+    migration,
+    error,
+    signouted,
+    name,
+    username,
+    email,
+    externalEmail,
+    agreeToTerms,
+    rememberMe,
+  } = await searchParams;
+  const initState: AuthorizationFormState = {
+    name,
+    username,
+    email,
+    externalEmail,
+    agreeToTerms: agreeToTerms === "1",
+    rememberMe: rememberMe === "1",
+  };
+  const snacks: SnackbarData[] = [
+    ...(signouted
+      ? [
+          {
+            message: `サインアウトしました。`,
+            variant: "success" as VariantType,
+          },
+        ]
+      : []),
+    ...(migration
+      ? [
+          {
+            message: `アカウントの移行が完了しました。サインインしてください。`,
+            variant: "success" as VariantType,
+          },
+        ]
+      : []),
+    ...(error?.startsWith("A")
+      ? [getAuthenticationErrorSnackbarData(error as AuthenticationErrorCodes)]
+      : error?.startsWith("F")
+        ? [getFormRequestErrorSnackbarData(error as FormRequestErrorCodes)]
+        : error?.startsWith("D")
+          ? [getAuthServerErrorSnackbarData(error as AuthServerErrorCodes)]
+          : error?.startsWith("E")
+            ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
+            : error?.startsWith("R")
+              ? [
+                  getResourceApiErrorSnackbarData(
+                    error as ResourceApiErrorCodes,
+                  ),
+                ]
+              : []),
+  ];
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
-      <Content mode={SignInCardMode.Migrate} />
-      <SignInCard
-        mode={SignInCardMode.Migrate}
-        initialFormValues={{ name, email, period, username }}
+      <AuthenticationPage
+        initFormState={initState}
+        mode={AuthorizationPageMode.Migration}
       />
     </>
   );
