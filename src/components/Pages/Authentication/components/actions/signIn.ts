@@ -9,7 +9,13 @@ export const submitSignIn = async (formData: FormData) => {
   const password = formData.get("password") as string | undefined;
   const remember = formData.get("remember") === "on";
   const code = formData.get("code") as string | undefined;
-  const redirectTo = formData.get("redirectTo") as string | undefined;
+  const rawRedirectTo = formData.get("redirectTo") as string | undefined;
+  const redirectTo =
+    typeof rawRedirectTo === "string" &&
+    rawRedirectTo.startsWith("/") &&
+    !rawRedirectTo.startsWith("//")
+      ? rawRedirectTo
+      : "/dashboard";
 
   const credentials: Credentials = {
     username,
