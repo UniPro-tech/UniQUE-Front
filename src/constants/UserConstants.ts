@@ -94,11 +94,6 @@ export function getSelectableAffiliationPeriods(): Array<{
 }
 
 /**
- * 互換性維持用（動的生成）
- */
-export const AFFILIATION_PERIOD_OPTIONS = getSelectableAffiliationPeriods();
-
-/**
  * 所属期ラベルを取得
  */
 export function getAffiliationPeriodLabel(period?: string | null): string {

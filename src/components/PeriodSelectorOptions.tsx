@@ -7,8 +7,8 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
+  getSelectableAffiliationPeriods,
 } from "@/constants/UserConstants";
 
 /**
@@ -17,7 +17,7 @@ import {
  * @returns React.JSX 所属期のMenuItem
  */
 export default function PeriodSelectorOptions() {
-  const periods = AFFILIATION_PERIOD_OPTIONS;
+  const periods = getSelectableAffiliationPeriods();
 
   return (
     <FormControl fullWidth>

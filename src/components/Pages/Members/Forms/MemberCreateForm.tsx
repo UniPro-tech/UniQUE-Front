@@ -23,6 +23,7 @@ import {
 import {
   AFFILIATION_PERIOD_OPTIONS,
   getAffiliationPeriodInfo,
+  getSelectableAffiliationPeriods,
 } from "@/constants/UserConstants";
 
 export default function MemberCreateForm() {
@@ -167,7 +168,7 @@ export default function MemberCreateForm() {
             helperText="所属期を選択（任意）"
             disabled={loading}
           >
-            {AFFILIATION_PERIOD_OPTIONS.map((opt) => {
+            {getSelectableAffiliationPeriods().map((opt) => {
               const info = getAffiliationPeriodInfo(opt.value);
               return (
                 <MenuItem key={opt.value} value={opt.value}>
