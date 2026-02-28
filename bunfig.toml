@@ -1,0 +1,9 @@
+# Bun test configuration
+[test]
+preload = ["./src/test-setup.ts"]
+coverage = true
+coverageDir = "./coverage"
+
+# Set test environment to happy-dom for React component testing
+# Note: Requires happy-dom to be installed
+# Run: bun add -d happy-dom
