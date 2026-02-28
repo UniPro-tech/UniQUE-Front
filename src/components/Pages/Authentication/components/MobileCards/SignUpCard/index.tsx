@@ -295,11 +295,7 @@ export default function SignUpCard() {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Typography sx={{ textAlign: "center" }}>
             既存メンバーですか？{" "}
-            <Link
-              href="/migration"
-              variant="body2"
-              sx={{ alignSelf: "center" }}
-            >
+            <Link href="/migrate" variant="body2" sx={{ alignSelf: "center" }}>
               アカウント移行
             </Link>
           </Typography>

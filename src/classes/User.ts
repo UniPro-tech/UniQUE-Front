@@ -129,6 +129,14 @@ export class User {
   ): Promise<User> {
     const response = await apiPost("/internal/users", {
       ...userData,
+      profile: {
+        ...userData.profile,
+        joinedAt: userData.profile?.joinedAt
+          ? typeof userData.profile?.joinedAt === "string"
+            ? userData.profile.joinedAt
+            : new Date(userData.profile?.joinedAt).toISOString()
+          : undefined,
+      },
       password,
     });
     if (!response.ok) {

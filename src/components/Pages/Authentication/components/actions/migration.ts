@@ -2,6 +2,7 @@
 import { RedirectType, redirect } from "next/navigation";
 import { User } from "@/classes/User";
 import { AuthenticationErrors } from "@/errors/AuthenticationErrors";
+import { UserStatus } from "@/classes/types/User";
 
 export const submitMigration = async (formData: FormData) => {
   const name = formData.get("name") as string;
@@ -18,7 +19,7 @@ export const submitMigration = async (formData: FormData) => {
       external_email,
       agreeTos: agreeTos ? "1" : "0",
     });
-    redirect(`/migration?${queryParams.toString()}`, RedirectType.replace);
+    redirect(`/migrate?${queryParams.toString()}`, RedirectType.replace);
   }
   try {
     // emailの最初の.より前の部分をperiodとして使用
@@ -26,7 +27,7 @@ export const submitMigration = async (formData: FormData) => {
     const username = email.split("@")[0].split(".").slice(1).join("."); // periodを除いた部分をusernameとして使用
     let internalEmail = email;
     if (period) {
-      internalEmail = `${period.toUpperCase}.${username}@uniproject.jp`;
+      internalEmail = `${period.toUpperCase()}.${username}@uniproject.jp`;
     }
 
     const verifyRes = await fetch(
@@ -37,20 +38,27 @@ export const submitMigration = async (formData: FormData) => {
     );
     const verifyData = await verifyRes.json();
     if (!verifyRes.ok || verifyData.status !== 200) {
+      console.log(
+        `${process.env.GAS_MIGRATE_API_URL}?external_email=${encodeURIComponent(
+          external_email,
+        )}&internal_email=${encodeURIComponent(internalEmail)}`,
+      );
+      console.log("Migration verification failed:", verifyData);
       throw AuthenticationErrors.MigrationError;
     }
 
     const joinedAt = new Date(verifyData.joined_at);
 
-    User.create(
+    await User.create(
       {
-        email: internalEmail,
+        email,
         customId: username,
         externalEmail: external_email,
         affiliationPeriod: period.toLowerCase(),
+        status: UserStatus.ACTIVE,
         profile: {
           displayName: name,
-          joinedAt,
+          joinedAt: joinedAt.toISOString(),
         },
       },
       password,
@@ -65,7 +73,7 @@ export const submitMigration = async (formData: FormData) => {
       agreeTos: agreeTos ? "1" : "0",
       error: errorCode,
     });
-    redirect(`/migration?${queryParams.toString()}`, RedirectType.replace);
+    redirect(`/migrate?${queryParams.toString()}`, RedirectType.replace);
   }
 
   redirect("/signin?migration=1", RedirectType.replace);

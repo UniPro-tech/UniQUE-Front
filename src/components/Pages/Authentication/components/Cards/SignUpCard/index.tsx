@@ -147,7 +147,7 @@ export default function SignUpCard() {
       <Typography sx={{ textAlign: "left" }}>
         既存メンバーですか？{" "}
         <span>
-          <Link href="/migration" variant="body2" sx={{ alignSelf: "left" }}>
+          <Link href="/migrate" variant="body2" sx={{ alignSelf: "left" }}>
             アカウント移行
           </Link>
         </span>
