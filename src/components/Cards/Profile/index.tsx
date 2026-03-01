@@ -58,7 +58,15 @@ export default function Profile({
           {variant === "detail" && (
             <Button
               startIcon={<ArrowBackIcon />}
-              onClick={() => (onBack ? onBack() : router.back())}
+              onClick={() => {
+                if (onBack) {
+                  onBack();
+                } else if (window.history.length > 2) {
+                  router.back();
+                } else {
+                  router.push('/dashboard/members');
+                }
+              }}
               sx={{ mb: 2 }}
             >
               メンバー一覧に戻る
