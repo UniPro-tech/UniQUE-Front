@@ -134,7 +134,9 @@ export class User {
         ...(userData.status === UserStatus.ACTIVE && {
           joinedAt: userData.profile?.joinedAt
             ? userData.profile.joinedAt
-            : new Date().toLocaleDateString("sv-SE"), // 日付のみ
+            : new Date().toLocaleDateString("sv-SE", {
+                timeZone: "Asia/Tokyo",
+              }), // 日付のみ
         }),
       },
       password,
@@ -450,7 +452,11 @@ export class User {
       affiliationPeriod: affiliationPeriod,
       email,
       sakuraEmailPassword,
-      joinedAt: joinedAt ? joinedAt : new Date().toLocaleDateString("sv-SE"), // 日付のみ
+      joinedAt: joinedAt
+        ? joinedAt
+        : new Date().toLocaleDateString("sv-SE", {
+            timeZone: "Asia/Tokyo",
+          }), // 日付のみ
     });
     if (!response.ok) {
       switch (response.status) {
@@ -475,7 +481,9 @@ export class User {
     this.email = email;
     this.profile.joinedAt = joinedAt
       ? joinedAt
-      : new Date().toLocaleDateString("sv-SE"); // 日付のみ
+      : new Date().toLocaleDateString("sv-SE", {
+          timeZone: "Asia/Tokyo",
+        }); // 日付のみ
   }
 }
 
