@@ -255,6 +255,28 @@ export default function MembersDataGrid({
           const d = row.profile?.joinedAt;
           return d ? new Date(d) : null;
         },
+        valueSetter: (value, row) => {
+          const date =
+            value instanceof Date
+              ? value
+              : typeof value === "string"
+                ? new Date(`${value}T00:00:00`)
+                : new Date(NaN);
+
+          if (Number.isNaN(date.getTime())) {
+            return row; // 無効な日付の場合は変更を適用しない
+          }
+
+          return {
+            ...row,
+            profile: {
+              ...row.profile,
+              joinedAt: date.toLocaleDateString("sv-SE", {
+                timeZone: "Asia/Tokyo",
+              }),
+            },
+          };
+        },
         editable: true,
       },
       {
