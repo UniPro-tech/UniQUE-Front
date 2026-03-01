@@ -64,7 +64,7 @@ export default function Profile({
                 } else if (window.history.length > 2) {
                   router.back();
                 } else {
-                  router.push('/dashboard/members');
+                  router.push("/dashboard/members");
                 }
               }}
               sx={{ mb: 2 }}
