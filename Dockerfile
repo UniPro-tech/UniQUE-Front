@@ -94,9 +94,6 @@ COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
 # RUN bun add prisma
 # RUN chmod -R 777 /app/node_modules
 
-RUN mkdir /app/keys
-RUN chown bun:bun /app/keys
-
 # Switch to non-root user for security best practices
 USER bun
 
