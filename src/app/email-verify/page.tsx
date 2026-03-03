@@ -25,8 +25,7 @@ export default async function EmailVerifyPage({
   }
 
   // サーバーサイドでメール検証APIを叩く
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   let verifyResult = null;
 
   try {

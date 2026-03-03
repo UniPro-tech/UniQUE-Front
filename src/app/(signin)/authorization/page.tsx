@@ -113,9 +113,7 @@ export default async function Page({
   // 既存の同意があるかチェック – あればコンセント画面をスキップ
   // Resolve auth API URL from public or server env, fallback to localhost
   const resolvedAuthApiUrl =
-    process.env.NEXT_PUBLIC_AUTH_API_URL ||
-    process.env.AUTH_API_URL ||
-    "http://localhost:8001";
+    process.env.NEXT_PUBLIC_AUTH_API_URL || process.env.AUTH_API_URL;
   const authClient = createApiClient(resolvedAuthApiUrl);
   let consented = false;
   const consentedQuery = new URLSearchParams();

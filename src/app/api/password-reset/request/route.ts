@@ -3,7 +3,7 @@
  * Request password reset by email
  */
 
-const AUTH_API_URL = process.env.AUTH_API_URL || "http://localhost:8000";
+const AUTH_API_URL = process.env.AUTH_API_URL;
 
 export const POST = async (request: Request) => {
   try {

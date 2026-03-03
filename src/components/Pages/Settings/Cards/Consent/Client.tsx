@@ -28,7 +28,7 @@ export interface ConsentDTO {
 }
 
 async function clientRevokeConsent(consentId: string): Promise<boolean> {
-  const authApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL || "";
+  const authApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL;
   const res = await fetch(
     `${authApiUrl}/internal/consents/${encodeURIComponent(consentId)}`,
     {

@@ -2,8 +2,8 @@
 import { getAllCookies } from "./cookies";
 import { toSnakecase } from "./snakeCamelUtil";
 
-const BASE = process.env.RESOURCE_API_URL || "";
-const CLIENT_BASE = process.env.NEXT_PUBLIC_RESOURCE_API_URL || "";
+const BASE = process.env.RESOURCE_API_URL;
+const CLIENT_BASE = process.env.NEXT_PUBLIC_RESOURCE_API_URL;
 const COOKIE_NAME = "session_jwt";
 
 /** API レスポンスの拡張型 */

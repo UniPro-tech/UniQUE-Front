@@ -9,7 +9,7 @@ export default async function ConsentSettingsCard({
 }: {
   user: UserData;
 }) {
-  const authApiUrl = process.env.AUTH_API_URL || "";
+  const authApiUrl = process.env.AUTH_API_URL;
   const authClient = createApiClient(authApiUrl);
   let consents: ConsentDTO[] = [];
 
@@ -34,9 +34,7 @@ export default async function ConsentSettingsCard({
 
   // アプリ名解決: Resource API から application 情報を取得
   const resourceApiUrl =
-    process.env.RESOURCE_API_URL ||
-    process.env.NEXT_PUBLIC_RESOURCE_API_URL ||
-    "";
+    process.env.RESOURCE_API_URL || process.env.NEXT_PUBLIC_RESOURCE_API_URL;
   const resourceClient = createApiClient(resourceApiUrl);
   const resolvedConsents = await Promise.all(
     consents.map(async (c) => {

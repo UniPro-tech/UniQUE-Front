@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     webpackMemoryOptimizations: true,
     authInterrupts: true,
   },
+  output: "standalone",
 };
 
 export default nextConfig;
