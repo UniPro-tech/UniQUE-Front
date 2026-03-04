@@ -33,7 +33,7 @@ export const submitSignIn = async (formData: FormData) => {
       error: errorCode,
       ...(redirectTo ? { redirect: redirectTo } : {}),
     });
-    redirect(`/signin?${queryParams.toString()}`, RedirectType.replace);
+    redirect(`/signin?${queryParams.toString()}`, RedirectType.push);
   });
 
   if (response.requireMfa) {
@@ -54,11 +54,11 @@ export const submitSignIn = async (formData: FormData) => {
 
     redirect(
       `/signin/mfa?redirect=${encodeURIComponent(redirectTo || "/dashboard")}`,
-      RedirectType.replace,
+      RedirectType.push,
     );
   }
 
-  SetSessionCookie(response);
+  await SetSessionCookie(response);
 
   redirect(redirectTo ? redirectTo : "/dashboard", RedirectType.push);
 };
