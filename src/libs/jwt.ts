@@ -5,6 +5,7 @@ import {
   type JWTVerifyGetKey,
   jwtVerify,
 } from "jose";
+import { baseLogger } from "./logger";
 
 const AUTH_ISSUER = process.env.AUTH_API_URL;
 const JWKS_CACHE_TTL = 1000 * 60 * 60; // 1時間
@@ -118,7 +119,8 @@ export async function VerifyJwt(token: string): Promise<{
     }
     return { valid: true, payload: verified.payload };
   } catch (error) {
-    console.error("JWT verification failed:", error);
+    const logger = baseLogger.getLogger({ function: "VerifyJwt" });
+    logger.error(error);
     return { valid: false };
   }
 }
