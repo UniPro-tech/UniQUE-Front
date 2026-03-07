@@ -7,6 +7,7 @@ import FormLabel from "@mui/material/FormLabel";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { RedirectType, redirect } from "next/navigation";
 import { SnackbarProvider } from "notistack";
 import * as React from "react";
 import { useInitialFormState, useRedirectTo } from "../../../Client";
@@ -81,7 +82,12 @@ export default function SignUpCard() {
         component="form"
         noValidate
         sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
-        action={submitSignIn}
+        action={async (data: FormData) => {
+          const result = await submitSignIn(data);
+          if (result.redirectTo) {
+            redirect(result.redirectTo, RedirectType.push);
+          }
+        }}
       >
         <input
           type="hidden"

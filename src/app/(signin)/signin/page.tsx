@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
+import { Session } from "@/classes/Session";
 import AuthenticationPage, {
   type AuthorizationFormState,
 } from "@/components/Pages/Authentication/Client";
@@ -22,7 +23,6 @@ import {
   type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
-import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "サインイン",

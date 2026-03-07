@@ -4,6 +4,7 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { RedirectType, redirect } from "next/navigation";
 import { useInitialFormState, useRedirectTo } from "../../../Client";
 import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
@@ -29,7 +30,12 @@ export default function MultiFactorCard() {
         component="form"
         noValidate
         sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
-        action={submitSignIn}
+        action={async (data: FormData) => {
+          const result = await submitSignIn(data);
+          if (result.redirectTo) {
+            redirect(result.redirectTo, RedirectType.push);
+          }
+        }}
       >
         <input type="hidden" name="redirectTo" value={redirectTo} />
         <FormControl>

@@ -1,6 +1,5 @@
 "use server";
 import { cookies } from "next/headers";
-import { RedirectType, redirect } from "next/navigation";
 import { AuthenticationRequest, type Credentials } from "@/libs/authentication";
 import { SetSessionCookie } from "@/libs/cookies";
 
@@ -24,8 +23,35 @@ export const submitSignIn = async (formData: FormData) => {
     remember,
   };
 
-  const response = await AuthenticationRequest(credentials).catch((error) => {
-    const errorCodeMatch = error.message.match(/\[(.*?)\]/);
+  try {
+    const response = await AuthenticationRequest(credentials);
+
+    if (response.requireMfa) {
+      const cookieStore = await cookies();
+      cookieStore.set("pending_mfa_user", username, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 5 * 60, // 5分間有効
+      });
+
+      cookieStore.set("pending_mfa_remember", remember ? "1" : "0", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 5 * 60, // 5分間有効
+      });
+
+      return {
+        success: false,
+        redirectTo: `/signin/mfa?redirect=${encodeURIComponent(redirectTo || "/dashboard")}`,
+      };
+    }
+
+    await SetSessionCookie(response);
+    return { success: true, redirectTo: redirectTo || "/dashboard" };
+  } catch (error) {
+    const errorCodeMatch = (error as Error).message.match(/\[(.*?)\]/);
     const errorCode = errorCodeMatch ? errorCodeMatch[1] : "E0001";
     const queryParams = new URLSearchParams({
       username,
@@ -33,32 +59,6 @@ export const submitSignIn = async (formData: FormData) => {
       error: errorCode,
       ...(redirectTo ? { redirect: redirectTo } : {}),
     });
-    redirect(`/signin?${queryParams.toString()}`, RedirectType.push);
-  });
-
-  if (response.requireMfa) {
-    const cookieStore = await cookies();
-    cookieStore.set("pending_mfa_user", username, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 5 * 60, // 5分間有効
-    });
-
-    cookieStore.set("pending_mfa_remember", remember ? "1" : "0", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 5 * 60, // 5分間有効
-    });
-
-    redirect(
-      `/signin/mfa?redirect=${encodeURIComponent(redirectTo || "/dashboard")}`,
-      RedirectType.push,
-    );
+    return { success: false, redirectTo: `/signin?${queryParams.toString()}` };
   }
-
-  await SetSessionCookie(response);
-
-  redirect(redirectTo ? redirectTo : "/dashboard", RedirectType.push);
 };
