@@ -14,6 +14,7 @@ import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import ForgotPassword from "../../ForgotPassword";
 import { Card } from "../Base";
+import { redirect, RedirectType } from "next/navigation";
 
 export default function SignUpCard() {
   const initialState = useInitialFormState();
@@ -81,7 +82,12 @@ export default function SignUpCard() {
         component="form"
         noValidate
         sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
-        action={submitSignIn}
+        action={async (data: FormData) => {
+          const result = await submitSignIn(data);
+          if (result.redirectTo) {
+            redirect(result.redirectTo, RedirectType.push);
+          }
+        }}
       >
         <input
           type="hidden"

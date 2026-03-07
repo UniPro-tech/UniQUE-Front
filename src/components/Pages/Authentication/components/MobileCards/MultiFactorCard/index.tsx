@@ -8,6 +8,7 @@ import { useInitialFormState, useRedirectTo } from "../../../Client";
 import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import { Card } from "../Base";
+import { redirect, RedirectType } from "next/navigation";
 
 export default function MultiFactorCard() {
   const initialState = useInitialFormState();
@@ -29,7 +30,12 @@ export default function MultiFactorCard() {
         component="form"
         noValidate
         sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
-        action={submitSignIn}
+        action={async (data: FormData) => {
+          const result = await submitSignIn(data);
+          if (result.redirectTo) {
+            redirect(result.redirectTo, RedirectType.push);
+          }
+        }}
       >
         <input type="hidden" name="redirectTo" value={redirectTo} />
         <FormControl>
