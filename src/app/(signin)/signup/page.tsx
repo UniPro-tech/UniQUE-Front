@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
 import { AuthorizationPageMode } from "@/components/Pages/Authentication";
 import AuthenticationPage, {
@@ -27,7 +28,6 @@ import {
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
 import { getCurrent } from "@/libs/auth";
-import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "メンバー登録申請",
