@@ -8,12 +8,12 @@ import FormLabel from "@mui/material/FormLabel";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { RedirectType, redirect } from "next/navigation";
 import * as React from "react";
 import { useInitialFormState, useRedirectTo } from "../../../Client";
 import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import { Card } from "../Base";
-import { redirect, RedirectType } from "next/navigation";
 
 export default function SignInCard() {
   const initialState = useInitialFormState();

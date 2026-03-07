@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
+import { Session } from "@/classes/Session";
 import { AuthorizationPageMode } from "@/components/Pages/Authentication";
 import AuthenticationPage, {
   type AuthorizationFormState,
@@ -27,7 +28,6 @@ import {
   getResourceApiErrorSnackbarData,
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
-import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "アカウント移行",

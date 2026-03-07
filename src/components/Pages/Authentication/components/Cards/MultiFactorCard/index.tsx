@@ -4,11 +4,11 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { RedirectType, redirect } from "next/navigation";
 import { useInitialFormState, useRedirectTo } from "../../../Client";
 import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import { Card } from "../Base";
-import { redirect, RedirectType } from "next/navigation";
 
 export default function MultiFactorCard() {
   const initialState = useInitialFormState();

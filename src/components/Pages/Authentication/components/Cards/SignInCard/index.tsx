@@ -7,6 +7,7 @@ import FormLabel from "@mui/material/FormLabel";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { RedirectType, redirect } from "next/navigation";
 import { SnackbarProvider } from "notistack";
 import * as React from "react";
 import { useInitialFormState, useRedirectTo } from "../../../Client";
@@ -14,7 +15,6 @@ import { submitSignIn } from "../../actions/signIn";
 import { SitemarkIcon } from "../../CustomIcons";
 import ForgotPassword from "../../ForgotPassword";
 import { Card } from "../Base";
-import { redirect, RedirectType } from "next/navigation";
 
 export default function SignUpCard() {
   const initialState = useInitialFormState();
