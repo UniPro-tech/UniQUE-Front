@@ -41,7 +41,7 @@ export default async function Page({
     rememberMe?: string;
     migration?: string;
     signouted?: string;
-    redirectpath?: string;
+    redirect?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -59,7 +59,7 @@ export default async function Page({
     external_email: externalEmail,
     agreeToTerms,
     rememberMe,
-    redirectpath,
+    redirect: redirectPath,
   } = await searchParams;
   const initState: AuthorizationFormState = {
     name,
@@ -98,12 +98,12 @@ export default async function Page({
   ];
   const session = await Session.getCurrent();
   if (session) {
-    redirect(redirectpath || "/dashboard");
+    redirect(redirectPath || "/dashboard");
   }
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
-      <AuthenticationPage initFormState={initState} redirectTo={redirectpath} />
+      <AuthenticationPage initFormState={initState} redirectTo={redirectPath} />
     </>
   );
 }
