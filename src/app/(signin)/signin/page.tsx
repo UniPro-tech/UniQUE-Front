@@ -21,6 +21,8 @@ import {
   type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
+import { redirect } from "next/navigation";
+import { getCurrent } from "@/lib/session";
 
 export const metadata = {
   title: "サインイン",
@@ -94,6 +96,7 @@ export default async function Page({
             ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
             : []),
   ];
+  const session = await getCurrent();
   if (session) {
     redirect(redirectpath || "/dashboard");
   }
