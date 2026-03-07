@@ -96,9 +96,13 @@ export default async function Page({
             ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
             : []),
   ];
+  function isValidRedirectPath(path: string | undefined): path is string {
+    if (!path) return false;
+    return path.startsWith("/") && !path.startsWith("//");
+  }
   const session = await Session.getCurrent();
   if (session) {
-    redirect(redirectPath || "/dashboard");
+    redirect(isValidRedirectPath(redirectPath) ? redirectPath : "/dashboard");
   }
   return (
     <>
