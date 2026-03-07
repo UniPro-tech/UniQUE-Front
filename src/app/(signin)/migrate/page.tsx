@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
 import { AuthorizationPageMode } from "@/components/Pages/Authentication";
 import AuthenticationPage, {
@@ -26,6 +27,7 @@ import {
   getResourceApiErrorSnackbarData,
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "アカウント移行",
@@ -45,6 +47,7 @@ export default async function Page({
     rememberMe?: string;
     migration?: string;
     signouted?: string;
+    redirect?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -63,6 +66,7 @@ export default async function Page({
     external_email: externalEmail,
     agreeToTerms,
     rememberMe,
+    redirect: redirectPath,
   } = await searchParams;
   const initState: AuthorizationFormState = {
     name,
@@ -105,6 +109,14 @@ export default async function Page({
                 ]
               : []),
   ];
+  function isValidRedirectPath(path: string | undefined): path is string {
+    if (!path) return false;
+    return path.startsWith("/") && !path.startsWith("//");
+  }
+  const session = await Session.getCurrent();
+  if (session) {
+    redirect(isValidRedirectPath(redirectPath) ? redirectPath : "/dashboard");
+  }
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />

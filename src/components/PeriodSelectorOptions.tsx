@@ -7,11 +7,11 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import { useMemo } from "react";
 import {
   getAffiliationPeriodInfo,
   getSelectableAffiliationPeriods,
 } from "@/constants/UserConstants";
-import { useMemo } from "react";
 
 /**
  * ## PeriodSelectorOptions

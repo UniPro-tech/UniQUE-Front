@@ -1,5 +1,5 @@
+import type { NextRequest } from "next/server";
 import { baseLogger } from "@/libs/logger";
-import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const data = await req.json();

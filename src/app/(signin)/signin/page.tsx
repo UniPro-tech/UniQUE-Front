@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
 import AuthenticationPage, {
   type AuthorizationFormState,
@@ -21,6 +22,7 @@ import {
   type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "サインイン",
@@ -94,6 +96,14 @@ export default async function Page({
             ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
             : []),
   ];
+  function isValidRedirectPath(path: string | undefined): path is string {
+    if (!path) return false;
+    return path.startsWith("/") && !path.startsWith("//");
+  }
+  const session = await Session.getCurrent();
+  if (session) {
+    redirect(isValidRedirectPath(redirectPath) ? redirectPath : "/dashboard");
+  }
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
