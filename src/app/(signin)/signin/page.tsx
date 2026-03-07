@@ -98,7 +98,7 @@ export default async function Page({
   ];
   const session = await getCurrent();
   if (session) {
-    redirect(redirectpath || "/dashboard");
+    redirect(redirectPath || "/dashboard");
   }
   return (
     <>
