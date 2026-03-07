@@ -26,6 +26,8 @@ import {
   getResourceApiErrorSnackbarData,
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
+import { getCurrent } from "@/libs/auth";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "メンバー登録申請",
@@ -105,6 +107,10 @@ export default async function Page({
                 ]
               : []),
   ];
+  const session = await getCurrent();
+  if (session) {
+    redirect(redirectpath || "/dashboard");
+  }
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />

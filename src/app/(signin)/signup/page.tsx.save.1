@@ -26,13 +26,13 @@ import {
   getResourceApiErrorSnackbarData,
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
-import { getCurrent } from "@/libs/auth";
 import { redirect } from "next/navigation";
+import { getCurrent } from "@/lib/session";
 
 export const metadata = {
-  title: "アカウント移行",
+  title: "メンバー登録申請",
   description:
-    "UniQUEのアカウント移行ページです。UniQUE完成以前のメンバーの情報を移行します。",
+    "UniQUEのサインアップページです。UniProjectメンバーになるための申請を行います。",
 };
 
 export default async function Page({
@@ -110,13 +110,22 @@ export default async function Page({
   const session = await getCurrent();
   if (session) {
     redirect(redirectpath || "/dashboard");
+  }1~  const session = await getCurrent();
+  if (session) {
+    redirect(redirectpath || "/dashboard");
+  }1~  const session = await getCurrent();
+  if (session) {
+    redirect(redirectpath || "/dashboard");
+  }  const session = await getCurrent();
+  if (session) {
+    redirect(redirectpath || "/dashboard");
   }
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
       <AuthenticationPage
         initFormState={initState}
-        mode={AuthorizationPageMode.Migration}
+        mode={AuthorizationPageMode.SignUp}
       />
     </>
   );
