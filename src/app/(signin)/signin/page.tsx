@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
 import AuthenticationPage, {
   type AuthorizationFormState,
@@ -21,8 +22,7 @@ import {
   type FrontendErrorCodes,
   getFrontendErrorSnackbarData,
 } from "@/errors/FrontendErrors";
-import { redirect } from "next/navigation";
-import { getCurrent } from "@/lib/session";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "サインイン",
@@ -41,7 +41,7 @@ export default async function Page({
     rememberMe?: string;
     migration?: string;
     signouted?: string;
-    redirect?: string;
+    redirectpath?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -59,7 +59,7 @@ export default async function Page({
     external_email: externalEmail,
     agreeToTerms,
     rememberMe,
-    redirect: redirectPath,
+    redirectpath,
   } = await searchParams;
   const initState: AuthorizationFormState = {
     name,
@@ -96,14 +96,14 @@ export default async function Page({
             ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
             : []),
   ];
-  const session = await getCurrent();
+  const session = await Session.getCurrent();
   if (session) {
-    redirect(redirectPath || "/dashboard");
+    redirect(redirectpath || "/dashboard");
   }
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
-      <AuthenticationPage initFormState={initState} redirectTo={redirectPath} />
+      <AuthenticationPage initFormState={initState} redirectTo={redirectpath} />
     </>
   );
 }

@@ -27,7 +27,7 @@ import {
   getResourceApiErrorSnackbarData,
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
-import { getCurrent } from "@/libs/auth";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "メンバー登録申請",
@@ -47,6 +47,7 @@ export default async function Page({
     rememberMe?: string;
     migration?: string;
     signouted?: string;
+    redirectpath?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -65,6 +66,7 @@ export default async function Page({
     external_email: externalEmail,
     agreeToTerms,
     rememberMe,
+    redirectpath,
   } = await searchParams;
   const initState: AuthorizationFormState = {
     name,
@@ -107,7 +109,7 @@ export default async function Page({
                 ]
               : []),
   ];
-  const session = await getCurrent();
+  const session = await Session.getCurrent();
   if (session) {
     redirect(redirectpath || "/dashboard");
   }

@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import type { VariantType } from "notistack";
 import { AuthorizationPageMode } from "@/components/Pages/Authentication";
 import AuthenticationPage, {
@@ -26,8 +27,7 @@ import {
   getResourceApiErrorSnackbarData,
   type ResourceApiErrorCodes,
 } from "@/errors/ResourceApiErrors";
-import { getCurrent } from "@/libs/auth";
-import { redirect } from "next/navigation";
+import { Session } from "@/classes/Session";
 
 export const metadata = {
   title: "アカウント移行",
@@ -47,6 +47,7 @@ export default async function Page({
     rememberMe?: string;
     migration?: string;
     signouted?: string;
+    redirectpath?: string;
     error?:
       | AuthenticationErrorCodes
       | FormRequestErrorCodes
@@ -65,6 +66,7 @@ export default async function Page({
     external_email: externalEmail,
     agreeToTerms,
     rememberMe,
+    redirectpath,
   } = await searchParams;
   const initState: AuthorizationFormState = {
     name,
@@ -107,7 +109,7 @@ export default async function Page({
                 ]
               : []),
   ];
-  const session = await getCurrent();
+  const session = await Session.getCurrent();
   if (session) {
     redirect(redirectpath || "/dashboard");
   }
