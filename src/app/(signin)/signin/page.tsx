@@ -94,6 +94,9 @@ export default async function Page({
             ? [getFrontendErrorSnackbarData(error as FrontendErrorCodes)]
             : []),
   ];
+  if (session) {
+    redirect(redirectpath || "/dashboard");
+  }
   return (
     <>
       <TemporarySnackProvider snacks={snacks} />
