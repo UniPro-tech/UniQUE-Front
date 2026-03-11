@@ -1,14 +1,11 @@
 import { Stack, Typography } from "@mui/material";
 
-export default function SignUpSuccessPage({
+export default async function SignUpSuccessPage({
   searchParams,
 }: {
   searchParams: Promise<{ email_verified?: string }>;
 }) {
-  const emailVerified = (async () => {
-    const params = await searchParams;
-    return params.email_verified === "true";
-  })();
+  const emailVerified = (await searchParams).email_verified === "true";
   if (!emailVerified) {
     return (
       <Stack>
