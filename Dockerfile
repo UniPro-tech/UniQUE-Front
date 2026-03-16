@@ -84,6 +84,10 @@ RUN chown bun:bun .next
 COPY --from=builder --chown=bun:bun /app/.next/standalone ./
 COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
 
+# Include full dependencies for dynamic requires that standalone tracing can miss
+# (e.g. pino transport modules loaded at runtime)
+COPY --from=dependencies --chown=bun:bun /app/node_modules ./node_modules
+
 # If you want to persist the fetch cache generated during the build so that
 # cached responses are available immediately on startup, uncomment this line:
 # COPY --from=builder --chown=bun:bun /app/.next/cache ./.next/cache
