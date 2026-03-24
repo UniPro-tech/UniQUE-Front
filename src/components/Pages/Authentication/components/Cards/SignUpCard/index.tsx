@@ -69,7 +69,7 @@ export default function SignUpCard() {
     }
 
     if (!username.value || !/^[a-zA-Z0-9_]+$/.test(username.value)) {
-      // ユーザー名が空であるか、半角英数字とアンダースコア以外の文字が含まれている場合はエラー
+      // ユーザーIDが空であるか、半角英数字とアンダースコア以外の文字が含まれている場合はエラー
       setUsernameError(true);
       setUsernameErrorMessage(
         "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",

@@ -28,7 +28,7 @@ export default function SignUpCard() {
     React.useState("");
   const [usernameError, setUsernameError] = React.useState(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = React.useState(
-    "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
+    "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
   );
   const [agreeTosError, setAgreeTosError] = React.useState(false);
   const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState("");
@@ -71,16 +71,16 @@ export default function SignUpCard() {
     }
 
     if (!username.value || !/^[a-zA-Z0-9_]+$/.test(username.value)) {
-      // ユーザー名が空であるか、半角英数字とアンダースコア以外の文字が含まれている場合はエラー
+      // ユーザーIDが空であるか、半角英数字とアンダースコア以外の文字が含まれている場合はエラー
       setUsernameError(true);
       setUsernameErrorMessage(
-        "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
+        "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
       );
       isValid = false;
     } else {
       setUsernameError(false);
       setUsernameErrorMessage(
-        "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
+        "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
       );
     }
 

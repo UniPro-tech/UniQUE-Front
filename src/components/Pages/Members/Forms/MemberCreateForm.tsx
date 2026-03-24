@@ -51,7 +51,7 @@ export default function MemberCreateForm() {
     setError(null);
 
     if (!formData.customId.trim()) {
-      setError("カスタムIDを入力してください");
+      setError("ユーザーIDを入力してください");
       setLoading(false);
       return;
     }
@@ -111,7 +111,7 @@ export default function MemberCreateForm() {
           )}
 
           <TextField
-            label="カスタムID"
+            label="ユーザーID"
             fullWidth
             required
             value={formData.customId}
