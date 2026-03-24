@@ -87,14 +87,14 @@ export default function SignUpCard() {
     // もし数字や_のみであればエラー
     if (/^[0-9_]+$/.test(username.value)) {
       setUsernameError(true);
-      setUsernameErrorMessage("ユーザー名は半角英字も含めて設定してください。");
+      setUsernameErrorMessage("ユーザーIDは半角英字も含めて設定してください。");
       isValid = false;
     }
 
     // 先頭の文字が数字や_であればエラー
     if (/^[0-9_]/.test(username.value)) {
       setUsernameError(true);
-      setUsernameErrorMessage("ユーザー名の先頭は半角英字で設定してください。");
+      setUsernameErrorMessage("ユーザーIDの先頭は半角英字で設定してください。");
       isValid = false;
     }
 
@@ -102,7 +102,7 @@ export default function SignUpCard() {
     if (/_$/.test(username.value)) {
       setUsernameError(true);
       setUsernameErrorMessage(
-        "ユーザー名の最後は半角英字または数字で設定してください。",
+        "ユーザーIDの最後は半角英字または数字で設定してください。",
       );
       isValid = false;
     }
