@@ -68,7 +68,7 @@ export default function SignInCard() {
           value={redirectTo ? redirectTo : "/dashboard"}
         />
         <FormControl>
-          <FormLabel htmlFor="username">ユーザー名</FormLabel>
+          <FormLabel htmlFor="username">ユーザーID</FormLabel>
           <TextField
             id="username"
             type="text"

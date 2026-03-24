@@ -26,7 +26,7 @@ export default function SignUpCard() {
     React.useState("");
   const [usernameError, setUsernameError] = React.useState(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = React.useState(
-    "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
+    "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
   );
   const [agreeTosError, setAgreeTosError] = React.useState(false);
   const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState("");
@@ -72,27 +72,27 @@ export default function SignUpCard() {
       // ユーザー名が空であるか、半角英数字とアンダースコア以外の文字が含まれている場合はエラー
       setUsernameError(true);
       setUsernameErrorMessage(
-        "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
+        "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
       );
       isValid = false;
     } else {
       setUsernameError(false);
       setUsernameErrorMessage(
-        "ユーザー名は半角英数字とアンダースコアのみで設定してください。",
+        "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
       );
     }
 
     // もし数字や_のみであればエラー
     if (/^[0-9_]+$/.test(username.value)) {
       setUsernameError(true);
-      setUsernameErrorMessage("ユーザー名は半角英字も含めて設定してください。");
+      setUsernameErrorMessage("ユーザーIDは半角英字も含めて設定してください。");
       isValid = false;
     }
 
     // 先頭の文字が数字や_であればエラー
     if (/^[0-9_]/.test(username.value)) {
       setUsernameError(true);
-      setUsernameErrorMessage("ユーザー名の先頭は半角英字で設定してください。");
+      setUsernameErrorMessage("ユーザーIDの先頭は半角英字で設定してください。");
       isValid = false;
     }
 
@@ -100,7 +100,7 @@ export default function SignUpCard() {
     if (/_$/.test(username.value)) {
       setUsernameError(true);
       setUsernameErrorMessage(
-        "ユーザー名の最後は半角英字または数字で設定してください。",
+        "ユーザーIDの最後は半角英字または数字で設定してください。",
       );
       isValid = false;
     }
@@ -176,7 +176,7 @@ export default function SignUpCard() {
           />
         </FormControl>
         <FormControl>
-          <FormLabel htmlFor="username">ユーザー名</FormLabel>
+          <FormLabel htmlFor="username">ユーザーID</FormLabel>
           <TextField
             error={usernameError}
             helperText={usernameErrorMessage}

@@ -168,7 +168,7 @@ export default function SignUpCard() {
             />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor="username">ユーザー名</FormLabel>
+            <FormLabel htmlFor="username">ユーザーID</FormLabel>
             <TextField
               error={usernameError}
               helperText={usernameErrorMessage}

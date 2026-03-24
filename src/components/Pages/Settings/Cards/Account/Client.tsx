@@ -73,7 +73,7 @@ export default function AccountSettingsCardClient({
           基本設定
         </Typography>
         <Typography variant="body2">
-          ユーザー名、メールアドレスなどの変更を行います。
+          ユーザーID、メールアドレスなどの変更を行います。
         </Typography>
       </Stack>
       <TextField

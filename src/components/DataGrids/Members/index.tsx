@@ -196,7 +196,7 @@ export default function MembersDataGrid({
       },
       {
         field: "customId",
-        headerName: "カスタムID",
+        headerName: "ユーザーID",
         editable: !beforeJoined && canUpdate,
         width: 150,
       },
