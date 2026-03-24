@@ -58,7 +58,7 @@ export default function RejectDialog({
             </DialogContentText>
             <DialogContentText>
               ユーザーID:{" "}
-              {user?.profile?.displayName || user?.customId || "不明なユーザー"}
+              {user?.customId || user?.profile?.displayName || "不明なユーザー"}
             </DialogContentText>
             <input type="hidden" name="userId" value={user?.id || ""} />
           </DialogContent>
