@@ -8,7 +8,7 @@ import { User } from "@/classes/User";
  */
 export const GET = async (_request: NextRequest) => {
   try {
-    // セッションからユーザーIDを取得
+    // セッションからカスタムIDを取得
     const session = await Session.getCurrent();
     if (!session) {
       return NextResponse.json(

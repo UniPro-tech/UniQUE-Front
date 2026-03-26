@@ -39,7 +39,7 @@ export default function MultiFactorCard() {
       >
         <input type="hidden" name="redirectTo" value={redirectTo} />
         <FormControl>
-          <FormLabel htmlFor="username">ユーザー名</FormLabel>
+          <FormLabel htmlFor="username">カスタムID</FormLabel>
           <TextField
             id="username"
             type="text"

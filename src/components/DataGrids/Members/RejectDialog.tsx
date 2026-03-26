@@ -57,8 +57,8 @@ export default function RejectDialog({
               本当にこのユーザーの申請を却下しますか？この操作は取り消せません。
             </DialogContentText>
             <DialogContentText>
-              ユーザー名:{" "}
-              {user?.profile?.displayName || user?.customId || "不明なユーザー"}
+              カスタムID:{" "}
+              {user?.customId || user?.profile?.displayName || "不明なユーザー"}
             </DialogContentText>
             <input type="hidden" name="userId" value={user?.id || ""} />
           </DialogContent>
