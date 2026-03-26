@@ -11,7 +11,7 @@ export const approveAction = async (
   if (typeof userId !== "string") {
     return {
       status: "error",
-      message: "ユーザーIDが無効です。",
+      message: "カスタムIDが無効です。",
     };
   }
   const period = formData?.get("period");

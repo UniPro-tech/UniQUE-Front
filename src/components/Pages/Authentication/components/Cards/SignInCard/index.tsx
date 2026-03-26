@@ -95,7 +95,7 @@ export default function SignUpCard() {
           value={redirectTo ? redirectTo : "/dashboard"}
         />
         <FormControl>
-          <FormLabel htmlFor="username">ユーザーID</FormLabel>
+          <FormLabel htmlFor="username">カスタムID</FormLabel>
           <TextField
             id="username"
             type="text"

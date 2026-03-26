@@ -28,7 +28,7 @@ export default function SignUpCard() {
     React.useState("");
   const [usernameError, setUsernameError] = React.useState(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = React.useState(
-    "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
+    "カスタムIDは半角英数字とアンダースコアのみで設定してください。",
   );
   const [agreeTosError, setAgreeTosError] = React.useState(false);
   const [agreeTosErrorMessage, setAgreeTosErrorMessage] = React.useState("");
@@ -71,30 +71,30 @@ export default function SignUpCard() {
     }
 
     if (!username.value || !/^[a-zA-Z0-9_]+$/.test(username.value)) {
-      // ユーザーIDが空であるか、半角英数字とアンダースコア以外の文字が含まれている場合はエラー
+      // カスタムIDが空であるか、半角英数字とアンダースコア以外の文字が含まれている場合はエラー
       setUsernameError(true);
       setUsernameErrorMessage(
-        "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
+        "カスタムIDは半角英数字とアンダースコアのみで設定してください。",
       );
       isValid = false;
     } else {
       setUsernameError(false);
       setUsernameErrorMessage(
-        "ユーザーIDは半角英数字とアンダースコアのみで設定してください。",
+        "カスタムIDは半角英数字とアンダースコアのみで設定してください。",
       );
     }
 
     // もし数字や_のみであればエラー
     if (/^[0-9_]+$/.test(username.value)) {
       setUsernameError(true);
-      setUsernameErrorMessage("ユーザーIDは半角英字も含めて設定してください。");
+      setUsernameErrorMessage("カスタムIDは半角英字も含めて設定してください。");
       isValid = false;
     }
 
     // 先頭の文字が数字や_であればエラー
     if (/^[0-9_]/.test(username.value)) {
       setUsernameError(true);
-      setUsernameErrorMessage("ユーザーIDの先頭は半角英字で設定してください。");
+      setUsernameErrorMessage("カスタムIDの先頭は半角英字で設定してください。");
       isValid = false;
     }
 
@@ -102,7 +102,7 @@ export default function SignUpCard() {
     if (/_$/.test(username.value)) {
       setUsernameError(true);
       setUsernameErrorMessage(
-        "ユーザーIDの最後は半角英字または数字で設定してください。",
+        "カスタムIDの最後は半角英字または数字で設定してください。",
       );
       isValid = false;
     }
@@ -168,7 +168,7 @@ export default function SignUpCard() {
             />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor="username">ユーザーID</FormLabel>
+            <FormLabel htmlFor="username">カスタムID</FormLabel>
             <TextField
               error={usernameError}
               helperText={usernameErrorMessage}

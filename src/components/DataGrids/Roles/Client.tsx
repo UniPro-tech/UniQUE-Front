@@ -114,7 +114,7 @@ export default function RolesDataGridClient({ rows }: { rows: RoleData[] }) {
       },
       {
         field: "customId",
-        headerName: "ユーザーID",
+        headerName: "カスタムID",
         width: 140,
         flex: 0.8,
       },

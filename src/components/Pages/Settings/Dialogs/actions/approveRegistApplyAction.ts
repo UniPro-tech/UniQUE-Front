@@ -34,7 +34,7 @@ export const userIdChangeApplyAction = async (
     return {
       status: "success",
       message:
-        "Not implemented: ユーザーID変更申請が送信されました。管理者の承認をお待ちください。",
+        "Not implemented: カスタムID変更申請が送信されました。管理者の承認をお待ちください。",
     };
   } catch (error) {
     switch (error) {

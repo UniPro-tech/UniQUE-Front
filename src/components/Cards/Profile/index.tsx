@@ -176,7 +176,7 @@ export default function Profile({
                 <BadgeIcon color="action" />
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    ユーザーID
+                    カスタムID
                   </Typography>
                   <Typography variant="body1">
                     {user?.customId || "未設定"}

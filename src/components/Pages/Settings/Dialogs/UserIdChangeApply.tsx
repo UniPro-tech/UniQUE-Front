@@ -73,7 +73,7 @@ export default function UserIdChangeApply({
         }}
       >
         <form action={action} id="approve-regist-apply-data-dialog">
-          <DialogTitle>ユーザーIDの変更申請</DialogTitle>
+          <DialogTitle>カスタムIDの変更申請</DialogTitle>
           <DialogContent
             sx={{
               display: "flex",
@@ -83,7 +83,7 @@ export default function UserIdChangeApply({
             }}
           >
             <DialogContentText>
-              <strong>ユーザーIDの変更は原則としてできません。</strong>
+              <strong>カスタムIDの変更は原則としてできません。</strong>
               <br />
               特別な事情がある場合に限り、管理者が承認した場合のみ変更されます。
               <br />
@@ -92,7 +92,7 @@ export default function UserIdChangeApply({
             </DialogContentText>
             <input type="hidden" name="userId" value={user?.id || ""} />
             <TextField
-              label="新しいユーザーID"
+              label="新しいカスタムID"
               type="text"
               name="newCustomId"
               required
@@ -100,7 +100,7 @@ export default function UserIdChangeApply({
               variant="outlined"
               placeholder="hogehoge"
               disabled={isPending}
-              helperText="@を除いたユーザーIDを入力してください。"
+              helperText="@を除いたカスタムIDを入力してください。"
             />
             <TextField
               label="変更理由"
@@ -138,7 +138,7 @@ export default function UserIdChangeApply({
         }}
       >
         <form action={action} id="approve-regist-apply-data-dialog">
-          <DialogTitle>ユーザーIDの変更申請</DialogTitle>
+          <DialogTitle>カスタムIDの変更申請</DialogTitle>
           <DialogContent
             sx={{
               display: "flex",
@@ -148,7 +148,7 @@ export default function UserIdChangeApply({
             }}
           >
             <DialogContentText>
-              <strong>ユーザーIDの変更は原則としてできません。</strong>
+              <strong>カスタムIDの変更は原則としてできません。</strong>
               <br />
               特別な事情がある場合に限り、管理者が承認した場合のみ変更されます。
               <br />
@@ -157,7 +157,7 @@ export default function UserIdChangeApply({
             </DialogContentText>
             <input type="hidden" name="userId" value={user?.id || ""} />
             <TextField
-              label="新しいユーザーID"
+              label="新しいカスタムID"
               type="text"
               name="newCustomId"
               required
@@ -165,7 +165,7 @@ export default function UserIdChangeApply({
               variant="outlined"
               placeholder="hogehoge"
               disabled={isPending}
-              helperText="@を除いたユーザーIDを入力してください。"
+              helperText="@を除いたカスタムIDを入力してください。"
             />
             <TextField
               label="変更理由"

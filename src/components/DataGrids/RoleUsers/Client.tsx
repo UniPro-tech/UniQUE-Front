@@ -137,7 +137,7 @@ export default function RoleUsersDataGridClient({
       },
       {
         field: "customId",
-        headerName: "ユーザーID",
+        headerName: "カスタムID",
         width: 140,
         flex: 0.8,
       },

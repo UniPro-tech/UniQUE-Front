@@ -73,7 +73,7 @@ export default function AccountSettingsCardClient({
           基本設定
         </Typography>
         <Typography variant="body2">
-          ユーザーID、メールアドレスなどの変更を行います。
+          カスタムID、メールアドレスなどの変更を行います。
         </Typography>
       </Stack>
       <TextField
@@ -92,12 +92,12 @@ export default function AccountSettingsCardClient({
       <Stack>
         <TextField
           required
-          label="ユーザーID"
+          label="カスタムID"
           defaultValue={lastResult.user.customId}
           disabled
         />
         <FormHelperText>
-          ユーザーIDを変更するには申請が必要です。
+          カスタムIDを変更するには申請が必要です。
           <Link href="#" onClick={() => setOpenUserIdChangeDialog(true)}>
             申請する
           </Link>
@@ -111,7 +111,7 @@ export default function AccountSettingsCardClient({
           disabled
         />
         <FormHelperText>
-          メールアドレスは原則として所属期とユーザーIDに基づいて自動生成されます。
+          メールアドレスは原則として所属期とカスタムIDに基づいて自動生成されます。
         </FormHelperText>
       </Stack>
       <Stack spacing={1}>

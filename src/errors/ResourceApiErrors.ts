@@ -73,7 +73,7 @@ export function getResourceApiErrorSnackbarData(
       };
     case ResourceApiErrorCodes.UsernameAlreadyExists:
       return {
-        message: `[${ResourceApiErrorCodes.UsernameAlreadyExists}] このユーザーIDは既に使用されています。別のユーザーIDを入力してください。`,
+        message: `[${ResourceApiErrorCodes.UsernameAlreadyExists}] このカスタムIDは既に使用されています。別のカスタムIDを入力してください。`,
         variant: "error",
       };
     case ResourceApiErrorCodes.EmailAlreadyExists:
