@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { Announcement } from "@/classes/Announcement";
 import AnnouncementsList from "@/components/Lists/AnnouncementsList";
@@ -67,7 +67,17 @@ export default async function DashboardPage() {
       </Typography>
       <Stack mt={4} spacing={2}>
         <Typography variant="h5">サービス一覧</Typography>
-        <Stack mt={4} spacing={2} direction="row" id="other-services">
+        <Grid
+          container
+          columns={12}
+          mt={4}
+          justifyContent={"start"}
+          alignItems={"start"}
+          justifyItems={"start"}
+          spacing={2}
+          id="other-services"
+          maxWidth={`${160 * 6 + 16 * 5}px`}
+        >
           {OTHER_SERVICES.map((service) => (
             <OtherServicesCard
               key={service.serviceName}
@@ -77,7 +87,7 @@ export default async function DashboardPage() {
               iconURL={service.iconURL}
             />
           ))}
-        </Stack>
+        </Grid>
       </Stack>
       <Stack mt={4} spacing={2} id="announce">
         <Stack

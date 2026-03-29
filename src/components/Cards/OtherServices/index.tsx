@@ -1,4 +1,5 @@
-import { Card, CardContent, Typography } from "@mui/material";
+"use client";
+import { Card, CardContent, Grid, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import DesignServicesIcon from "@mui/icons-material/DesignServices";
@@ -17,7 +18,17 @@ export default function OtherServicesCard({
   icon,
 }: OtherServiceCardProps) {
   return (
-    <Link href={url} target={"_blank"} style={{ textDecoration: "none" }}>
+    <Grid
+      size={{ xs: 6, sm: 4, md: 3, lg: 2 }}
+      component={Link}
+      href={url}
+      target={"_blank"}
+      style={{ textDecoration: "none" }}
+      sx={{
+        width: 160,
+        height: 180,
+      }}
+    >
       <Card
         variant="outlined"
         sx={{
@@ -53,6 +64,6 @@ export default function OtherServicesCard({
           <Typography variant={"subtitle1"}>{serviceName}</Typography>
         </CardContent>
       </Card>
-    </Link>
+    </Grid>
   );
 }
