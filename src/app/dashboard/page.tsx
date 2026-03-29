@@ -47,6 +47,11 @@ export const OTHER_SERVICES: OtherServiceCardProps[] = [
       />
     ),
   },
+  {
+    serviceName: "Netbox",
+    url: "https://netbox.uniproject.jp",
+    iconURL: "/otherServices/netbox.png",
+  },
 ];
 
 export default async function DashboardPage() {
