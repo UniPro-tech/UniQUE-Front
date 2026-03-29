@@ -2,11 +2,52 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { Announcement } from "@/classes/Announcement";
 import AnnouncementsList from "@/components/Lists/AnnouncementsList";
+import OtherServicesCard, {
+  OtherServiceCardProps,
+} from "@/components/Cards/OtherServices";
+import EventIcon from "@mui/icons-material/Event";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import Image from "next/image";
 
 export const metadata = {
   title: "ダッシュボード",
   description: "ユーザーダッシュボードページ",
 };
+
+export const OTHER_SERVICES: OtherServiceCardProps[] = [
+  {
+    serviceName: "Event Manager",
+    url: "https://event.uniproject.jp",
+    icon: <EventIcon fontSize="large" sx={{ fontSize: 50 }} />,
+  },
+  {
+    serviceName: "役員会サイト",
+    url: "https://boardmembers.uniproject.jp",
+    icon: <AccountBalanceIcon fontSize="large" sx={{ fontSize: 50 }} />,
+  },
+  {
+    serviceName: "UniWiki",
+    url: "https://wiki.uniproject.jp",
+    iconURL: "/otherServices/growi.svg",
+  },
+  {
+    serviceName: "Proxmox VE",
+    url: "https://pm.uniproject.jp",
+    iconURL: "/otherServices/proxmox.png",
+  },
+  {
+    serviceName: "蔵雲",
+    url: "https://cloud.uniproject.jp",
+    icon: (
+      <Image
+        src="/otherServices/nextcloud.png"
+        alt="蔵雲 icon"
+        width={70}
+        height={50}
+      />
+    ),
+  },
+];
 
 export default async function DashboardPage() {
   const anns = (await Announcement.getAll()).map((a) => a.toJson());
@@ -19,6 +60,20 @@ export default async function DashboardPage() {
       <Typography variant="body1">
         ダッシュボードへようこそ。左のサイドバーからナビゲートしてください。
       </Typography>
+      <Stack mt={4} spacing={2}>
+        <Typography variant="h5">サービス一覧</Typography>
+        <Stack mt={4} spacing={2} direction="row" id="other-services">
+          {OTHER_SERVICES.map((service) => (
+            <OtherServicesCard
+              key={service.serviceName}
+              serviceName={service.serviceName}
+              url={service.url}
+              icon={service.icon}
+              iconURL={service.iconURL}
+            />
+          ))}
+        </Stack>
+      </Stack>
       <Stack mt={4} spacing={2} id="announce">
         <Stack
           direction="row"
