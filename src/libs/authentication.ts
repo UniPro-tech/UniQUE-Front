@@ -67,7 +67,7 @@ export const AuthenticationRequest = async (
 
   if (!response.ok) {
     switch (response.status) {
-      case 401:
+      case 401: {
         const errorData = await response.json();
         if (errorData.reason === "invalid_credentials") {
           throw AuthenticationErrors.InvalidCredentials;
@@ -75,6 +75,7 @@ export const AuthenticationRequest = async (
           throw AuthenticationErrors.AccountLocked;
         }
         throw AuthenticationErrors.InvalidCredentials;
+      }
       case 400:
         throw FrontendErrors.InvalidInput;
       default:
