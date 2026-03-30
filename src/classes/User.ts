@@ -1,7 +1,10 @@
 import { ConvertPermissionBitsToText } from "@/constants/Permission";
 import { AuthorizationErrors } from "@/errors/AuthorizationErrors";
 import { FrontendErrors } from "@/errors/FrontendErrors";
-import { ResourceApiErrors } from "@/errors/ResourceApiErrors";
+import {
+  ResourceApiErrorCodes,
+  ResourceApiErrors,
+} from "@/errors/ResourceApiErrors";
 import {
   apiDelete,
   apiGet,
@@ -149,7 +152,15 @@ export class User {
           throw FrontendErrors.InvalidInput;
         }
         case 409:
-          throw ResourceApiErrors.ResourceAlreadyExists;
+          const errorData = await response.json();
+          switch (errorData.code) {
+            case ResourceApiErrorCodes.UsernameAlreadyExists:
+              throw ResourceApiErrors.UsernameAlreadyExists;
+            case ResourceApiErrorCodes.EmailAlreadyExists:
+              throw ResourceApiErrors.EmailAlreadyExists;
+            default:
+              throw ResourceApiErrors.ResourceAlreadyExists;
+          }
         default:
           console.log("Failed to create user:", await response.text());
           throw ResourceApiErrors.ApiServerInternalError;
