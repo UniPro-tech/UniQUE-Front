@@ -1,13 +1,13 @@
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import EventIcon from "@mui/icons-material/Event";
 import { Box, Button, Grid, Stack, Typography } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
 import { Announcement } from "@/classes/Announcement";
-import AnnouncementsList from "@/components/Lists/AnnouncementsList";
 import OtherServicesCard, {
-  OtherServiceCardProps,
+  type OtherServiceCardProps,
 } from "@/components/Cards/OtherServices";
-import EventIcon from "@mui/icons-material/Event";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import Image from "next/image";
+import AnnouncementsList from "@/components/Lists/AnnouncementsList";
 
 export const metadata = {
   title: "ダッシュボード",

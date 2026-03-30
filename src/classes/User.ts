@@ -151,7 +151,7 @@ export class User {
           console.log("Failed to create user:", errorText);
           throw FrontendErrors.InvalidInput;
         }
-        case 409:
+        case 409: {
           const errorData = await response.json();
           switch (errorData.code) {
             case ResourceApiErrorCodes.UsernameAlreadyExists:
@@ -161,6 +161,7 @@ export class User {
             default:
               throw ResourceApiErrors.ResourceAlreadyExists;
           }
+        }
         default:
           console.log("Failed to create user:", await response.text());
           throw ResourceApiErrors.ApiServerInternalError;
