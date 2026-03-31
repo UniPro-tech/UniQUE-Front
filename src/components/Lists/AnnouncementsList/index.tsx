@@ -18,6 +18,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Grid,
   Snackbar,
   Stack,
   TextField,
@@ -173,12 +174,13 @@ export default function AnnouncementsList({
 
   return (
     <>
-      <Box
-        sx={{
-          display: "grid",
-          gap: 16,
-          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-        }}
+      <Grid
+        container
+        spacing={2}
+        justifyContent="start"
+        alignItems="start"
+        id="announcements-grid"
+        columns={12}
       >
         {items.map((a) => {
           const preview =
@@ -187,7 +189,7 @@ export default function AnnouncementsList({
               : a.content;
 
           return (
-            <Box key={a.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={a.id}>
               <Card variant="outlined">
                 <CardHeader
                   avatar={
@@ -284,10 +286,10 @@ export default function AnnouncementsList({
                   )}
                 </CardActions>
               </Card>
-            </Box>
+            </Grid>
           );
         })}
-      </Box>
+      </Grid>
 
       <Dialog
         open={editDialogOpen}
