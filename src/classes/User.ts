@@ -152,8 +152,16 @@ export class User {
           throw FrontendErrors.InvalidInput;
         }
         case 409: {
-          const errorData = await response.json();
-          switch (errorData.code) {
+          let errorCode: string | undefined;
+          try {
+            const errorData = (await response.json()) as {
+              code?: string;
+            } | null;
+            errorCode = errorData?.code;
+          } catch {
+            errorCode = undefined;
+          }
+          switch (errorCode) {
             case ResourceApiErrorCodes.UsernameAlreadyExists:
               throw ResourceApiErrors.UsernameAlreadyExists;
             case ResourceApiErrorCodes.EmailAlreadyExists:
