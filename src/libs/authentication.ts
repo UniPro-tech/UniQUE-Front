@@ -74,6 +74,7 @@ export const AuthenticationRequest = async (
         } else if (errorData.reason === "user_inactive") {
           throw AuthenticationErrors.AccountLocked;
         }
+        throw AuthenticationErrors.InvalidCredentials;
       }
       case 400:
         throw FrontendErrors.InvalidInput;

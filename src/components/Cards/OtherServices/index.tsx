@@ -1,8 +1,8 @@
 "use client";
+import DesignServicesIcon from "@mui/icons-material/DesignServices";
 import { Card, CardContent, Grid, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import DesignServicesIcon from "@mui/icons-material/DesignServices";
 
 export interface OtherServiceCardProps {
   serviceName: string;
