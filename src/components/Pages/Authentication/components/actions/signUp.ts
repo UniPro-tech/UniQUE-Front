@@ -22,6 +22,7 @@ export const submitSignUp = async (formData: FormData) => {
 
   await User.create(
     {
+      email: `temp_${Date.now()}@uniproject.jp`,
       externalEmail: external_email,
       customId: username,
       profile: {

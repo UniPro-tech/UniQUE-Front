@@ -22,7 +22,7 @@ export async function createMember(
       {
         customId: data.customId,
         email: data.email,
-        externalEmail: data.externalEmail,
+        externalEmail: data.externalEmail || null,
         affiliationPeriod: data.affiliationPeriod,
         status: data.status,
         profile: {

@@ -101,19 +101,21 @@ export class User {
   // ------ CRUD Static Methods ------
 
   static async create(
-    userData: Partial<
-      Omit<
-        UserData,
-        | "id"
-        | "createdAt"
-        | "updatedAt"
-        | "deletedAt"
-        | "profile"
-        | "emailVerified"
-        | "pendingEmail"
-        | "isTotpEnabled"
-      >
+    userData: Omit<
+      UserData,
+      | "id"
+      | "createdAt"
+      | "updatedAt"
+      | "deletedAt"
+      | "profile"
+      | "emailVerified"
+      | "pendingEmail"
+      | "isTotpEnabled"
+      | "affiliationPeriod"
+      | "status"
     > & {
+      status?: UserStatus;
+      affiliationPeriod?: string;
       profile: Partial<
         Omit<
           ProfileData,
