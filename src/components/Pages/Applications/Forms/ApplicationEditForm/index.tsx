@@ -9,8 +9,10 @@ import {
   Box,
   Button,
   Card,
+  Checkbox,
   CircularProgress,
   Divider,
+  FormControlLabel,
   IconButton,
   InputAdornment,
   Paper,
@@ -310,6 +312,13 @@ export default function ApplicationEditForm({
               </Stack>
             )}
           </Stack>
+          <FormControlLabel
+            control={
+              <Checkbox checked={application.publicClient} color="primary" />
+            }
+            label="Public Client (PKCE必須)"
+            sx={{ mt: 2 }}
+          />
         </Box>
 
         <Divider />

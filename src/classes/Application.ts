@@ -13,6 +13,7 @@ export interface ApplicationData {
   userId?: string;
   owner?: User | UserData;
   clientSecret: string | null;
+  publicClient?: boolean;
   createdAt: string | Date;
   updatedAt: string | Date;
   deletedAt: string | Date | null;
@@ -26,6 +27,7 @@ export class Application {
   privacyPolicyUrl: string | null;
   private ownerId: string;
   clientSecret: string | null;
+  publicClient: boolean;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -51,6 +53,7 @@ export class Application {
       throw new Error("Either ownerId or owner must be provided");
     }
     this.clientSecret = data.clientSecret || null;
+    this.publicClient = data.publicClient || false;
     this.createdAt =
       data.createdAt instanceof Date
         ? data.createdAt
@@ -85,6 +88,7 @@ export class Application {
       userId: this.ownerId,
       owner,
       clientSecret: this.clientSecret,
+      publicClient: this.publicClient,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
       deletedAt: this.deletedAt ? this.deletedAt.toISOString() : null,
