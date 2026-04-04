@@ -166,6 +166,28 @@ export default function ApplicationEditForm({
     }
   };
 
+  const handlePublicClientToggle = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const isPublic = e.target.checked;
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      await changeAction({
+        id: application.id,
+        publicClient: isPublic,
+      });
+      setSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "更新に失敗しました");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card sx={{ p: 4 }}>
       <Stack spacing={4}>
@@ -314,8 +336,9 @@ export default function ApplicationEditForm({
           </Stack>
           <FormControlLabel
             control={
-              <Checkbox checked={application.publicClient} color="primary" />
+              <Checkbox color="primary" onChange={handlePublicClientToggle} />
             }
+            defaultChecked={application.publicClient}
             label="Public Client (PKCE必須)"
             sx={{ mt: 2 }}
           />
