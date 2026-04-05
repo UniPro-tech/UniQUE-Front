@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
+import { ExternalIdentity } from "@/classes/ExternalIdentity";
 import { UserStatus } from "@/classes/types/User";
 import { User } from "@/classes/User";
-import { ExternalIdentity } from "@/classes/ExternalIdentity";
 import MembersDataGrid from "@/components/DataGrids/Members";
 import { PermissionBitsFields } from "@/constants/Permission";
 import { requirePermission } from "@/libs/permissions";
@@ -21,8 +21,9 @@ export default async function Page() {
       .filter((u) => u.status === UserStatus.ESTABLISHED)
       .map(async (userData) => {
         // 各ユーザーのDiscord連携状態を取得
-        const externalIdentities =
-          await ExternalIdentity.getByUserId(userData.id);
+        const externalIdentities = await ExternalIdentity.getByUserId(
+          userData.id,
+        );
         const discordLinked = externalIdentities.some(
           (id) => id.provider === "discord",
         );
