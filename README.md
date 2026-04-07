@@ -1,3 +1,7 @@
+> [!WARNING]
+> # DEPRECATED
+> このリポジトリは、[UniPro-tech/UniQUE](https://github.com/UniPro-tech/UniQUE)に移動しました。
+
 # UniQUE Front
 
 デジタル創作サークル UniProject 内製の OIDC 認証基盤 UniQUE のフロントエンドです。
