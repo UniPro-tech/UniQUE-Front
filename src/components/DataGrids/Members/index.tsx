@@ -99,16 +99,17 @@ export default function MembersDataGrid({
               type: "actions",
               width: 140,
               getActions: ({ id }: { id: GridRowId }) => {
+                const user = localRows.find((u) => String(u.id) === String(id));
+                const canApprove =
+                  user?.emailVerified === true && user?.discordLinked === true;
                 return [
                   <GridActionsCellItem
                     key={"approve"}
                     icon={<CheckIcon />}
                     label="Approve"
+                    disabled={!canApprove}
                     onClick={() => {
-                      setApprovedUser(
-                        localRows.find((u) => String(u.id) === String(id)) ||
-                          null,
-                      );
+                      setApprovedUser(user || null);
                       setApproveDialogOpen(true);
                     }}
                   />,
@@ -117,10 +118,7 @@ export default function MembersDataGrid({
                     icon={<DeleteIcon />}
                     label="Reject"
                     onClick={() => {
-                      setRejectUser(
-                        localRows.find((u) => String(u.id) === String(id)) ||
-                          null,
-                      );
+                      setRejectUser(user || null);
                       setRejectDialogOpen(true);
                     }}
                   />,
@@ -279,6 +277,28 @@ export default function MembersDataGrid({
         },
         editable: true,
       },
+      ...(beforeJoined
+        ? [
+            {
+              field: "emailVerified",
+              headerName: "メール認証",
+              width: 120,
+              renderCell: (params) => {
+                const verified = params.row.emailVerified === true;
+                return verified ? "✓ 認証済み" : "✗ 未認証";
+              },
+            } as GridColDef,
+            {
+              field: "discordLinked",
+              headerName: "Discord連携",
+              width: 120,
+              renderCell: (params) => {
+                const linked = params.row.discordLinked === true;
+                return linked ? "✓ 連携済み" : "✗ 未連携";
+              },
+            } as GridColDef,
+          ]
+        : []),
       {
         field: "createdAt",
         headerName: "作成日時",
